@@ -13,20 +13,6 @@ public class RestApplication {
 
 
 
-		Properties properties = new Properties();
-		try (FileInputStream input = new FileInputStream(".env.properties")) {
-			properties.load(input);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		String databaseUrl = properties.getProperty("DATABASE_URL");
-		String databaseUsername = properties.getProperty("DATABASE_USERNAME");
-		String databasePassword = properties.getProperty("DATABASE_PASSWORD");
-
-		// Use the configuration values as needed in your application
-
-
 
 		SpringApplication.run(RestApplication.class, args);
 
