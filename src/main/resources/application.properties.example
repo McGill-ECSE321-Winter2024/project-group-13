@@ -1,0 +1,7 @@
+## Copy this as application.properties in this folder,
+# and change credentials if required for your local setup
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/ecse321-db
+spring.datasource.username=postgres
+spring.datasource.password=default
+spring.datasource.driver-class-name=org.postgresql.Driver
