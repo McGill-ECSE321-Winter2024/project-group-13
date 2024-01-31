@@ -1,0 +1,95 @@
+class SportCenter {
+  	String openingHour;
+  	String closingHour;
+  	address;
+	1 <@>- 1 Schedule schedule;
+  	1 <@>- 0..1 User user;
+  	1 <@>- 1 CourseType courseType;
+  	1 <@>- 1 Room room;
+}
+
+class User {
+  	abstract;
+  	unique String email;
+  	String password;
+  	String name;
+}
+
+class Owner {
+  	isA User;
+}
+
+class Instructor {
+  	isA User;
+  	String qualifications;
+}
+
+class Customer {
+  	isA User;
+}
+
+class CourseType {
+  	unique String name;
+  	String description;
+
+}
+
+class Course {
+  	1 <@>- 0..* CourseSession;
+  	Integer defaultCapacity;
+  	Date defaultDay;
+  	Level level;
+  	DateTime defaultStartTime;
+  	DateTime defaultEndTime;
+  	unique Integer courseID;
+  	* courses -- 1 Room defaultRoom;
+}
+class CourseSession {
+  	Integer capacity;
+  	Date day;
+	DateTime startTime;
+  	DateTime endTime;
+
+}
+
+class Schedule {
+}
+
+
+associationClass Registration
+{
+  * Customer;
+  * CourseSession;
+}
+
+association {
+
+  0..* Course -- 1 Schedule;
+  1 CourseType type <@>- 0..* Course courses;
+  0..1 Instructor instructor -- 0..* Course courses;
+
+}
+
+enum Level {
+	Beginner,
+  	Intermediate,
+  	Advanced
+}
+class Room
+{
+  	String roomName;
+}
+
+class Invoice
+{
+  0..* -- 1 Registration;
+  Status status;
+}
+
+enum Status {
+	Open,
+  	Failed,
+  	Void,
+  	Completed,
+  	Cancelled
+}
