@@ -3,9 +3,11 @@ class SportCenter {
   	String closingHour;
   	address;
 	1 <@>- 1 Schedule schedule;
-  	1 <@>- 0..1 User user;
-  	1 <@>- 1 CourseType courseType;
   	1 <@>- 1 Room room;
+  	1 <@>- 1 Owner owner;
+  	1 <@>- * Instructor instructors;
+  	1 <@>- * Customer customers;
+    1 <@>- * Course courses;
 }
 
 class User {
@@ -28,15 +30,13 @@ class Customer {
   	isA User;
 }
 
-class CourseType {
-  	unique String name;
-  	String description;
 
-}
 
 class Course {
   	1 <@>- 0..* CourseSession;
   	Integer defaultCapacity;
+    unique String name;
+  	String description;
   	Date defaultDay;
   	Level level;
   	DateTime defaultStartTime;
@@ -49,7 +49,7 @@ class CourseSession {
   	Date day;
 	DateTime startTime;
   	DateTime endTime;
-
+  	
 }
 
 class Schedule {
@@ -63,11 +63,10 @@ associationClass Registration
 }
 
 association {
-
+  
   0..* Course -- 1 Schedule;
-  1 CourseType type <@>- 0..* Course courses;
   0..1 Instructor instructor -- 0..* Course courses;
-
+ 
 }
 
 enum Level {
