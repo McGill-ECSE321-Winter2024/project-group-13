@@ -56,16 +56,16 @@ class Schedule {
 }
 
 
-associationClass Registration
+class Registration
 {
-  * Customer;
-  * CourseSession;
+  * -> 1 Customer;
+   * -> 1 CourseSession;
 }
 
 association {
   
   0..* Course -- 1 Schedule;
-  0..1 Instructor instructor -- 0..* Course courses;
+  * Instructor instructor -- 0..* Course courses;
  
 }
 
