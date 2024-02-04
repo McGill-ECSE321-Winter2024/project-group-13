@@ -1,72 +1,66 @@
 class SportCenter {
-  	String openingHour;
-  	String closingHour;
-  	address;
-	1 <@>- 1 Schedule schedule;
-  	1 <@>- 1 Room room;
-  	1 <@>- 1 Owner owner;
-  	1 <@>- * Instructor instructors;
-  	1 <@>- * Customer customers;
-    1 <@>- * Course courses;
+  String openingHour;
+  String closingHour;
+  String address;
+  1 <@>- 1 Room room;
+  1 <@>- 1 Owner owner;
+  1 <@>- * Instructor instructors;
+  1 <@>- * Customer customers;
+  1 <@>- * Course courses;
 }
 
 class User {
-  	abstract;
-  	unique String email;
-  	String password;
-  	String name;
+  abstract;
+  unique id;
+  unique String email;
+  String password;
+  String name;
 }
 
 class Owner {
-  	isA User;
+  isA User;
 }
 
 class Instructor {
-  	isA User;
-  	String qualifications;
+  isA User;
 }
 
 class Customer {
-  	isA User;
+  isA User;
 }
-
 
 
 class Course {
-  	1 <@>- 0..* CourseSession;
-  	Integer defaultCapacity;
-    unique String name;
-  	String description;
-  	Date defaultDay;
-  	Level level;
-  	DateTime defaultStartTime;
-  	DateTime defaultEndTime;
-  	unique Integer courseID;
-  	* courses -- 1 Room defaultRoom;
+  unique id;
+  unique String name;
+  String description;
+  Level level;
+  DateTime courseStartDate;
+  DateTime courseEndDate;
+
+  1 <@>- 0..* CourseSession;
 }
+
 class CourseSession {
-  	Integer capacity;
-  	Date day;
-	DateTime startTime;
-  	DateTime endTime;
-  	
-}
+  unique id;
+  Date day;
+  DateTime startTime;
+  DateTime endTime;
 
-class Schedule {
-}
+  * courses -- 1 Room defaultRoom;
 
+  }
 
 class Registration
 {
+  unique id;
+
   * -> 1 Customer;
-   * -> 1 CourseSession;
+  * -> 1 CourseSession;
 }
 
 association {
-  
-  0..* Course -- 1 Schedule;
-  * Instructor instructor -- 0..* Course courses;
- 
+  * Instructor instructors -- 0..* CourseSession sessions;
 }
 
 enum Level {
@@ -74,13 +68,16 @@ enum Level {
   	Intermediate,
   	Advanced
 }
+
 class Room
 {
+  	unique id;
   	String roomName;
 }
 
 class Invoice
 {
+  unique id;
   0..* -- 1 Registration;
   Status status;
 }
