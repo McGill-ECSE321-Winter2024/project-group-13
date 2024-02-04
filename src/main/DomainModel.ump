@@ -54,9 +54,10 @@ class CourseSession {
 class Registration
 {
   unique id;
+  Integer feedback; 
 
   * -> 1 Customer;
-  * -> 1 CourseSession;
+  * -> 1 Course;
 }
 
 association {
