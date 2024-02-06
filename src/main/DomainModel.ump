@@ -11,7 +11,7 @@ class SportCenter {
 
 class User {
   abstract;
-  unique id;
+  id;
   unique String email;
   String password;
   String name;
@@ -31,7 +31,7 @@ class Customer {
 
 
 class Course {
-  unique id;
+  id;
   unique String name;
   String description;
   Level level;
@@ -42,26 +42,25 @@ class Course {
 }
 
 class CourseSession {
-  unique id;
+  id;
   Date day;
   DateTime startTime;
   DateTime endTime;
 
-  * courses -- 1 Room defaultRoom;
+  * course -> 1 Room room;
 
   }
 
 class Registration
 {
-  unique id;
-  Integer feedback; 
+  id;
 
   * -> 1 Customer;
-  * -> 1 Course;
+  * -> 1 CourseSession;
 }
 
 association {
-  * Instructor instructors -- 0..* CourseSession sessions;
+  1 Instructor instructor <- 0..* CourseSession sessions;
 }
 
 enum Level {
@@ -72,14 +71,14 @@ enum Level {
 
 class Room
 {
-  	unique id;
+  	id;
   	String roomName;
 }
 
 class Invoice
 {
-  unique id;
-  0..* -- 1 Registration;
+  id;
+  0..* -> 1 Registration;
   Status status;
 }
 
