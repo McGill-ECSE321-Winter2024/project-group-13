@@ -9,7 +9,7 @@ class SportCenter {
   1 <@>- * Course courses;
 }
 
-class User {
+class Person {
   abstract;
   id;
   unique String email;
@@ -18,15 +18,15 @@ class User {
 }
 
 class Owner {
-  isA User;
+  isA Person;
 }
 
 class Instructor {
-  isA User;
+  isA Person;
 }
 
 class Customer {
-  isA User;
+  isA Person;
 }
 
 
