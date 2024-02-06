@@ -2,11 +2,11 @@ class SportCenter {
   String openingHour;
   String closingHour;
   String address;
-  1 <@>- 1 Room room;
-  1 <@>- 1 Owner owner;
-  1 <@>- * Instructor instructors;
-  1 <@>- * Customer customers;
-  1 <@>- * Course courses;
+  1 sportCenter <@>- 1 Room room;
+  1 sportCenter <@>- 1 Owner owner;
+  1 sportCenter <@>- * Instructor instructors;
+  1 sportCenter <@>- * Customer customers;
+  1 sportCenter <@>- * Course courses;
 }
 
 class Person {
@@ -38,7 +38,7 @@ class Course {
   DateTime courseStartDate;
   DateTime courseEndDate;
 
-  1 <@>- 0..* CourseSession;
+  1 course <@>- 0..* CourseSession sessions;
 }
 
 class CourseSession {
@@ -55,8 +55,8 @@ class Registration
 {
   id;
 
-  * -> 1 Customer;
-  * -> 1 CourseSession;
+  * registration -> 1 Customer customer ;
+  * registration -> 1 CourseSession session;
 }
 
 association {
@@ -78,7 +78,7 @@ class Room
 class Invoice
 {
   id;
-  0..* -> 1 Registration;
+  0..* invoices -> 1 Registration registrations;
   Status status;
 }
 
