@@ -54,7 +54,7 @@ class CourseSession {
 class Registration
 {
   id;
-	Integer Rating;
+  Integer rating;
   * registrations -> 1 Customer customer ;
   * registrations -> 1 Course course;
 }
