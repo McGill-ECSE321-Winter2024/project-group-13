@@ -54,9 +54,9 @@ class CourseSession {
 class Registration
 {
   id;
-
-  * registration -> 1 Customer customer ;
-  * registration -> 1 CourseSession session;
+	Integer Rating;
+  * registrations -> 1 Customer customer ;
+  * registrations -> 1 Course course;
 }
 
 association {
@@ -81,6 +81,8 @@ class Invoice
   0..* invoices -> 1 Registration registrations;
   Status status;
 }
+
+
 
 enum Status {
 	Open,
