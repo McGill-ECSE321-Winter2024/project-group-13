@@ -1,8 +1,11 @@
+namespace ca.mcgill.ecse321.rest.models;
+
+
 class SportCenter {
   String openingHour;
   String closingHour;
   String address;
-  1 sportCenter <@>- 1 Room room;
+  1 sportCenter <@>- * Room rooms;
   1 sportCenter <@>- 1 Owner owner;
   1 sportCenter <@>- * Instructor instructors;
   1 sportCenter <@>- * Customer customers;
@@ -35,19 +38,19 @@ class Course {
   unique String name;
   String description;
   Level level;
-  DateTime courseStartDate;
-  DateTime courseEndDate;
+  Date courseStartDate;
+  Date courseEndDate;
 
   1 course <@>- 0..* CourseSession sessions;
+  * course -> 1 Room room;
+
 }
 
 class CourseSession {
   id;
   Date day;
-  DateTime startTime;
-  DateTime endTime;
-
-  * course -> 1 Room room;
+  Date startTime;
+  Date endTime;
 
   }
 
@@ -59,8 +62,9 @@ class Registration
   * registrations -> 1 Course course;
 }
 
+
 association {
-  1 Instructor instructor <- 0..* CourseSession sessions;
+  1 Instructor instructor <- 0..* Course sessions;
 }
 
 enum Level {
