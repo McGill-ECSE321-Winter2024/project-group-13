@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,8 @@ public class Course
 
   //Course Attributes
   @Id
-  @GeneratedValue(strategy=GenerationType.UUID)
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true)

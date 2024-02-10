@@ -50,6 +50,10 @@ public class CourseSession
     }
   }
 
+  public CourseSession() {
+
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
