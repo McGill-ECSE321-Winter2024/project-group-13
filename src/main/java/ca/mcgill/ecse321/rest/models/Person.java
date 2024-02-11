@@ -1,13 +1,9 @@
 
 package ca.mcgill.ecse321.rest.models;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.*;
-
 
 
 @Entity
@@ -23,6 +19,8 @@ public abstract class Person
   //Person Attributes
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true, nullable = false)
   private String email;

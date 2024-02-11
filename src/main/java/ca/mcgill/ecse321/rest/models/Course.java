@@ -20,6 +20,8 @@ public class Course
 
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true)
   private String name;

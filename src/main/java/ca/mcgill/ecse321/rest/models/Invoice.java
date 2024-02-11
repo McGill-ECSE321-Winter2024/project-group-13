@@ -15,6 +15,8 @@ public class Invoice
 
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Enumerated(EnumType.STRING)
   private Status status;

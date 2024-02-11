@@ -2,11 +2,15 @@
 package ca.mcgill.ecse321.rest.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
 public class Room
 {
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   private String roomName;
 

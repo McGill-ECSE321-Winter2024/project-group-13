@@ -10,6 +10,8 @@ public class CourseSession
 
   @Id
   @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Temporal(TemporalType.DATE)
   private Date day;

@@ -29,6 +29,7 @@ public class PersonRepositoryTests {
         String address = "123 Drury Lane";
         Person person = new Owner();
         person.setName(name);
+        person.setPhoneNumber("4384934907");
         person.setEmail("a.ghellach@gmail.com");
         person.setPassword("test");
 
@@ -36,16 +37,11 @@ public class PersonRepositoryTests {
         personRepository.save(person);
 
         // Read person from database.
-        person = personRepository.findPersonByEmail(name);
+        person = personRepository.findPersonByName(name);
 
         // Assert that person is not null and has correct attributes.
         assertNotNull(person);
         assertEquals(name, person.getName());
     }
 
-    @Test
-    public void testInsertingDuplicateEmail () {
-        // create owner with an existing email
-        //
-    }
 }
