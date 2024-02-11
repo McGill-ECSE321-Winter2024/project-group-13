@@ -1,16 +1,10 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.sql.Date;
 
-// line 36 "../../../../../DomainModel.ump"
 @Entity
 public class Course
 {
@@ -18,27 +12,14 @@ public class Course
 
   }
 
-  //------------------------
-  // ENUMERATIONS
-  //------------------------
 
   public enum Level { Beginner, Intermediate, Advanced }
 
-  //------------------------
-  // STATIC VARIABLES
-  //------------------------
 
   private static Map<String, Course> coursesByName = new HashMap<String, Course>();
 
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //Course Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true)
   private String name;
@@ -50,7 +31,6 @@ public class Course
   @Temporal(TemporalType.DATE)
   private Date courseEndDate;
 
-  //Course Associations   
   @OneToMany(
       mappedBy = "course",
       cascade = CascadeType.ALL,
@@ -64,10 +44,6 @@ public class Course
   private SportCenter sportCenter;
   @ManyToOne
   private Instructor instructor;
-
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
 
   public Course(String aId, String aName, String aDescription, Level aLevel, Date aCourseStartDate, Date aCourseEndDate, Room aRoom, SportCenter aSportCenter, Instructor aInstructor)
   {
@@ -96,9 +72,6 @@ public class Course
     }
   }
 
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setId(String aId)
   {
@@ -168,12 +141,10 @@ public class Course
   {
     return name;
   }
-  /* Code from template attribute_GetUnique */
   public static Course getWithName(String aName)
   {
     return coursesByName.get(aName);
   }
-  /* Code from template attribute_HasUnique */
   public static boolean hasWithName(String aName)
   {
     return getWithName(aName) != null;
@@ -198,7 +169,6 @@ public class Course
   {
     return courseEndDate;
   }
-  /* Code from template association_GetMany */
   public CourseSession getSession(int index)
   {
     CourseSession aSession = sessions.get(index);
@@ -228,27 +198,22 @@ public class Course
     int index = sessions.indexOf(aSession);
     return index;
   }
-  /* Code from template association_GetOne */
   public Room getRoom()
   {
     return room;
   }
-  /* Code from template association_GetOne */
   public SportCenter getSportCenter()
   {
     return sportCenter;
   }
-  /* Code from template association_GetOne */
   public Instructor getInstructor()
   {
     return instructor;
   }
-  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfSessions()
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
   public CourseSession addSession(String aId, Date aDay, Date aStartTime, Date aEndTime)
   {
     return new CourseSession(aId, aDay, aStartTime, aEndTime, this);
@@ -275,7 +240,6 @@ public class Course
   public boolean removeSession(CourseSession aSession)
   {
     boolean wasRemoved = false;
-    //Unable to remove aSession, as it must always have a course
     if (!this.equals(aSession.getCourse()))
     {
       sessions.remove(aSession);
@@ -283,7 +247,6 @@ public class Course
     }
     return wasRemoved;
   }
-  /* Code from template association_AddIndexControlFunctions */
   public boolean addSessionAt(CourseSession aSession, int index)
   {
     boolean wasAdded = false;
@@ -315,7 +278,6 @@ public class Course
     }
     return wasAdded;
   }
-  /* Code from template association_SetUnidirectionalOne */
   public boolean setRoom(Room aNewRoom)
   {
     boolean wasSet = false;
@@ -326,7 +288,6 @@ public class Course
     }
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
   public boolean setSportCenter(SportCenter aSportCenter)
   {
     boolean wasSet = false;
@@ -345,7 +306,6 @@ public class Course
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetUnidirectionalOne */
   public boolean setInstructor(Instructor aNewInstructor)
   {
     boolean wasSet = false;

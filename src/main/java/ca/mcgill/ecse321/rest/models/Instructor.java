@@ -1,33 +1,16 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
-
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-import java.util.*;
-
-// line 27 "../../../../../DomainModel.ump"
 @Entity
 public class Instructor extends Person
 {
-
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //Instructor Associations
   @ManyToOne
   private SportCenter sportCenter;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
-
-  public Instructor(String aId, String aEmail, String aPassword, String aName, SportCenter aSportCenter)
+  public Instructor(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName, SportCenter aSportCenter)
   {
-    super(aId, aEmail, aPassword, aName);
+    super(aId, aEmail, aPhoneNumber, aPassword, aName);
     boolean didAddSportCenter = setSportCenter(aSportCenter);
     if (!didAddSportCenter)
     {
@@ -35,19 +18,15 @@ public class Instructor extends Person
     }
   }
 
+
   public Instructor() {
     super();
   }
 
-  //------------------------
-  // INTERFACE
-  //------------------------
-  /* Code from template association_GetOne */
   public SportCenter getSportCenter()
   {
     return sportCenter;
   }
-  /* Code from template association_SetOneToMany */
   public boolean setSportCenter(SportCenter aSportCenter)
   {
     boolean wasSet = false;

@@ -1,36 +1,18 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
 
 package ca.mcgill.ecse321.rest.models;
 
-// line 76 "../../../../../DomainModel.ump"
-
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-
 @Entity
 public class Room
 {
-
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //Room Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   private String roomName;
 
-  //Room Associations
   @ManyToOne
   private SportCenter sportCenter;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
 
   public Room(String aId, String aRoomName, SportCenter aSportCenter)
   {
@@ -47,9 +29,6 @@ public class Room
 
   }
 
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setId(String aId)
   {

@@ -1,37 +1,22 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
 
 package ca.mcgill.ecse321.rest.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-// line 57 "../../../../../DomainModel.ump"
 @Entity
 public class Registration
 {
 
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //Registration Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   private int rating;
 
-  //Registration Associations
   @ManyToOne
   private Customer customer;
   @ManyToOne
   private Course course;
-
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
 
   public Registration(String aId, int aRating, Customer aCustomer, Course aCourse)
   {
@@ -51,9 +36,6 @@ public class Registration
 
   }
 
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setId(String aId)
   {
@@ -80,17 +62,14 @@ public class Registration
   {
     return rating;
   }
-  /* Code from template association_GetOne */
   public Customer getCustomer()
   {
     return customer;
   }
-  /* Code from template association_GetOne */
   public Course getCourse()
   {
     return course;
   }
-  /* Code from template association_SetUnidirectionalOne */
   public boolean setCustomer(Customer aNewCustomer)
   {
     boolean wasSet = false;
@@ -101,7 +80,6 @@ public class Registration
     }
     return wasSet;
   }
-  /* Code from template association_SetUnidirectionalOne */
   public boolean setCourse(Course aNewCourse)
   {
     boolean wasSet = false;

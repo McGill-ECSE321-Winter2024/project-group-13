@@ -1,6 +1,3 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
-
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,32 +5,17 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.*;
 import java.sql.Date;
 
-// line 4 "../../../../../DomainModel.ump"
-
 @Entity
 public class SportCenter
 {
 
-  //------------------------
-  // ENUMERATIONS
-  //------------------------
-
-
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //SportCenter Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   private String openingHour;
   private String closingHour;
   private String address;
 
-  //SportCenter Associations
   @OneToMany(mappedBy = "sportCenter", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Room> rooms;
   @OneToOne
@@ -48,9 +30,6 @@ public class SportCenter
 
   private List<Course> courses;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
 
   public SportCenter(String aOpeningHour, String aClosingHour, String aAddress, Owner aOwner)
   {
@@ -68,25 +47,22 @@ public class SportCenter
     courses = new ArrayList<Course>();
   }
 
-  public SportCenter(String aOpeningHour, String aClosingHour, String aAddress, String aIdForOwner, String aEmailForOwner, String aPasswordForOwner, String aNameForOwner)
+  public SportCenter(String aOpeningHour, String aClosingHour, String aAddress, String aIdForOwner, String aEmailForOwner, String aPhoneNumberForOwner, String aPasswordForOwner, String aNameForOwner)
   {
     openingHour = aOpeningHour;
     closingHour = aClosingHour;
     address = aAddress;
     rooms = new ArrayList<Room>();
-    owner = new Owner(aIdForOwner, aEmailForOwner, aPasswordForOwner, aNameForOwner, this);
+    owner = new Owner(aIdForOwner, aEmailForOwner, aPhoneNumberForOwner, aPasswordForOwner, aNameForOwner, this);
     instructors = new ArrayList<Instructor>();
     customers = new ArrayList<Customer>();
     courses = new ArrayList<Course>();
   }
 
+
   public SportCenter() {
 
   }
-
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setOpeningHour(String aOpeningHour)
   {
@@ -251,12 +227,10 @@ public class SportCenter
     int index = courses.indexOf(aCourse);
     return index;
   }
-  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfRooms()
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
   public Room addRoom(String aId, String aRoomName)
   {
     return new Room(aId, aRoomName, this);
@@ -283,7 +257,6 @@ public class SportCenter
   public boolean removeRoom(Room aRoom)
   {
     boolean wasRemoved = false;
-    //Unable to remove aRoom, as it must always have a sportCenter
     if (!this.equals(aRoom.getSportCenter()))
     {
       rooms.remove(aRoom);
@@ -291,9 +264,8 @@ public class SportCenter
     }
     return wasRemoved;
   }
-  /* Code from template association_AddIndexControlFunctions */
   public boolean addRoomAt(Room aRoom, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addRoom(aRoom))
     {
@@ -316,22 +288,20 @@ public class SportCenter
       rooms.remove(aRoom);
       rooms.add(index, aRoom);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addRoomAt(aRoom, index);
     }
     return wasAdded;
   }
-  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfInstructors()
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
-  public Instructor addInstructor(String aId, String aEmail, String aPassword, String aName)
+  public Instructor addInstructor(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName)
   {
-    return new Instructor(aId, aEmail, aPassword, aName, this);
+    return new Instructor(aId, aEmail, aPhoneNumber, aPassword, aName, this);
   }
 
   public boolean addInstructor(Instructor aInstructor)
@@ -363,9 +333,8 @@ public class SportCenter
     }
     return wasRemoved;
   }
-  /* Code from template association_AddIndexControlFunctions */
   public boolean addInstructorAt(Instructor aInstructor, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addInstructor(aInstructor))
     {
@@ -388,8 +357,8 @@ public class SportCenter
       instructors.remove(aInstructor);
       instructors.add(index, aInstructor);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addInstructorAt(aInstructor, index);
     }
@@ -401,9 +370,9 @@ public class SportCenter
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Customer addCustomer(String aId, String aEmail, String aPassword, String aName)
+  public Customer addCustomer(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName)
   {
-    return new Customer(aId, aEmail, aPassword, aName, this);
+    return new Customer(aId, aEmail, aPhoneNumber, aPassword, aName, this);
   }
 
   public boolean addCustomer(Customer aCustomer)
@@ -435,9 +404,8 @@ public class SportCenter
     }
     return wasRemoved;
   }
-  /* Code from template association_AddIndexControlFunctions */
   public boolean addCustomerAt(Customer aCustomer, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addCustomer(aCustomer))
     {
@@ -460,19 +428,17 @@ public class SportCenter
       customers.remove(aCustomer);
       customers.add(index, aCustomer);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addCustomerAt(aCustomer, index);
     }
     return wasAdded;
   }
-  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfCourses()
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
   public Course addCourse(String aId, String aName, String aDescription, Course.Level aLevel, Date aCourseStartDate, Date aCourseEndDate, Room aRoom, Instructor aInstructor)
   {
     return new Course(aId, aName, aDescription, aLevel, aCourseStartDate, aCourseEndDate, aRoom, this, aInstructor);
@@ -499,7 +465,6 @@ public class SportCenter
   public boolean removeCourse(Course aCourse)
   {
     boolean wasRemoved = false;
-    //Unable to remove aCourse, as it must always have a sportCenter
     if (!this.equals(aCourse.getSportCenter()))
     {
       courses.remove(aCourse);
@@ -507,9 +472,8 @@ public class SportCenter
     }
     return wasRemoved;
   }
-  /* Code from template association_AddIndexControlFunctions */
   public boolean addCourseAt(Course aCourse, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addCourse(aCourse))
     {
@@ -532,8 +496,8 @@ public class SportCenter
       courses.remove(aCourse);
       courses.add(index, aCourse);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addCourseAt(aCourse, index);
     }
@@ -548,7 +512,7 @@ public class SportCenter
       aRoom.delete();
       rooms.remove(aRoom);
     }
-    
+
     Owner existingOwner = owner;
     owner = null;
     if (existingOwner != null)
@@ -561,21 +525,21 @@ public class SportCenter
       aInstructor.delete();
       instructors.remove(aInstructor);
     }
-    
+
     while (customers.size() > 0)
     {
       Customer aCustomer = customers.get(customers.size() - 1);
       aCustomer.delete();
       customers.remove(aCustomer);
     }
-    
+
     while (courses.size() > 0)
     {
       Course aCourse = courses.get(courses.size() - 1);
       aCourse.delete();
       courses.remove(aCourse);
     }
-    
+
   }
 
 

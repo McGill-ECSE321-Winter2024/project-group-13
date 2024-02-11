@@ -1,5 +1,3 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.Column;
@@ -10,19 +8,14 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.*;
 
-// line 15 "../../../../../DomainModel.ump"
 
 
 @Entity
 public abstract class Person
 {
 
-  //------------------------
-  // STATIC VARIABLES
-  //------------------------
-
   private static Map<String, Person> personsByEmail = new HashMap<String, Person>();
-
+  private static Map<String, Person> personsByPhoneNumber = new HashMap<String, Person>();
   //------------------------
   // MEMBER VARIABLES
   //------------------------
@@ -30,11 +23,11 @@ public abstract class Person
   //Person Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true, nullable = false)
   private String email;
+  @Column(unique = true, nullable = false)
+  private String phoneNumber;
   @Column(nullable = false)
   private String password;
   @Column(nullable = false)
@@ -45,7 +38,7 @@ public abstract class Person
   // CONSTRUCTOR
   //------------------------
 
-  public Person(String aId, String aEmail, String aPassword, String aName)
+  public Person(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName)
   {
     id = aId;
     password = aPassword;
@@ -54,15 +47,15 @@ public abstract class Person
     {
       throw new RuntimeException("Cannot create due to duplicate email. See http://manual.umple.org?RE003ViolationofUniqueness.html");
     }
+    if (!setPhoneNumber(aPhoneNumber))
+    {
+      throw new RuntimeException("Cannot create due to duplicate phoneNumber. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
   }
 
   public Person() {
 
   }
-
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setId(String aId)
   {
@@ -88,6 +81,25 @@ public abstract class Person
       personsByEmail.remove(anOldEmail);
     }
     personsByEmail.put(aEmail, this);
+    return wasSet;
+  }
+
+  public boolean setPhoneNumber(String aPhoneNumber)
+  {
+    boolean wasSet = false;
+    String anOldPhoneNumber = getPhoneNumber();
+    if (anOldPhoneNumber != null && anOldPhoneNumber.equals(aPhoneNumber)) {
+      return true;
+    }
+    if (hasWithPhoneNumber(aPhoneNumber)) {
+      return wasSet;
+    }
+    phoneNumber = aPhoneNumber;
+    wasSet = true;
+    if (anOldPhoneNumber != null) {
+      personsByPhoneNumber.remove(anOldPhoneNumber);
+    }
+    personsByPhoneNumber.put(aPhoneNumber, this);
     return wasSet;
   }
 
@@ -127,6 +139,21 @@ public abstract class Person
     return getWithEmail(aEmail) != null;
   }
 
+  public String getPhoneNumber()
+  {
+    return phoneNumber;
+  }
+  /* Code from template attribute_GetUnique */
+  public static Person getWithPhoneNumber(String aPhoneNumber)
+  {
+    return personsByPhoneNumber.get(aPhoneNumber);
+  }
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithPhoneNumber(String aPhoneNumber)
+  {
+    return getWithPhoneNumber(aPhoneNumber) != null;
+  }
+
   public String getPassword()
   {
     return password;
@@ -140,6 +167,7 @@ public abstract class Person
   public void delete()
   {
     personsByEmail.remove(getEmail());
+    personsByPhoneNumber.remove(getPhoneNumber());
   }
 
 
@@ -148,6 +176,7 @@ public abstract class Person
     return super.toString() + "["+
             "id" + ":" + getId()+ "," +
             "email" + ":" + getEmail()+ "," +
+            "phoneNumber" + ":" + getPhoneNumber()+ "," +
             "password" + ":" + getPassword()+ "," +
             "name" + ":" + getName()+ "]";
   }

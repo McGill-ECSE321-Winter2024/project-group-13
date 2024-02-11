@@ -18,11 +18,11 @@ public class PersonRepositoryTests {
 
     @AfterEach
     public void clearDatabase() {
-//        personRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
     @Test
-    public void testPersistAndLoadPerson() {
+    public void testCreateOwner() {
         // Create person.
         String name = "Muffin Man";
         Integer age = 40;
@@ -36,10 +36,16 @@ public class PersonRepositoryTests {
         personRepository.save(person);
 
         // Read person from database.
-        person = personRepository.findPersonByName(name);
+        person = personRepository.findPersonByEmail(name);
 
         // Assert that person is not null and has correct attributes.
         assertNotNull(person);
         assertEquals(name, person.getName());
+    }
+
+    @Test
+    public void testInsertingDuplicateEmail () {
+        // create owner with an existing email
+        //
     }
 }

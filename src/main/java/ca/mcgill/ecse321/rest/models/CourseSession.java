@@ -1,26 +1,15 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.32.1.6535.66c005ced modeling language!*/
-
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Date;
 
-// line 49 "../../../../../DomainModel.ump"
 @Entity
 public class CourseSession
 {
 
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
-
-  //CourseSession Attributes
   @Id
   @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-  @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Temporal(TemporalType.DATE)
   private Date day;
@@ -29,13 +18,9 @@ public class CourseSession
   @Temporal(TemporalType.DATE)
   private Date endTime;
 
-  //CourseSession Associations
   @ManyToOne
   private Course course;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
 
   public CourseSession(String aId, Date aDay, Date aStartTime, Date aEndTime, Course aCourse)
   {
@@ -53,10 +38,6 @@ public class CourseSession
   public CourseSession() {
 
   }
-
-  //------------------------
-  // INTERFACE
-  //------------------------
 
   public boolean setId(String aId)
   {
@@ -109,12 +90,10 @@ public class CourseSession
   {
     return endTime;
   }
-  /* Code from template association_GetOne */
   public Course getCourse()
   {
     return course;
   }
-  /* Code from template association_SetOneToMany */
   public boolean setCourse(Course aCourse)
   {
     boolean wasSet = false;
