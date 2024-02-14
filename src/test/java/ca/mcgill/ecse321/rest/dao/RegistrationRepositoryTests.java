@@ -13,25 +13,39 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class RegistrationRepositoryTests {
     @Autowired
     private PersonRepository personRepository;
-        //@Autowired
-        //private CourseRepository courseRepository;  //need to create courseRepository first
+    @Autowired
+    private CourseRepository courseRepository;
     @Autowired
     private RegistrationRepository registrationRepository;
 
+    /**
+     * This method executes after each test. This is done by the "@AfterEach" JPA annotation
+     * The method is used to clear the database after each test, so that we don't fill up our database tables
+     * with unwanted data from tests.
+     */
     @AfterEach
     public void clearDatabase() {
         registrationRepository.deleteAll();
-            //CourseRepository.deleteAll();
+        courseRepository.deleteAll();
         personRepository.deleteAll();
     }
+
+
+    /**
+     * This method is a "@TEST" that tests the Persistance and Loading of the registration class.
+     * A registration needs a customer and a course in order to be relevant.
+     * Once the customer and course are set, we cannot delete registration, to do so
+     * We have to delete course and customer first.
+     * In this method, we first create a customer, then a course.
+     * We save customer and course. Then, we create and save a registration.
+     * Finally, we use "asserts" to check if the values saved in our registration table in the database are correct.
+     */
     @Test
     public void testPersistAndLoadRegistration() {
-        // Create person.
-
+        // Create Customer
         Customer customer = new Customer();
-
         customer.setName("Teddy");
-        customer.setPhoneNumber("5147912844");
+        customer.setPhoneNumber("XXX-XXX-XXXX");
         customer.setEmail("teddy.el-husseini@mail.mcgill.ca");
         customer.setPassword("test");
         customer.setId("123");
@@ -43,14 +57,17 @@ public class RegistrationRepositoryTests {
         course.setDescription("description");
 
 
-        // Save EveryThing
+        // Save Customer and Course
         personRepository.save(customer);
-        //courseRepository.save(course);
+        courseRepository.save(course);
 
         // Create and save registration.
         Registration registration = new Registration();
         registration.setCustomer(customer);
-        //registration.setCourse(course);
+        registration.setCourse(course);
+
+        int rating = 1;
+        registration.setRating(rating);
         registrationRepository.save(registration);
 
 
@@ -60,28 +77,26 @@ public class RegistrationRepositoryTests {
         // Read registration from database.
         registration = registrationRepository.findRegistrationById(registrationID);
 
+        //Asserts
         assertNotNull(registration);
         assertNotNull(registration.getId());
+        assertEquals(rating, registration.getRating());
 
         assertEquals(customer.getName(), registration.getCustomer().getName());
         assertEquals(customer.getPhoneNumber(), registration.getCustomer().getPhoneNumber());
         assertEquals(customer.getEmail(), registration.getCustomer().getEmail());
         assertEquals(customer.getPassword(), registration.getCustomer().getPassword());
         assertEquals(customer.getId(), registration.getCustomer().getId());
+        assertEquals(customer.getSportCenter(), registration.getCustomer().getSportCenter());
 
-        //assertEquals(1,1); //this will be for course
-
-
-        /**
-        assertEquals(event.getName(), registration.getEvent().getName());
-        assertEquals(event.getDate(), registration.getEvent().getDate());
-        assertEquals(event.getStartTime(), registration.getEvent().getStartTime());
-        assertEquals(event.getEndTime(), registration.getEvent().getEndTime());
-        **/
+        assertEquals(course.getId(), registration.getCourse().getId());
+        assertEquals(course.getName(), registration.getCourse().getName());
+        assertEquals(course.getDescription(), registration.getCourse().getDescription());
+        assertEquals(course.getCourseStartDate(), registration.getCourse().getCourseStartDate());
+        assertEquals(course.getCourseEndDate(), registration.getCourse().getCourseEndDate());
+        assertEquals(course.getRoom(), registration.getCourse().getRoom());
+        assertEquals(course.getSportCenter(), registration.getCourse().getSportCenter());
+        assertEquals(course.getInstructor(), registration.getCourse().getInstructor());
 
     }
-
-
-
-
 }
