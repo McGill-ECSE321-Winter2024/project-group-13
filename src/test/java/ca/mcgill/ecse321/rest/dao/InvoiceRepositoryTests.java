@@ -80,7 +80,7 @@ public class InvoiceRepositoryTests {
 
         //create and save invoice
         Invoice invoice = new Invoice();
-        Registration registration = registrationRepository.findRegistrationById("5187c018-a79e-46ab-a243-3e88fadf2773"); //get this value from the database
+        Registration registration = registrationRepository.findRegistrationById("0b951cdf-bafe-44fb-930d-a1ed993e28df"); //get this value from the database
         invoice.setStatus(Invoice.Status.Open);
         invoice.setRegistrations(registration);
         invoiceRepository.save(invoice);
