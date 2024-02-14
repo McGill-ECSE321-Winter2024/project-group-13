@@ -56,7 +56,6 @@ public class RegistrationRepositoryTests {
         course.setName("ecse321");
         course.setDescription("description");
 
-
         // Save Customer and Course
         personRepository.save(customer);
         courseRepository.save(course);
@@ -69,6 +68,7 @@ public class RegistrationRepositoryTests {
         int rating = 1;
         registration.setRating(rating);
         registrationRepository.save(registration);
+
 
 
         //Get RegistrationID

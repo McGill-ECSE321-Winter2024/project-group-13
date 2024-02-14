@@ -21,7 +21,7 @@ public class Invoice
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  @OneToOne
+  @ManyToOne
   private Registration registrations;
 
 
