@@ -11,15 +11,7 @@ public class Customer extends Person
   @ManyToOne
   private SportCenter sportCenter;
 
-  public Customer(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName, SportCenter aSportCenter)
-  {
-    super(aId, aEmail, aPhoneNumber, aPassword, aName);
-    boolean didAddSportCenter = setSportCenter(aSportCenter);
-    if (!didAddSportCenter)
-    {
-      throw new RuntimeException("Unable to create customer due to sportCenter. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-  }
+
   public Customer() {
 
   }

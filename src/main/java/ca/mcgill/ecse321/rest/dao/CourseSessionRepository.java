@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
@@ -14,16 +15,15 @@ import java.util.List;
 public interface CourseSessionRepository extends CrudRepository<CourseSession, String>{
 
     //Read methods
-    CourseSession findCourseSessionById(String id);
+    CourseSession findCourseSessionByCourse(Course course);
     // Find all sessions for a specific course
-    List<CourseSession> findByCourse(Course course);
+    List<CourseSession> findCourseSessionsByCourse(Course course);
     // Find sessions by date
-    List<CourseSession> findByDayOfWeek(Date day);
+    List<CourseSession> findCourseSessionByStartTime(Timestamp day);
     // Find sessions within a specific time range on a specific day
-    @Query("SELECT cs FROM CourseSession cs WHERE cs.dayOfWeek = :day AND cs.startTime >= :startTime AND cs.endTime <= :endTime")
-    List<CourseSession> findSessionsByDayAndTimeRange(@Param("day") Date day, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    // Find all sessions for a course on a specific day
-    List<CourseSession> findByCourseAndDayOfWeek(Course course, Date dayOfWeek);
+//    List<CourseSession> findSessionsByDayAndTimeRange(@Param("day") Date day, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+//    // Find all sessions for a course on a specific day
+//    List<CourseSession> findByCourseAndDayOfWeek(Course course, Date dayOfWeek);
 
 
     // Deletion

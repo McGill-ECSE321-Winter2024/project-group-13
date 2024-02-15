@@ -17,6 +17,7 @@ public class Registration
 
   @ManyToOne
   private Customer customer;
+  private Double amount;
   @ManyToOne
   private Course course;
 
@@ -86,6 +87,13 @@ public class Registration
     course = null;
   }
 
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
 
   public String toString()
   {

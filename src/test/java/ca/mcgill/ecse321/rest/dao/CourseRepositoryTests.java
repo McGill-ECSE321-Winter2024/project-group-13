@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @SpringBootTest
 public class CourseRepositoryTests {
@@ -29,8 +30,8 @@ public class CourseRepositoryTests {
         String name= "Health Plus";
         String description= "The best sports center";
         Course.Level level= Course.Level.Advanced;
-        Date courseStartDate= new Date(2024,1,1);
-        Date courseEndDate= new Date(2024,1,1);
+        Timestamp courseStartDate= Timestamp.valueOf("2023-01-01 08:00:00");
+        Timestamp courseEndDate= Timestamp.valueOf("2023-01-01 10:00:00");
         Course course = new Course();
         course.setName(name);
         course.setDescription(description);

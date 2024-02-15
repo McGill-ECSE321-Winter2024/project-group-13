@@ -17,6 +17,9 @@ public class SportCenter
   private String openingHour;
   private String closingHour;
   private String address;
+  private String name;
+  @OneToOne
+  private Schedule schedule;
 
 
   public SportCenter() {
@@ -62,6 +65,15 @@ public class SportCenter
     return address;
   }
   /* Code from template association_GetMany */
+  public String getName()
+  {
+    return name;
+  }
+
+    public void setName(String aName)
+    {
+        name = aName;
+    }
 
   public static int minimumNumberOfRooms()
   {
@@ -85,15 +97,21 @@ public class SportCenter
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Customer addCustomer(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName)
-  {
-    return new Customer(aId, aEmail, aPhoneNumber, aPassword, aName, this);
-  }
 
   public static int minimumNumberOfCourses()
   {
     return 0;
   }
+
+  public Schedule getSchedule()
+  {
+    return schedule;
+  }
+
+    public void setSchedule(Schedule aSchedule)
+    {
+        schedule = aSchedule;
+    }
 
 
   public String toString()
