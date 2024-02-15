@@ -29,7 +29,6 @@ public abstract class Person
   @Column(nullable = false)
   private String password;
   @Column(nullable = false)
-
   private String name;
 
   //------------------------
