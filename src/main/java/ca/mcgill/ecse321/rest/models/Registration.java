@@ -20,12 +20,15 @@ public class Registration
   @ManyToOne
   private Course course;
 
-  @Temporal(TemporalType.DATE)
-  private Date registrationDate;
-
   public Registration(String aId, int aRating, Customer aCustomer, Course aCourse)
   {
+
+    if (aRating <= 0){
+      throw new IllegalArgumentException("Rating should be strictly positive.");
+    }
     id = aId;
+
+
     rating = aRating;
     if (!setCustomer(aCustomer))
     {
@@ -53,6 +56,11 @@ public class Registration
   public boolean setRating(int aRating)
   {
     boolean wasSet = false;
+
+    if (aRating <= 0){
+      return  wasSet;
+    }
+
     rating = aRating;
     wasSet = true;
     return wasSet;

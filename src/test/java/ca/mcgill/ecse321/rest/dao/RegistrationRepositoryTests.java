@@ -1,13 +1,12 @@
 package ca.mcgill.ecse321.rest.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import ca.mcgill.ecse321.rest.models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class RegistrationRepositoryTests {
@@ -30,7 +29,6 @@ public class RegistrationRepositoryTests {
         personRepository.deleteAll();
     }
 
-
     /**
      * This method is a "@TEST" that tests the Persistance and Loading of the registration class.
      * A registration needs a customer and a course in order to be relevant.
@@ -42,11 +40,52 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testPersistAndLoadRegistration() {
+
         // Create Customer
         Customer customer = new Customer();
         customer.setName("Teddy");
-        customer.setPhoneNumber("XXX-XXX-XXXX");
+        customer.setPhoneNumber("111-222-3333");
         customer.setEmail("teddy.el-husseini@mail.mcgill.ca");
+        customer.setPassword("test");
+
+        //Create Course.
+        Course course = new Course();
+        course.setName("ecse321");
+        course.setDescription("description");
+
+        // Save Customer and Course
+        personRepository.save(customer);
+        courseRepository.save(course);
+
+        // Create and save registration.
+        Registration registration = new Registration();
+        int rating = 1;
+        registration.setRating(rating);
+        registration.setCourse(course);
+        registration.setCustomer(customer);
+        registrationRepository.save(registration);
+
+        String registrationID = registration.getId();
+
+        // Read registration from database.
+        registration = registrationRepository.findRegistrationById(registrationID);
+
+        assertNotNull(registration);
+        assertNotNull(registration.getId());
+        assertEquals(rating, registration.getRating());
+
+        assertEquals(customer.getId(), registration.getCustomer().getId());
+        assertEquals(course.getId(), registration.getCourse().getId());
+    }
+
+    @Test
+    public void testDeleteRegistrationWithInvalidId() {
+
+        // Create Customer
+        Customer customer = new Customer();
+        customer.setName("Teddy");
+        customer.setPhoneNumber("111-111-1111");
+        customer.setEmail("teddyw.el-husseini@mailll.mcgill.ca");
         customer.setPassword("test");
 
         //Create Course.
@@ -61,41 +100,124 @@ public class RegistrationRepositoryTests {
 
         // Create and save registration.
         Registration registration = new Registration();
-        registration.setCustomer(customer);
-        registration.setCourse(course);
-
         int rating = 1;
         registration.setRating(rating);
+        registration.setCourse(course);
+        registration.setCustomer(customer);
         registrationRepository.save(registration);
 
+        String registrationID = registrationRepository.findRegistrationById(registration.getId()).getId();
+
+        registrationID = "HEHEHE"+ registrationID + "HOHOHO";
+
+        long beforeDelete = registrationRepository.count();
+
+        registrationRepository.deleteById(registrationID);
+
+        long afterDelete = registrationRepository.count();
+
+        assertEquals(beforeDelete, afterDelete);
+
+    }
+
+    @Test
+    public void testUpdateRegistrationWithNullValues() {
+        // Create Customer
+        Customer customer = new Customer();
+        customer.setName("Teddy");
+        customer.setPhoneNumber("XXX-XXX-XXXX");
+        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
+        customer.setPassword("test");
+
+        //Create Course.
+        Course course = new Course();
+        course.setId("456");
+        course.setName("ecse321");
+        course.setDescription("description");
+
+        // Save Customer and Course
+        personRepository.save(customer);
+        courseRepository.save(course);
+
+        Registration registration = new Registration("something", 1, customer,course);
 
 
-        //Get RegistrationID
-        String registrationID = registration.getId();
+        assertFalse(registration.setCourse(null));
+        assertFalse(registration.setRating(0));
+        assertFalse(registration.setRating(-1));
+        assertFalse(registration.setCustomer(null));
 
-        // Read registration from database.
-        registration = registrationRepository.findRegistrationById(registrationID);
+        registrationRepository.save(registration);
+    }
 
-        //Asserts
-        assertNotNull(registration);
-        assertNotNull(registration.getId());
-        assertEquals(rating, registration.getRating());
+    @Test
+    public void testCreateRegistrationWithNullValues() {
 
-        assertEquals(customer.getName(), registration.getCustomer().getName());
-        assertEquals(customer.getPhoneNumber(), registration.getCustomer().getPhoneNumber());
-        assertEquals(customer.getEmail(), registration.getCustomer().getEmail());
-        assertEquals(customer.getPassword(), registration.getCustomer().getPassword());
-        assertEquals(customer.getId(), registration.getCustomer().getId());
-        assertEquals(customer.getSportCenter(), registration.getCustomer().getSportCenter());
+        // Create Customer
+        Customer customer = new Customer();
+        customer.setName("Teddy");
+        customer.setPhoneNumber("XXX-XXX-XXXX");
+        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
+        customer.setPassword("test");
 
-        assertEquals(course.getId(), registration.getCourse().getId());
-        assertEquals(course.getName(), registration.getCourse().getName());
-        assertEquals(course.getDescription(), registration.getCourse().getDescription());
-        assertEquals(course.getCourseStartDate(), registration.getCourse().getCourseStartDate());
-        assertEquals(course.getCourseEndDate(), registration.getCourse().getCourseEndDate());
-        assertEquals(course.getRoom(), registration.getCourse().getRoom());
-        assertEquals(course.getSportCenter(), registration.getCourse().getSportCenter());
-        assertEquals(course.getInstructor(), registration.getCourse().getInstructor());
+        //Create Course.
+        Course course = new Course();
+        course.setId("456");
+        course.setName("ecse321");
+        course.setDescription("description");
+
+        assertThrows(RuntimeException.class, () -> {
+            // Create and save registration.
+            Registration registration = new Registration("something", 1, customer, null);
+            registrationRepository.save(registration);
+
+        });
+
+        assertThrows(RuntimeException.class, () -> {
+            // Create and save registration.
+            Registration registration = new Registration("something", 1, null, null);
+            registrationRepository.save(registration);
+
+        });
+
+        assertThrows(RuntimeException.class, () -> {
+            // Create and save registration.
+            Registration registration = new Registration("something", 1, null, course);
+            registrationRepository.save(registration);
+
+        });
+
+
+    }
+
+    @Test
+    public void testCreateRegistrationWithInvalidRating() {
+        // Create Customer
+        Customer customer = new Customer();
+        customer.setName("Teddy");
+        customer.setPhoneNumber("XXX-XXX-XXXX");
+        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
+        customer.setPassword("test");
+
+        //Create Course.
+        Course course = new Course();
+        course.setId("456");
+        course.setName("ecse321");
+        course.setDescription("description");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            // Create and save registration.
+            Registration registration = new Registration("something", 0, customer, course);
+            registrationRepository.save(registration);
+
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            // Create and save registration.
+            Registration registration = new Registration("something", -10, customer, course);
+            registrationRepository.save(registration);
+
+        });
 
     }
 }

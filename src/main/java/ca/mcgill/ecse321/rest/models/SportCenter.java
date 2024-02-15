@@ -28,6 +28,9 @@ public class SportCenter
   @OneToMany(mappedBy = "sportCenter", cascade = CascadeType.ALL, orphanRemoval = true)
 
   private List<Customer> customers;
+  @OneToMany(mappedBy = "sportCenter", cascade = CascadeType.ALL, orphanRemoval = true)
+
+  private List<Course> courses;
 
 
   public SportCenter(String aOpeningHour, String aClosingHour, String aAddress, Owner aOwner)

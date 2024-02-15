@@ -21,14 +21,16 @@ public class Invoice
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  private double amount;
-
   @ManyToOne
   private Registration registrations;
 
 
   public Invoice(String aId, Status aStatus, Registration aRegistrations)
   {
+    if (aStatus ==null){
+      throw new RuntimeException("Set valid Status.");
+
+    }
     id = aId;
     status = aStatus;
     if (!setRegistrations(aRegistrations))
@@ -49,8 +51,10 @@ public class Invoice
   public boolean setStatus(Status aStatus)
   {
     boolean wasSet = false;
-    status = aStatus;
-    wasSet = true;
+    if (aStatus != null) {
+      status = aStatus;
+      wasSet = true;
+    }
     return wasSet;
   }
 
