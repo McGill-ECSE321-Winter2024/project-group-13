@@ -48,7 +48,6 @@ public class RegistrationRepositoryTests {
         customer.setPhoneNumber("XXX-XXX-XXXX");
         customer.setEmail("teddy.el-husseini@mail.mcgill.ca");
         customer.setPassword("test");
-        customer.setId("123");
 
         //Create Course.
         Course course = new Course();

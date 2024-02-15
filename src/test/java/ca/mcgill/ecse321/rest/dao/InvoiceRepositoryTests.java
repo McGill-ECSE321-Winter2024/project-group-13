@@ -21,6 +21,9 @@ public class InvoiceRepositoryTests {
     @Autowired
     private CourseRepository courseRepository;
 
+    Customer findCustomer;
+    Course findCourse;
+
     /**
      * This method executes after each test. This is done by the "@AfterEach" JPA annotation
      * The method is used to clear the database after each test, so that we don't fill up our database tables
@@ -29,8 +32,14 @@ public class InvoiceRepositoryTests {
     @AfterEach
     public void clearDatabase() {
         invoiceRepository.deleteAll();
+        registrationRepository.deleteAll();
+        courseRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
+    /**
+     * e
+     */
     public void fillDataBase() {
         // Create Customer
         Customer customer = new Customer();
@@ -58,6 +67,9 @@ public class InvoiceRepositoryTests {
         int rating = 1;
         registration.setRating(rating);
         registrationRepository.save(registration);
+
+        findCourse = course;
+        findCustomer = customer;
     }
 
     /**
@@ -72,15 +84,12 @@ public class InvoiceRepositoryTests {
     @Test
     public void testPersistAndLoadInvoice() {
 
-        // Run this one time to get data in table
-        // Open Database Table to see registration: "SELECT * FROM registration;"
-        // Then copy/paste Registration Id below
-        // Need to find a better way to do this: have already existing table.
-        //fillDataBase();
+        fillDataBase();
 
         //create and save invoice
         Invoice invoice = new Invoice();
-        Registration registration = registrationRepository.findRegistrationById("0b951cdf-bafe-44fb-930d-a1ed993e28df"); //get this value from the database
+        Registration registration = registrationRepository.findRegistrationByCourseAndCustomer(findCourse, findCustomer);
+
         invoice.setStatus(Invoice.Status.Open);
         invoice.setRegistrations(registration);
         invoiceRepository.save(invoice);
