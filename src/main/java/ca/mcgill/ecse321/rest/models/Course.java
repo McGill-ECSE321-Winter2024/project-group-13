@@ -1,7 +1,11 @@
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.sql.Time;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.sql.Date;
 
@@ -9,6 +13,7 @@ import java.sql.Date;
 public class Course
 {
   public Course() {
+    this.sessions = new ArrayList<>();
 
   }
 
@@ -216,7 +221,7 @@ public class Course
   {
     return 0;
   }
-  public CourseSession addSession(String aId, Date aDay, Date aStartTime, Date aEndTime)
+  public CourseSession addSession(String aId, Date aDay, Time aStartTime, Time aEndTime)
   {
     return new CourseSession(aId, aDay, aStartTime, aEndTime, this);
   }

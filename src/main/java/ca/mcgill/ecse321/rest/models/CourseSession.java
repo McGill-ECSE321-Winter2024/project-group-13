@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.time.DayOfWeek;
 
 @Entity
 public class CourseSession
@@ -14,20 +16,20 @@ public class CourseSession
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Temporal(TemporalType.DATE)
-  private Date day;
-  @Temporal(TemporalType.DATE)
-  private Date startTime;
-  @Temporal(TemporalType.DATE)
-  private Date endTime;
+  private Date dayOfWeek;
+  @Temporal(TemporalType.TIME)
+  private Time startTime;
+  @Temporal(TemporalType.TIME)
+  private Time endTime;
 
   @ManyToOne
   private Course course;
 
 
-  public CourseSession(String aId, Date aDay, Date aStartTime, Date aEndTime, Course aCourse)
+  public CourseSession(String aId, Date dayOfWeek, Time aStartTime, Time aEndTime, Course aCourse)
   {
     id = aId;
-    day = aDay;
+    this.dayOfWeek = dayOfWeek;
     startTime = aStartTime;
     endTime = aEndTime;
     boolean didAddCourse = setCourse(aCourse);
@@ -52,12 +54,12 @@ public class CourseSession
   public boolean setDay(Date aDay)
   {
     boolean wasSet = false;
-    day = aDay;
+    this.dayOfWeek = aDay;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setStartTime(Date aStartTime)
+  public boolean setStartTime(Time aStartTime)
   {
     boolean wasSet = false;
     startTime = aStartTime;
@@ -65,7 +67,7 @@ public class CourseSession
     return wasSet;
   }
 
-  public boolean setEndTime(Date aEndTime)
+  public boolean setEndTime(Time aEndTime)
   {
     boolean wasSet = false;
     endTime = aEndTime;
@@ -78,17 +80,17 @@ public class CourseSession
     return id;
   }
 
-  public Date getDay()
+  public Date getADay()
   {
-    return day;
+    return dayOfWeek;
   }
 
-  public Date getStartTime()
+  public Time getStartTime()
   {
     return startTime;
   }
 
-  public Date getEndTime()
+  public Time getEndTime()
   {
     return endTime;
   }
@@ -130,7 +132,7 @@ public class CourseSession
   {
     return super.toString() + "["+
             "id" + ":" + getId()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "day" + "=" + (getDay() != null ? !getDay().equals(this)  ? getDay().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "day" + "=" + (getADay() != null ? !getADay().equals(this)  ? getADay().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "course = "+(getCourse()!=null?Integer.toHexString(System.identityHashCode(getCourse())):"null");
