@@ -25,20 +25,6 @@ public class CourseSession
   @ManyToOne
   private Course course;
 
-
-  public CourseSession(String aId, Date dayOfWeek, Time aStartTime, Time aEndTime, Course aCourse)
-  {
-    id = aId;
-    this.dayOfWeek = dayOfWeek;
-    startTime = aStartTime;
-    endTime = aEndTime;
-    boolean didAddCourse = setCourse(aCourse);
-    if (!didAddCourse)
-    {
-      throw new RuntimeException("Unable to create session due to course. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-  }
-
   public CourseSession() {
 
   }
@@ -51,81 +37,70 @@ public class CourseSession
     return wasSet;
   }
 
-  public boolean setDay(Date aDay)
-  {
-    boolean wasSet = false;
-    this.dayOfWeek = aDay;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setStartTime(Time aStartTime)
-  {
-    boolean wasSet = false;
-    startTime = aStartTime;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setEndTime(Time aEndTime)
-  {
-    boolean wasSet = false;
-    endTime = aEndTime;
-    wasSet = true;
-    return wasSet;
-  }
-
   public String getId()
   {
     return id;
   }
 
-  public Date getADay()
-  {
-    return dayOfWeek;
-  }
-
-  public Time getStartTime()
-  {
-    return startTime;
-  }
-
-  public Time getEndTime()
-  {
-    return endTime;
-  }
-  public Course getCourse()
-  {
-    return course;
-  }
-  public boolean setCourse(Course aCourse)
-  {
-    boolean wasSet = false;
-    if (aCourse == null)
+    public boolean setADay(Date aDay)
     {
-      return wasSet;
+        boolean wasSet = false;
+        dayOfWeek = aDay;
+        wasSet = true;
+        return wasSet;
     }
 
-    Course existingCourse = course;
-    course = aCourse;
-    if (existingCourse != null && !existingCourse.equals(aCourse))
+    public Date getADay()
     {
-      existingCourse.removeSession(this);
+        return dayOfWeek;
     }
-    course.addSession(this);
-    wasSet = true;
-    return wasSet;
-  }
 
-  public void delete()
-  {
-    Course placeholderCourse = course;
-    this.course = null;
-    if(placeholderCourse != null)
+    public boolean setStartTime(Time aStartTime)
     {
-      placeholderCourse.removeSession(this);
+        boolean wasSet = false;
+        startTime = aStartTime;
+        wasSet = true;
+        return wasSet;
     }
-  }
+
+    public Time getStartTime()
+    {
+        return startTime;
+    }
+
+    public boolean setEndTime(Time aEndTime)
+    {
+        boolean wasSet = false;
+        endTime = aEndTime;
+        wasSet = true;
+        return wasSet;
+    }
+
+    public Time getEndTime()
+    {
+        return endTime;
+    }
+
+    public Course getCourse()
+    {
+        return course;
+    }
+
+    public boolean setCourse(Course aNewCourse)
+    {
+        boolean wasSet = false;
+        if (aNewCourse != null)
+        {
+            course = aNewCourse;
+            wasSet = true;
+        }
+        return wasSet;
+    }
+
+    public void delete()
+    {
+        course = null;
+    }
 
 
   public String toString()

@@ -20,19 +20,6 @@ public class Registration
   @ManyToOne
   private Course course;
 
-  public Registration(String aId, int aRating, Customer aCustomer, Course aCourse)
-  {
-    id = aId;
-    rating = aRating;
-    if (!setCustomer(aCustomer))
-    {
-      throw new RuntimeException("Unable to create Registration due to aCustomer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    if (!setCourse(aCourse))
-    {
-      throw new RuntimeException("Unable to create Registration due to aCourse. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-  }
 
   public Registration() {
 

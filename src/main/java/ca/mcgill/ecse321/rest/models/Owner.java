@@ -16,36 +16,16 @@ public class Owner extends Person
 
   }
 
-  public Owner(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName, SportCenter aSportCenter)
-  {
-    super(aId, aEmail, aPhoneNumber, aPassword, aName);
-    if (aSportCenter == null || aSportCenter.getOwner() != null)
-    {
-      throw new RuntimeException("Unable to create Owner due to aSportCenter. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    sportCenter = aSportCenter;
-  }
-
-  public Owner(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName, String aOpeningHourForSportCenter, String aClosingHourForSportCenter, String aAddressForSportCenter)
-  {
-    super(aId, aEmail, aPhoneNumber, aPassword, aName);
-    sportCenter = new SportCenter(aOpeningHourForSportCenter, aClosingHourForSportCenter, aAddressForSportCenter, this);
-  }
-
   public SportCenter getSportCenter()
   {
     return sportCenter;
   }
 
-  public void delete()
-  {
-    SportCenter existingSportCenter = sportCenter;
-    sportCenter = null;
-    if (existingSportCenter != null)
+    public boolean setSportCenter(SportCenter aSportCenter)
     {
-      existingSportCenter.delete();
+        this.sportCenter = aSportCenter;
+        return true;
     }
-    super.delete();
-  }
+
 
 }

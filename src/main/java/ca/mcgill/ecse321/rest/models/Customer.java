@@ -29,32 +29,8 @@ public class Customer extends Person
   }
   public boolean setSportCenter(SportCenter aSportCenter)
   {
-    boolean wasSet = false;
-    if (aSportCenter == null)
-    {
-      return wasSet;
-    }
-
-    SportCenter existingSportCenter = sportCenter;
-    sportCenter = aSportCenter;
-    if (existingSportCenter != null && !existingSportCenter.equals(aSportCenter))
-    {
-      existingSportCenter.removeCustomer(this);
-    }
-    sportCenter.addCustomer(this);
-    wasSet = true;
-    return wasSet;
-  }
-
-  public void delete()
-  {
-    SportCenter placeholderSportCenter = sportCenter;
-    this.sportCenter = null;
-    if(placeholderSportCenter != null)
-    {
-      placeholderSportCenter.removeCustomer(this);
-    }
-    super.delete();
+    this.sportCenter = aSportCenter;
+    return true;
   }
 
 }
