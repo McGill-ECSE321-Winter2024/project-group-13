@@ -20,6 +20,9 @@ public class Registration
   @ManyToOne
   private Course course;
 
+  @Temporal(TemporalType.DATE)
+  private Date registrationDate;
+
   public Registration(String aId, int aRating, Customer aCustomer, Course aCourse)
   {
     id = aId;

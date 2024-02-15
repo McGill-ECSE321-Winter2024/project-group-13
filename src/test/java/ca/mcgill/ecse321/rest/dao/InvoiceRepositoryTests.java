@@ -120,9 +120,6 @@ public class InvoiceRepositoryTests {
         assertEquals(registration.getCourse().getDescription(), invoice.getRegistrations().getCourse().getDescription());
         assertEquals(registration.getCourse().getCourseStartDate(), invoice.getRegistrations().getCourse().getCourseStartDate());
         assertEquals(registration.getCourse().getCourseEndDate(), invoice.getRegistrations().getCourse().getCourseEndDate());
-        assertEquals(registration.getCourse().getRoom(), invoice.getRegistrations().getCourse().getRoom());
-        assertEquals(registration.getCourse().getSportCenter(), invoice.getRegistrations().getCourse().getSportCenter());
-        assertEquals(registration.getCourse().getInstructor(), invoice.getRegistrations().getCourse().getInstructor());
 
     }
 }

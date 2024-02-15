@@ -8,5 +8,6 @@ public interface CourseSessionRepository extends CrudRepository<CourseSession, S
 
     CourseSession findCourseSessionById(String id);
 
+    CourseSession findCourseSessionByCourseId(String name);
 
 }
