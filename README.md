@@ -1,3 +1,5 @@
+# README.md
+
 ## **McGill University - Department of Electrical and Computer Engineering**
 
 ### **ECSE 321 Introduction to Software Engineering**
@@ -35,3 +37,26 @@ The scope of our project encompasses implementing the functionalities described 
 Thank you for your interest in our project. We are excited to embark on this journey and deliver a successful solution. Stay tuned for updates on our progress!
 
 - **Team 13**
+
+---
+
+### Project Reports and Documentation
+
+All our documentation for this project, except for this README file, can be found in the wiki of this repository. This project consisted of three sprints, with a project deliverable associated to each sprint. Individual sprint reports for each deliverable can be navigated to using the following links:
+
+- Project Deliverable 1 Report
+- Project Deliverable 2 Report
+- Project Deliverable 3 Report
+
+---
+
+### Team Overview Table
+
+|  | Team Role | Deliverable 1 Individual Hours | Deliverable 2 Individual Hours | Deliverable 3 Individual Hours |
+| --- | --- | --- | --- | --- |
+| Mohamed | Full Stack Engineer |  |  |  |
+| Philippe | Backend Engineer |  |  |  |
+| Teddy | Frontend Engineer |  |  |  |
+| Achraf | Full Stack Engineer |  |  |  |
+| Omar | Testing Engineer |  |  |  |
+| Rafael | Project Manager |  |  |  |
