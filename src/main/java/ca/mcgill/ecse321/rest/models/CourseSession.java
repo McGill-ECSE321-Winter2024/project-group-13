@@ -1,12 +1,9 @@
 package ca.mcgill.ecse321.rest.models;
+
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 
 @Entity
 public class CourseSession
