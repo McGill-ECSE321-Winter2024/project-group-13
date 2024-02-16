@@ -1,13 +1,10 @@
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
-import org.hibernate.Session;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Time;
-import java.time.DayOfWeek;
+import java.sql.Timestamp;
 import java.util.*;
-import java.sql.Date;
 
 @Entity
 public class Course
@@ -17,7 +14,6 @@ public class Course
   }
 
   public enum Level { Beginner, Intermediate, Advanced }
-  private static Map<String, Course> coursesByName = new HashMap<String, Course>();
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -28,17 +24,20 @@ public class Course
   private String description;
   @Enumerated(EnumType.STRING)
   private Level level;
-  @Temporal(TemporalType.DATE)
-  private Date courseStartDate;
-  @Temporal(TemporalType.DATE)
-  private Date courseEndDate;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp courseStartDate;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp courseEndDate;
   @ManyToOne
   private Room room;
   @ManyToOne
   private SportCenter sportCenter;
   @ManyToOne
   private Instructor instructor;
+  @OneToOne
+  private Schedule schedule;
 
+  private Double hourlyRateAmount;
   public void setId(String id) {
     this.id = id;
   }
@@ -71,19 +70,19 @@ public class Course
         return level;
     }
 
-    public void setCourseStartDate(Date courseStartDate) {
+    public void setCourseStartDate(Timestamp courseStartDate) {
         this.courseStartDate = courseStartDate;
     }
 
-    public Date getCourseStartDate() {
+    public Timestamp getCourseStartDate() {
         return courseStartDate;
     }
 
-    public void setCourseEndDate(Date courseEndDate) {
+    public void setCourseEndDate(Timestamp courseEndDate) {
         this.courseEndDate = courseEndDate;
     }
 
-    public Date getCourseEndDate() {
+    public Timestamp getCourseEndDate() {
         return courseEndDate;
     }
 
@@ -109,6 +108,14 @@ public class Course
 
     public Instructor getInstructor() {
         return instructor;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
     }
 
   public String toString()
