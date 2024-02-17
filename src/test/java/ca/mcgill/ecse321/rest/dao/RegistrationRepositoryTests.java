@@ -130,7 +130,7 @@ public class RegistrationRepositoryTests {
         registrationRepository.save(registration);
 
         registration = registrationRepository.findRegistrationById(registrationID);
-        assertEquals(1, registration.getRating());
+        assertEquals(newRating, registration.getRating());
 
     }
 
