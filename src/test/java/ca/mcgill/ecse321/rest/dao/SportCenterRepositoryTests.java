@@ -33,8 +33,6 @@ public class SportCenterRepositoryTests {
         SportCenter center = new SportCenter();
         center.setName(name);
         center.setAddress(address);
-        center.setOpeningHour(openingHour);
-        center.setClosingHour(closingHour);
 
         // Save center
         sportCenterRepository.save(center);
@@ -45,8 +43,6 @@ public class SportCenterRepositoryTests {
         // Assert that center is not null and has correct attributes.
         assertNotNull(center);
         assertEquals(name, center.getName());
-        assertEquals(openingHour, center.getOpeningHour());
-        assertEquals(closingHour, center.getClosingHour());
 
         // Delete center from database.
         sportCenterRepository.delete(center);

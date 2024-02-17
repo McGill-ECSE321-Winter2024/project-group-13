@@ -15,8 +15,6 @@ public class SportCenter
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
-  private Time openingHour;
-  private Time closingHour;
   private String address;
   private String name;
   @OneToOne
@@ -27,21 +25,7 @@ public class SportCenter
 
   }
 
-  public boolean setOpeningHour(Time aOpeningHour)
-  {
-    boolean wasSet = false;
-    openingHour = aOpeningHour;
-    wasSet = true;
-    return wasSet;
-  }
 
-  public boolean setClosingHour(Time aClosingHour)
-  {
-    boolean wasSet = false;
-    closingHour = aClosingHour;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setAddress(String aAddress)
   {
@@ -49,16 +33,6 @@ public class SportCenter
     address = aAddress;
     wasSet = true;
     return wasSet;
-  }
-
-  public Time getOpeningHour()
-  {
-    return openingHour;
-  }
-
-  public Time getClosingHour()
-  {
-    return closingHour;
   }
 
   public String getAddress()
@@ -118,8 +92,6 @@ public class SportCenter
   public String toString()
   {
     return super.toString() + "["+
-            "openingHour" + ":" + getOpeningHour()+ "," +
-            "closingHour" + ":" + getClosingHour()+ "," +
             "address" + ":" + getAddress()+ "]" + System.getProperties().getProperty("line.separator");
   }
 }
