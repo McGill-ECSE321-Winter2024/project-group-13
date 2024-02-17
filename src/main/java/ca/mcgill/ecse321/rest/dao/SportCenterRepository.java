@@ -13,4 +13,5 @@ public interface SportCenterRepository extends CrudRepository<SportCenter, Strin
     SportCenter findSportCenterByAddress(String address);
     Integer deleteSportCenterByName(String name);
 
+
 }

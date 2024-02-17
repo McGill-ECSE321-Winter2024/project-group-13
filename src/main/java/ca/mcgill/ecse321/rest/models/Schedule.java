@@ -28,7 +28,38 @@ public class Schedule {
     public Schedule() {
 
     }
-
+    public Schedule(Time standardOpeningHour, Time standardClosingHour){
+        this.mondayStart=standardOpeningHour;
+        this.mondayEnd=standardClosingHour;
+        this.tuesdayStart=standardOpeningHour;
+        this.tuesdayEnd=standardClosingHour;
+        this.wednesdayStart=standardOpeningHour;
+        this.wednesdayEnd=standardClosingHour;
+        this.thursdayStart=standardOpeningHour;
+        this.thursdayEnd=standardClosingHour;
+        this.fridayStart=standardOpeningHour;
+        this.fridayEnd=standardClosingHour;
+        this.saturdayStart=standardOpeningHour;
+        this.saturdayEnd=standardClosingHour;
+        this.sundayStart=standardOpeningHour;
+        this.sundayEnd=standardClosingHour;
+    }
+    public Schedule(Time weekDaysOpeningHour, Time weekDaysClosingHour, Time weekEndsOpeningHour, Time weekEndClosingHour){
+        this.mondayStart=weekDaysOpeningHour;
+        this.mondayEnd=weekDaysClosingHour;
+        this.tuesdayStart=weekDaysOpeningHour;
+        this.tuesdayEnd=weekDaysClosingHour;
+        this.wednesdayStart=weekDaysOpeningHour;
+        this.wednesdayEnd=weekDaysClosingHour;
+        this.thursdayStart=weekDaysOpeningHour;
+        this.thursdayEnd=weekDaysClosingHour;
+        this.fridayStart=weekDaysOpeningHour;
+        this.fridayEnd=weekDaysClosingHour;
+        this.saturdayStart=weekEndsOpeningHour;
+        this.saturdayEnd=weekEndClosingHour;
+        this.sundayStart=weekEndsOpeningHour;
+        this.sundayEnd=weekEndClosingHour;
+    }
     public void setId(String id) {
         this.id = id;
     }

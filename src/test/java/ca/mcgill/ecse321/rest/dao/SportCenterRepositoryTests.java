@@ -1,12 +1,13 @@
 package ca.mcgill.ecse321.rest.dao;
 
+import ca.mcgill.ecse321.rest.models.Schedule;
 import ca.mcgill.ecse321.rest.models.SportCenter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.sql.Date;
+
 import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,17 +17,29 @@ public class SportCenterRepositoryTests {
     @Autowired
     private SportCenterRepository sportCenterRepository;
 
+    @Autowired
+    private TestEntityManager entityManager;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+    /**
+     * This method executes before each test. This is done by the "@BeforeEach" JPA annotation
+     * The method is used to fill the database with a sport center before each of the tests.
+     *
+     * @Author Philippe Aprahamian
+     */
     @BeforeEach
     public void CreateSportCenter() {
         // Create SportCenter.
         String name= "McGill Recreation";
-        //Time openingHour = new Time(8,0,0);
-        //Time closingHour = new Time(20,0,0);
+        Time openingHour = new Time(8,0,0);
+        Time closingHour = new Time(20,30,0);
+        Schedule schedule = new Schedule(openingHour,closingHour);
+        scheduleRepository.save(schedule);
         String address = "1234 Av Dr.Penfield";
         SportCenter center = new SportCenter();
         center.setName(name);
         center.setAddress(address);
-
+        //center.setSchedule(schedule);
         // Save center
         sportCenterRepository.save(center);
     }
@@ -43,7 +56,7 @@ public class SportCenterRepositoryTests {
     }
 
     /**
-     * This method tests the creation and the del
+     * This method tests the save and the findSportCenterByName method
      *
      * @Author Philippe Aprahamian
      */
@@ -57,6 +70,11 @@ public class SportCenterRepositoryTests {
         assertEquals("McGill Recreation", center.getName());
         assertEquals("1234 Av Dr.Penfield", center.getAddress());
     }
+    /**
+     * This method tests the save and the findSportCenterByAddress method
+     *
+     * @Author Philippe Aprahamian
+     */
     @Test
     public void testFindSportCenterByAddress() {
         // Read center from database.
@@ -66,17 +84,35 @@ public class SportCenterRepositoryTests {
         assertNotNull(center);
         assertEquals("McGill Recreation", center.getName());
     }
+    /**
+     * This method tests that when we update attributes of the local object it also updates the database
+     *
+     * @Author Philippe Aprahamian
+     */
     @Test
     public void testUpdateAndReadSportCenter() {
         SportCenter center = sportCenterRepository.findSportCenterByName("McGill Recreation");
         center.setAddress("4321 Av Dr.Penfield");
+
+//        Time openingHour = new Time(8,0,0);
+//        Time closingHour = new Time(16,0,0);
+
+//        assertNotEquals(schedule,center.getSchedule());
+//        center.setSchedule(schedule);
         // Save center
         //sportCenterRepository.save(center);
         center = sportCenterRepository.findSportCenterByName("McGill Recreation");
         assertEquals("4321 Av Dr.Penfield",center.getAddress());
+        //assertEquals(schedule,center.getSchedule());
     }
+
+    /**
+     * This method tests the save and the deleteSportCenterByName method
+     *
+     * @Author Philippe Aprahamian
+     */
     @Test
-    public void testDeleteSportCenter() {
+    public void testDeleteSportCenterByName() {
         // Delete center from database.
         sportCenterRepository.deleteSportCenterByName("McGill Recreation");
         // Assert that center is null.
