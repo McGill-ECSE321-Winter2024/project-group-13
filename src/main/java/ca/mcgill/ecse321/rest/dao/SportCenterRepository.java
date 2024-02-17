@@ -5,9 +5,9 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SportCenterRepository extends CrudRepository<SportCenter, String>{
 
-    SportCenter findSportCenterById(String id);
-
     SportCenter findSportCenterByName(String name);
+    Boolean deleteSportCenterByName(String name);
+
 
 
 }

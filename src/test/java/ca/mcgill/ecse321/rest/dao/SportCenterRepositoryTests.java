@@ -1,7 +1,9 @@
 package ca.mcgill.ecse321.rest.dao;
 
 import ca.mcgill.ecse321.rest.models.SportCenter;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -17,11 +19,25 @@ public class SportCenterRepositoryTests {
     @Autowired
     private SportCenterRepository sportCenterRepository;
 
-    @AfterEach
+    @BeforeAll
+
+    /**
+     * This method executes after each test. This is done by the "@AfterAll" JPA annotation
+     * The method is used to clear the database after all tests, so that we don't fill up our database tables
+     * with unwanted data from tests.
+     *
+     * @Author Philippe Aprahamian
+     */
+    @AfterAll
     public void clearDatabase() {
         sportCenterRepository.deleteAll();
     }
 
+    /**
+     * This method tests the creation and the d
+     *
+     * @Author Philippe Aprahamian
+     */
     @Test
     public void testCRUDSportCenter() {
         // Create SportCenter.
