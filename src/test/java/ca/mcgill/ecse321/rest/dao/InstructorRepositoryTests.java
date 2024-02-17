@@ -68,6 +68,27 @@ public class InstructorRepositoryTests {
 
     /**
      * @author Rafael Reis
+     * Test goal: create an instructor and read its data from the database successfully using the phone number as identifier.
+     * This test creates an instructor, saves it to the database, retrieves it by phone number
+     * and asserts that the retrieved data related to this instructor from the database is correct.
+     */
+    @Test
+    public void testReadInstructorByPhoneNumber() {
+        // Create instructor.
+        Instructor instructor = createInstructor();
+        String email = instructor.getEmail();
+        String phoneNumber = instructor.getPhoneNumber();
+
+        instructorRepository.save(instructor); // Save instructor to database.
+        instructor = instructorRepository.findInstructorByPhoneNumber(phoneNumber); // Get instructor from database by phone number.
+
+        // Assert that instructor is not null (i.e. instructor was created and added to the database successfully)
+        assertNotNull(instructor);
+        checkAttributes(instructor, name, phoneNumber, email, password);
+    }
+
+    /**
+     * @author Rafael Reis
      * Test goal: update the instructor password
      * In this test we create an instructor and save it to the database.
      * Then we change the instructor password and make sure the database reflects that change.
@@ -187,12 +208,12 @@ public class InstructorRepositoryTests {
 
     /**
      * @author Rafael Reis
-     * Test goal: delete the instructor
+     * Test goal: delete the instructor by id
      * In this test we create an instructor and save it to the database.
      * Then we delete the instructor and make sure the database reflects that change.
      */
     @Test
-    public void testDeleteInstructor() {
+    public void testDeleteInstructorById() {
         // Create instructor.
         Instructor instructor = createInstructor();
         String email = instructor.getEmail();
@@ -207,20 +228,19 @@ public class InstructorRepositoryTests {
 
         // Delete instructor
         String id = instructor.getId();
-        instructorRepository.deleteById(id);
+        instructorRepository.deleteInstructorById(id);
         instructor = instructorRepository.findInstructorByEmail(email);
-        assertNull(instructor); // there should not be an instructor with the email raf@gmail.com
+        assertNull(instructor); // there should not be an instructor with the specified email
     }
 
     /**
      * @author Rafael Reis
-     * Test goal: check for duplicate instructor email.
+     * Test goal: delete the instructor by email
      * In this test we create an instructor and save it to the database.
-     * Then we try to create another instructor.
-     * We should detect this and not allow it.
+     * Then we delete the instructor and make sure the database reflects that change.
      */
     @Test
-    public void testMoreThanOneInstructor() {
+    public void testDeleteInstructorByEmail() {
         // Create instructor.
         Instructor instructor = createInstructor();
         String email = instructor.getEmail();
@@ -233,11 +253,68 @@ public class InstructorRepositoryTests {
         assertNotNull(instructor);
         checkAttributes(instructor, name, phoneNumber, email, password);
 
-        // Create second instructor.
+        // Delete instructor
+        instructorRepository.deleteInstructorByEmail(email);
+        instructor = instructorRepository.findInstructorByEmail(email);
+        assertNull(instructor); // there should not be an instructor with the specified email
+    }
+
+    /**
+     * @author Rafael Reis
+     * Test goal: check for duplicate instructor email.
+     * In this test we create an instructor and save it to the database.
+     * Then we try to create another instructor with the same email.
+     * We should detect this and not allow it.
+     */
+    @Test
+    public void testInstructorDuplicateEmail() {
+        // Create instructor.
+        Instructor instructor1 = createInstructor();
+        String email1 = instructor1.getEmail();
+        String phoneNumber1 = instructor1.getPhoneNumber();
+
+        instructorRepository.save(instructor1); // Save instructor to database.
+        instructor1 = instructorRepository.findInstructorByEmail(email1); // Get instructor from database by email.
+
+        // Assert that instructor is not null (i.e. instructor was created and added to the database successfully)
+        assertNotNull(instructor1);
+        checkAttributes(instructor1, name, phoneNumber1, email1, password);
+
+        // Create second instructor
         Instructor instructor2 = createInstructor();
-        if (instructorRepository.count()==0) instructorRepository.save(instructor2); // if there is no instructor in the DB, add the instructor.
-        instructor2 = instructorRepository.findInstructorByEmail(instructor2.getEmail());
-        assertNull(instructor2); // instructor2 shouldn't be in the DB since we can't have more than 1 instructor.
+        String email2 = instructor2.getEmail();
+        instructor2.setEmail(email1); // Attempt to change the email of instructor2 to be that of instructor1;
+
+        assertEquals(email2, instructor2.getEmail()); // the email should still be email2, i.e. the change was not allowed
+    }
+
+    /**
+     * @author Rafael Reis
+     * Test goal: check for duplicate instructor phone number.
+     * In this test we create an instructor and save it to the database.
+     * Then we try to create another instructor with the same phone number.
+     * We should detect this and not allow it.
+     */
+    @Test
+    public void testInstructorDuplicatePhoneNumber() {
+        // Create instructor.
+        Instructor instructor1 = createInstructor();
+        String email1 = instructor1.getEmail();
+        String phoneNumber1 = instructor1.getPhoneNumber();
+
+        instructorRepository.save(instructor1); // Save instructor to database.
+        instructor1 = instructorRepository.findInstructorByEmail(email1); // Get instructor from database by email.
+
+        // Assert that instructor is not null (i.e. instructor was created and added to the database successfully)
+        assertNotNull(instructor1);
+        checkAttributes(instructor1, name, phoneNumber1, email1, password);
+
+        // Create second instructor
+        Instructor instructor2 = createInstructor();
+        String phoneNumber2 = instructor2.getPhoneNumber();
+        instructor2.setEmail(phoneNumber1); // Attempt to change the phone number of instructor2 to be that of instructor1;
+
+        assertEquals(phoneNumber2, instructor2.getPhoneNumber()); // the phone number should still be email2, i.e. the change was not allowed
     }
 
     /**
@@ -262,10 +339,10 @@ public class InstructorRepositoryTests {
      * @param email the new instructor email.
      */
     private void setAttributes(Instructor instructor, String phoneNumber, String email) {
-        instructor.setName("Instructor");
+        instructor.setName(name);
         instructor.setPhoneNumber(phoneNumber);
         instructor.setEmail(email);
-        instructor.setPassword("test");
+        instructor.setPassword(password);
     }
 
     /**
@@ -283,15 +360,4 @@ public class InstructorRepositoryTests {
         assertEquals(email, instructor.getEmail());
         assertEquals(password, instructor.getPassword());
     }
-
-    /*
-     * //TODO
-     * Update password test
-     * Update email test
-     * Update name test
-     * Update phone number test
-     * Delete instructor test
-     * Duplicate email test
-     * Duplicate phone number test
-     */
 }

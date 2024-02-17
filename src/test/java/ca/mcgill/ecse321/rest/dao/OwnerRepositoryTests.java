@@ -88,6 +88,27 @@ public class OwnerRepositoryTests {
 
     /**
      * @author Rafael Reis
+     * Test goal: create an owner and read its data from the database successfully.
+     * This test creates an owner, saves it to the database, retrieves it by phoneNumber
+     * and asserts that the retrieved data related to this owner from the database is correct.
+     */
+    @Test
+    public void testReadOwnerByPhoneNumber() {
+        // Create owner.
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
+
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByPhoneNumber(phoneNumber); // Get owner from database by phoneNumber.
+
+        // Assert that owner is not null (i.e. owner was created and added to the database successfully)
+        assertNotNull(owner);
+        checkAttributes(owner, name, phoneNumber, email, password);
+    }
+
+    /**
+     * @author Rafael Reis
      * Test goal: update the owner password
      * In this test we create an owner and save it to the database.
      * Then we change the owner password and make sure the database reflects that change.
@@ -227,9 +248,9 @@ public class OwnerRepositoryTests {
 
         // Delete Owner
         String id = owner.getId();
-        ownerRepository.deleteById(id);
+        ownerRepository.deleteOwnerById(id);
         owner = ownerRepository.findOwnerByEmail(email);
-        assertNull(owner); // there should not be an owner with the email raf@gmail.com
+        assertNull(owner); // there should not be an owner with the specified email
     }
 
     /**
@@ -282,10 +303,10 @@ public class OwnerRepositoryTests {
      * @param email the new owner email.
      */
     private void setAttributes(Owner owner, String phoneNumber, String email) {
-        owner.setName("Owner");
+        owner.setName(name);
         owner.setPhoneNumber(phoneNumber);
         owner.setEmail(email);
-        owner.setPassword("test");
+        owner.setPassword(password);
     }
 
     /**
