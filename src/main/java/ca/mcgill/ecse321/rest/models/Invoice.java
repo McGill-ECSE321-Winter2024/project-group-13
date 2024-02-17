@@ -24,7 +24,7 @@ public class Invoice
   @ManyToOne
   private Registration registrations;
 
-  private int amount;
+  private double amount;
 
 
   public Invoice(String aId, Status aStatus, Registration aRegistrations, int aAmount)
@@ -90,7 +90,7 @@ public class Invoice
     return wasSet;
   }
 
-  public int getAmount()
+  public double getAmount()
   {
     return amount;
   }
