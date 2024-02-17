@@ -1,6 +1,7 @@
 
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.*;
@@ -23,10 +24,12 @@ public abstract class Person
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
   @Column(unique = true, nullable = false)
+  @Email
   private String email;
   @Column(unique = true, nullable = false)
   private String phoneNumber;
   @Column(nullable = false)
+
   private String password;
   @Column(nullable = false)
 
