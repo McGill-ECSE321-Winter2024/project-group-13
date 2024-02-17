@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Time;
 import java.util.*;
 import java.sql.Date;
 
@@ -14,8 +15,8 @@ public class SportCenter
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
-  private String openingHour;
-  private String closingHour;
+  private Time openingHour;
+  private Time closingHour;
   private String address;
   private String name;
   @OneToOne
@@ -26,7 +27,7 @@ public class SportCenter
 
   }
 
-  public boolean setOpeningHour(String aOpeningHour)
+  public boolean setOpeningHour(Time aOpeningHour)
   {
     boolean wasSet = false;
     openingHour = aOpeningHour;
@@ -34,7 +35,7 @@ public class SportCenter
     return wasSet;
   }
 
-  public boolean setClosingHour(String aClosingHour)
+  public boolean setClosingHour(Time aClosingHour)
   {
     boolean wasSet = false;
     closingHour = aClosingHour;
@@ -50,12 +51,12 @@ public class SportCenter
     return wasSet;
   }
 
-  public String getOpeningHour()
+  public Time getOpeningHour()
   {
     return openingHour;
   }
 
-  public String getClosingHour()
+  public Time getClosingHour()
   {
     return closingHour;
   }
