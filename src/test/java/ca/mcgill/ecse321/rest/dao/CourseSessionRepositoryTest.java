@@ -2,11 +2,11 @@ package ca.mcgill.ecse321.rest.dao;
 
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.CourseSession;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -16,14 +16,15 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@SpringBootTest
 public class CourseSessionRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
-    private CourseSessionRepository repository;
+    private CourseSessionRepository courseSessionRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
 
     private Course testCourse;
 
@@ -36,7 +37,7 @@ public class CourseSessionRepositoryTest {
         testCourse.setCourseEndDate(Timestamp.valueOf(LocalDateTime.of(2023, 1, 1, 10, 0)));
         testCourse.setDescription("Test Description");
         testCourse.setLevel(Course.Level.Beginner);
-        entityManager.persist(testCourse);
+        courseRepository.save(testCourse);
 
         // Creating 10 courses with the same timing but different days
         for(int day = 1; day < 11; day++){
@@ -44,20 +45,26 @@ public class CourseSessionRepositoryTest {
             session.setStartTime(Timestamp.valueOf(LocalDateTime.of(2023, 1, day, 9, 0)));
             session.setEndTime(Timestamp.valueOf(LocalDateTime.of(2023, 1, day, 11, 0)));
             session.setCourse(testCourse);
-            entityManager.persist(session);
+            courseSessionRepository.save(session);
         }
+    }
+
+    @AfterEach
+    public void clearDatabase() {
+        courseSessionRepository.deleteAll();
+        courseRepository.deleteAll();
     }
 
     @Test
     public void testFindCourseSessionsByCourse() {
         // Fetch all sessions for the test course
-        List<CourseSession> sessions = repository.findCourseSessionsByCourse(testCourse);
+        List<CourseSession> sessions = courseSessionRepository.findCourseSessionsByCourse(testCourse);
 
         // Assert that the number of fetched sessions matches the expected number
         assertEquals(10, sessions.size(), "Should find 10 sessions for the test course");
 
         // Checking that all sessions belong to the test course
-        assertTrue(sessions.stream().allMatch(session -> session.getCourse().equals(testCourse)),
+        assertTrue(sessions.stream().allMatch(session -> session.getCourse().getId().equals(testCourse.getId())),
                 "All fetched sessions should belong to the test course");
     }
 
@@ -65,7 +72,7 @@ public class CourseSessionRepositoryTest {
     @Test
     public void testFindSessionsByStartTimeBefore() {
         // Fetch sessions that start before the end of the first day
-        List<CourseSession> sessionsBeforeEndOfFirstDay = repository.findCourseSessionsByStartTimeBefore(
+        List<CourseSession> sessionsBeforeEndOfFirstDay = courseSessionRepository.findCourseSessionsByStartTimeBefore(
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 2, 0, 0))
         );
 
@@ -76,7 +83,7 @@ public class CourseSessionRepositoryTest {
     @Test
     public void testFindSessionsByStartTimeAfter() {
         // Fetch sessions that start after the beginning of the 1st day (effectively, sessions from day 2 onwards)
-        List<CourseSession> sessionsAfterStartOfFirstDay = repository.findCourseSessionsByStartTimeAfter(
+        List<CourseSession> sessionsAfterStartOfFirstDay = courseSessionRepository.findCourseSessionsByStartTimeAfter(
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 1, 0, 0))
         );
 
@@ -87,14 +94,14 @@ public class CourseSessionRepositoryTest {
     @Test
     public void testFindSessionsByStartTimeBetween() {
         // Fetch sessions for the first day
-        List<CourseSession> firstDaySessions = repository.findCourseSessionsByStartTimeBetween(
+        List<CourseSession> firstDaySessions = courseSessionRepository.findCourseSessionsByStartTimeBetween(
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 1, 0, 0)),
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 2, 0, 0))
         );
         assertEquals(1, firstDaySessions.size(), "Should find 1 session on the first day");
 
         // Fetch all sessions across 10 days
-        List<CourseSession> allSessions = repository.findCourseSessionsByStartTimeBetween(
+        List<CourseSession> allSessions = courseSessionRepository.findCourseSessionsByStartTimeBetween(
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 1, 0, 0)),
                 Timestamp.valueOf(LocalDateTime.of(2023, 1, 11, 0, 0)) // Adjusted to cover all 10 days
         );
@@ -103,7 +110,7 @@ public class CourseSessionRepositoryTest {
 
     @Test
     public void testCountByCourse() {
-        long sessionCount = repository.countByCourse(testCourse);
+        long sessionCount = courseSessionRepository.countByCourse(testCourse);
         assertEquals(10, sessionCount);
     }
 
@@ -116,20 +123,20 @@ public class CourseSessionRepositoryTest {
         Timestamp initialEndTime = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 11, 0));
         session.setStartTime(initialStartTime);
         session.setEndTime(initialEndTime);
-        session = entityManager.persistFlushFind(session); // Persist and then find to ensure it's managed
+        session = courseSessionRepository.save(session); // Persist and then find to ensure it's managed
 
         // New times for update
         Timestamp newStartTime = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 10, 0));
         Timestamp newEndTime = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 12, 0));
 
+        session.setStartTime(newStartTime);
+        session.setEndTime(newEndTime);
         // Execution: Update the session times
-        repository.updateSessionTimes(session.getId(), newStartTime, newEndTime);
+        courseSessionRepository.save(session);
 
-        // Manual flush is required to ensure the update is executed within the test transaction
-        entityManager.refresh(session);
 
         // Verification: Retrieve the updated session and verify the changes
-        CourseSession updatedSession = entityManager.find(CourseSession.class, session.getId());
+        CourseSession updatedSession = courseSessionRepository.findCourseSessionById(session.getId());
         assertEquals(newStartTime, updatedSession.getStartTime(), "The start time should be updated.");
         assertEquals(newEndTime, updatedSession.getEndTime(), "The end time should be updated.");
     }
@@ -145,20 +152,19 @@ public class CourseSessionRepositoryTest {
         session.setEndTime(endTime);
         // Assuming a Course instance is required and has been set up appropriately
         Course course = new Course(); // Setup course as needed
-        entityManager.persist(course); // Persist course if it's a part of the CourseSession
+        courseRepository.save(course); // Persist course if it's a part of the CourseSession
         session.setCourse(course);
-        session = entityManager.persistFlushFind(session);
+        session = courseSessionRepository.save(session);
 
         // Ensure the session is persisted
-        Optional<CourseSession> persistedSession = repository.findById(session.getId());
+        Optional<CourseSession> persistedSession = courseSessionRepository.findById(session.getId());
         assertTrue(persistedSession.isPresent(), "CourseSession should exist before deletion.");
 
         // Execution: Delete the session by id
-        repository.deleteById(session.getId());
-        entityManager.flush(); // Ensure the delete operation is flushed to the database
+        courseSessionRepository.deleteById(session.getId());
 
         // Verification: Check the session no longer exists
-        Optional<CourseSession> deletedSession = repository.findById(session.getId());
+        Optional<CourseSession> deletedSession = courseSessionRepository.findById(session.getId());
         assertFalse(deletedSession.isPresent(), "CourseSession should not exist after deletion.");
     }
 
@@ -168,10 +174,9 @@ public class CourseSessionRepositoryTest {
         // Given the setUp method, we have a course and its associated sessions
 
         // When we delete sessions by the course
-        repository.deleteByCourse(testCourse);
-        entityManager.flush(); // Ensure the delete operation is executed and flushed to the DB
+        courseSessionRepository.deleteByCourse(testCourse);
 
         // Then no sessions should exist for the course
-        List<CourseSession> sessionsAfterDeletion = repository.findCourseSessionsByCourse(testCourse);
+        List<CourseSession> sessionsAfterDeletion = courseSessionRepository.findCourseSessionsByCourse(testCourse);
         assertTrue(sessionsAfterDeletion.isEmpty(), "No CourseSession entities should exist for the course after deletion.");
     }}

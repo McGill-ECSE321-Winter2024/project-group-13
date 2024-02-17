@@ -4,15 +4,14 @@ import ca.mcgill.ecse321.rest.models.Schedule;
 import ca.mcgill.ecse321.rest.models.SportCenter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
+import org.springframework.boot.test.context.SpringBootTest;
 
 
 import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@SpringBootTest
 public class SportCenterRepositoryTests {
     @Autowired
     private SportCenterRepository sportCenterRepository;
@@ -69,7 +68,7 @@ public class SportCenterRepositoryTests {
         assertNotNull(center);
         assertEquals("McGill Recreation", center.getName());
         assertEquals("1234 Av Dr.Penfield", center.getAddress());
-        assertEquals(schedule,center.getSchedule());
+        assertEquals(schedule.toString(),center.getSchedule().toString());
     }
 
 
@@ -109,7 +108,7 @@ public class SportCenterRepositoryTests {
         sportCenterRepository.save(center);
         center = sportCenterRepository.findSportCenterByName("McGill Recreation");
         assertEquals("4321 Av Dr.Penfield",center.getAddress());
-        assertEquals(schedule,center.getSchedule());
+        assertEquals(schedule.toString(),center.getSchedule().toString());
     }
 
     /**
@@ -120,7 +119,9 @@ public class SportCenterRepositoryTests {
     @Test
     public void testDeleteSportCenterByName() {
         // Delete center from database.
-        sportCenterRepository.deleteSportCenterByName("McGill Recreation");
+        SportCenter center = sportCenterRepository.findSportCenterByName("McGill Recreation");
+        sportCenterRepository.delete(center);
+
         // Assert that center is null.
         assertNull(sportCenterRepository.findSportCenterByName("McGill Recreation"));
     }
