@@ -32,4 +32,8 @@ public class RandomGenerator {
 
         return phoneNumber.toString();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/development

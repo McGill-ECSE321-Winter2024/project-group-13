@@ -1,13 +1,19 @@
 package ca.mcgill.ecse321.rest.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Time;
 
 @Entity
 public class Schedule {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, unique = true)
     private String id;
     private Time mondayStart;
     private Time mondayEnd;
@@ -28,7 +34,38 @@ public class Schedule {
     public Schedule() {
 
     }
-
+    public Schedule(Time standardOpeningHour, Time standardClosingHour){
+        this.mondayStart=standardOpeningHour;
+        this.mondayEnd=standardClosingHour;
+        this.tuesdayStart=standardOpeningHour;
+        this.tuesdayEnd=standardClosingHour;
+        this.wednesdayStart=standardOpeningHour;
+        this.wednesdayEnd=standardClosingHour;
+        this.thursdayStart=standardOpeningHour;
+        this.thursdayEnd=standardClosingHour;
+        this.fridayStart=standardOpeningHour;
+        this.fridayEnd=standardClosingHour;
+        this.saturdayStart=standardOpeningHour;
+        this.saturdayEnd=standardClosingHour;
+        this.sundayStart=standardOpeningHour;
+        this.sundayEnd=standardClosingHour;
+    }
+    public Schedule(Time weekDaysOpeningHour, Time weekDaysClosingHour, Time weekEndsOpeningHour, Time weekEndClosingHour){
+        this.mondayStart=weekDaysOpeningHour;
+        this.mondayEnd=weekDaysClosingHour;
+        this.tuesdayStart=weekDaysOpeningHour;
+        this.tuesdayEnd=weekDaysClosingHour;
+        this.wednesdayStart=weekDaysOpeningHour;
+        this.wednesdayEnd=weekDaysClosingHour;
+        this.thursdayStart=weekDaysOpeningHour;
+        this.thursdayEnd=weekDaysClosingHour;
+        this.fridayStart=weekDaysOpeningHour;
+        this.fridayEnd=weekDaysClosingHour;
+        this.saturdayStart=weekEndsOpeningHour;
+        this.saturdayEnd=weekEndClosingHour;
+        this.sundayStart=weekEndsOpeningHour;
+        this.sundayEnd=weekEndClosingHour;
+    }
     public void setId(String id) {
         this.id = id;
     }
@@ -145,6 +182,30 @@ public class Schedule {
 
     public void setSundayEnd(Time sundayEnd) {
         this.sundayEnd = sundayEnd;
+    }
+
+    public Time getSundayEnd() {
+        return sundayEnd;
+    }
+
+    public String toString() {
+        return "["+
+                "id" + ":" + getId()+
+                "mondayStart" + ":" + getMondayStart() +
+                "mondayEnd" + ":" + getMondayEnd() +
+                "tuesdayStart" + ":" + getTuesdayStart() +
+                "tuesdayEnd" + ":" + getTuesdayEnd() +
+                "wednesdayStart" + ":" + getWednesdayStart() +
+                "wednesdayEnd" + ":" + getWednesdayEnd() +
+                "thursdayStart" + ":" + getThursdayStart() +
+                "thursdayEnd" + ":" + getThursdayEnd() +
+                "fridayStart" + ":" + getFridayStart() +
+                "fridayEnd" + ":" + getFridayEnd() +
+                "saturdayStart" + ":" + getSaturdayStart() +
+                "saturdayEnd" + ":" + getSaturdayEnd() +
+                "sundayStart" + ":" + getSundayStart() +
+                "sundayEnd" + ":" + getSundayEnd() + "]";
+
     }
 
 
