@@ -20,7 +20,19 @@ public class SportCenterRepositoryTests {
     private SportCenterRepository sportCenterRepository;
 
     @BeforeAll
+    public void CreateSportCenter() {
+        // Create SportCenter.
+        String name= "McGill Recreation";
+        //Time openingHour = new Time(8,0,0);
+        //Time closingHour = new Time(20,0,0);
+        String address = "1234 Av Dr.Penfield";
+        SportCenter center = new SportCenter();
+        center.setName(name);
+        center.setAddress(address);
 
+        // Save center
+        sportCenterRepository.save(center);
+    }
     /**
      * This method executes after each test. This is done by the "@AfterAll" JPA annotation
      * The method is used to clear the database after all tests, so that we don't fill up our database tables
@@ -34,38 +46,35 @@ public class SportCenterRepositoryTests {
     }
 
     /**
-     * This method tests the creation and the d
+     * This method tests the creation and the del
      *
      * @Author Philippe Aprahamian
      */
     @Test
-    public void testCRUDSportCenter() {
-        // Create SportCenter.
-        String name= "McGill Recreation";
-        Time openingHour = new Time(8,0,0);
-        Time closingHour = new Time(20,0,0);
-        String address = "1234 Av Dr.Penfield";
-
-        SportCenter center = new SportCenter();
-        center.setName(name);
-        center.setAddress(address);
-
-        // Save center
-        sportCenterRepository.save(center);
-
+    public void testCreateAndReadSportCenter() {
         // Read center from database.
-        center = sportCenterRepository.findSportCenterByName(name);
+        SportCenter center = sportCenterRepository.findSportCenterByName("McGill Recreation");
 
         // Assert that center is not null and has correct attributes.
         assertNotNull(center);
-        assertEquals(name, center.getName());
-
+        assertEquals("McGill Recreation", center.getName());
+        assertEquals("1234 Av Dr.Penfield", center.getAddress());
+    }
+    @Test
+    public void testUpdateAndReadSportCenter() {
+        SportCenter center = sportCenterRepository.findSportCenterByName("McGill Recreation");
+        center.setAddress("4321 Av Dr.Penfield");
+        // Save center
+        //sportCenterRepository.save(center);
+        center = sportCenterRepository.findSportCenterByName("McGill Recreation");
+        assertEquals("4321 Av Dr.Penfield",center.getAddress());
+    }
+    @Test
+    public void testDeleteSportCenter() {
         // Delete center from database.
-        sportCenterRepository.delete(center);
-        center = sportCenterRepository.findSportCenterByName(name);
-
+        sportCenterRepository.deleteSportCenterByName("McGill Recreation");
         // Assert that center is null.
-        assertNull(center);
+        assertNull(sportCenterRepository.findSportCenterByName("McGill Recreation"));
     }
 
 
