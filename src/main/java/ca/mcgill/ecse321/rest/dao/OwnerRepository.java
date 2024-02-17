@@ -7,7 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface OwnerRepository extends CrudRepository<Owner, String> {
 
     Owner findOwnerById(String id);
-    Owner findOwnerByName(String name);
     Owner findOwnerByEmail(String email);
+    Owner findOwnerByName(String name);
+    long count();
 
 }

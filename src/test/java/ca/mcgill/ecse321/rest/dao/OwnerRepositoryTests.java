@@ -1,21 +1,21 @@
 package ca.mcgill.ecse321.rest.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import ca.mcgill.ecse321.rest.models.Instructor;
 import ca.mcgill.ecse321.rest.models.Owner;
-import ca.mcgill.ecse321.rest.models.Person;
+import ca.mcgill.ecse321.rest.helpers.RandomGenerator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
 public class OwnerRepositoryTests {
     @Autowired
     private OwnerRepository ownerRepository;
+    private final String name = "Owner";
+    private final String password = "test";
 
     /**
      * Clear the test database after tests have run.
@@ -34,22 +34,11 @@ public class OwnerRepositoryTests {
     @Test
     public void testCreateOwner() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
+        Owner owner = createOwner();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database.
-        owner = ownerRepository.findOwnerByName(name);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(email); // Get owner from database by email.
 
         // Assert that owner is not null (i.e. owner was created and added to the database successfully)
         assertNotNull(owner);
@@ -64,29 +53,16 @@ public class OwnerRepositoryTests {
     @Test
     public void testReadOwnerByName() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database by name.
-        owner = ownerRepository.findOwnerByName(name);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByName(name); // Get owner from database by name.
 
         // Assert that owner is not null (i.e. owner was created and added to the database successfully)
         assertNotNull(owner);
-        assertEquals(name, owner.getName());
-        assertEquals(phoneNumber, owner.getPhoneNumber());
-        assertEquals(email, owner.getEmail());
-        assertEquals(password, owner.getPassword());
+        checkAttributes(owner, name, phoneNumber, email, password);
     }
 
     /**
@@ -98,29 +74,16 @@ public class OwnerRepositoryTests {
     @Test
     public void testReadOwnerByEmail() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database by email.
-        owner = ownerRepository.findOwnerByEmail(email);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(email); // Get owner from database by email.
 
         // Assert that owner is not null (i.e. owner was created and added to the database successfully)
         assertNotNull(owner);
-        assertEquals(name, owner.getName());
-        assertEquals(phoneNumber, owner.getPhoneNumber());
-        assertEquals(email, owner.getEmail());
-        assertEquals(password, owner.getPassword());
+        checkAttributes(owner, name, phoneNumber, email, password);
     }
 
     /**
@@ -132,38 +95,24 @@ public class OwnerRepositoryTests {
     @Test
     public void testUpdateOwnerPassword() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
-        String id;
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database.
-        owner = ownerRepository.findOwnerByName(name);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
 
         // Assert that owner is not null and has correct attributes.
         assertNotNull(owner);
-        assertEquals(name, owner.getName());
-        assertEquals(phoneNumber, owner.getPhoneNumber());
-        assertEquals(email, owner.getEmail());
-        assertEquals(password, owner.getPassword());
+        checkAttributes(owner, name, phoneNumber, email, password);
 
         // Get owner with ID and update password.
-        id = owner.getId();
+        String id = owner.getId();
         owner.setPassword("password");
         ownerRepository.save(owner);
         owner = ownerRepository.findOwnerById(id);
         assertNotNull(owner);
-        assertEquals("password", owner.getPassword());
+        checkAttributes(owner, name, phoneNumber, email, "password");
     }
 
     /**
@@ -175,38 +124,26 @@ public class OwnerRepositoryTests {
     @Test
     public void testUpdateOwnerEmail() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
-        String id;
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database.
-        owner = ownerRepository.findOwnerByName(name);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
 
         // Assert that owner is not null and has correct attributes.
         assertNotNull(owner);
-        assertEquals(name, owner.getName());
-        assertEquals(phoneNumber, owner.getPhoneNumber());
-        assertEquals(email, owner.getEmail());
-        assertEquals(password, owner.getPassword());
+        checkAttributes(owner, name, phoneNumber, email, password);
 
         // Get owner with ID and update email.
-        id = owner.getId();
-        owner.setEmail("owner@gmail.com");
+        String id = owner.getId();
+        String newEmail = RandomGenerator.generateRandomEmail();
+        owner.setEmail(newEmail);
         ownerRepository.save(owner);
+
         owner = ownerRepository.findOwnerById(id);
         assertNotNull(owner);
-        assertEquals("owner@gmail.com", owner.getEmail());
+        checkAttributes(owner, name, phoneNumber, newEmail, password);
     }
 
     /**
@@ -218,46 +155,152 @@ public class OwnerRepositoryTests {
     @Test
     public void testUpdateOwnerName() {
         // Create owner.
-        String name = "Owner Owen";
-        String phoneNumber = "4384934907";
-        String email = "owner.owen@gmail.com";
-        String password = "test";
-        String id;
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
 
-        Owner owner = new Owner();
-        owner.setName(name);
-        owner.setPhoneNumber(phoneNumber);
-        owner.setEmail(email);
-        owner.setPassword(password);
-
-        // Save owner to database.
-        ownerRepository.save(owner);
-
-        // Get owner from database.
-        owner = ownerRepository.findOwnerByName(name);
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
 
         // Assert that owner is not null and has correct attributes.
         assertNotNull(owner);
+        checkAttributes(owner, name, phoneNumber, email,password);
+
+        // Get owner with ID and update name.
+        String id = owner.getId();
+        owner.setName("Philippe Aprahamian");
+        ownerRepository.save(owner);
+        owner = ownerRepository.findOwnerById(id);
+        assertNotNull(owner);
+        checkAttributes(owner, "Philippe Aprahamian", phoneNumber, email,password);
+    }
+
+    /**
+     * @author Rafael Reis
+     * Test goal: update the owner phone number
+     * In this test we create an owner and save it to the database.
+     * Then we change the owner phone number and make sure the database reflects that change.
+     */
+    @Test
+    public void testUpdateOwnerPhoneNumber() {
+        // Create owner.
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
+
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
+
+        // Assert that owner is not null and has correct attributes.
+        assertNotNull(owner);
+        checkAttributes(owner, name, phoneNumber, email,password);
+
+        // Get owner with ID and update phone number.
+        String id = owner.getId();
+        owner.setPhoneNumber("+33750901255");
+        ownerRepository.save(owner);
+        owner = ownerRepository.findOwnerById(id);
+        // Check new phone number
+        assertNotNull(owner);
+        checkAttributes(owner, name, "+33750901255", email, password);
+    }
+
+    /**
+     * @author Rafael Reis
+     * Test goal: delete the owner
+     * In this test we create an owner and save it to the database.
+     * Then we delete the owner and make sure the database reflects that change.
+     */
+    @Test
+    public void testDeleteOwner() {
+        // Create owner.
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
+
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
+
+        // Assert that owner is not null and has correct attributes.
+        assertNotNull(owner);
+        checkAttributes(owner, name, phoneNumber, email,password);
+
+        // Delete Owner
+        String id = owner.getId();
+        ownerRepository.deleteById(id);
+        owner = ownerRepository.findOwnerByEmail(email);
+        assertNull(owner); // there should not be an owner with the email raf@gmail.com
+    }
+
+    /**
+     * @author Rafael Reis
+     * Test goal: check for duplicate owner email.
+     * In this test we create an owner and save it to the database.
+     * Then we try to create another owner.
+     * We should detect this and not allow it.
+     */
+    @Test
+    public void testMoreThanOneOwner() {
+        // Create owner.
+        Owner owner = createOwner();
+        String phoneNumber = owner.getPhoneNumber();
+        String email = owner.getEmail();
+
+        ownerRepository.save(owner); // Save owner to database.
+        owner = ownerRepository.findOwnerByEmail(owner.getEmail()); // Get owner from database.
+
+        // Assert that owner is not null and has correct attributes.
+        assertNotNull(owner);
+        checkAttributes(owner, name, phoneNumber, email,password);
+
+        // Create second owner.
+        Owner owner2 = createOwner();
+        if (ownerRepository.count()==0) ownerRepository.save(owner2); // if there is no owner in the DB, add the owner.
+        owner2 = ownerRepository.findOwnerByEmail(owner2.getEmail());
+        assertNull(owner2); // owner2 shouldn't be in the DB since we can't have more than 1 Owner.
+    }
+
+    /**
+     * @author Rafael Reis
+     * Create a new owner object and return it.
+     * @return the new Owner object.
+     */
+    private Owner createOwner() {
+        String phoneNumber = RandomGenerator.generateRandomPhoneNumber();
+        String email = RandomGenerator.generateRandomEmail();
+
+        Owner owner = new Owner();
+        setAttributes(owner, phoneNumber, email);
+        return owner;
+    }
+
+    /**
+     * @author Rafael Reis
+     * Set attributes of the owner parameter.
+     * @param owner the owner whose attributes we will set.
+     * @param phoneNumber the new owner phone number.
+     * @param email the new owner email.
+     */
+    private void setAttributes(Owner owner, String phoneNumber, String email) {
+        owner.setName("Owner");
+        owner.setPhoneNumber(phoneNumber);
+        owner.setEmail(email);
+        owner.setPassword("test");
+    }
+
+    /**
+     * @author Rafael Reis
+     * Perform JUnit tests to see whether the owner attributes are correct or not.
+     * @param owner the owner whose attributes we are checking.
+     * @param name the expected name.
+     * @param phoneNumber the expected phone number.
+     * @param email the expected email address.
+     * @param password the expected password.
+     */
+    private void checkAttributes(Owner owner, String name, String phoneNumber, String email, String password) {
         assertEquals(name, owner.getName());
         assertEquals(phoneNumber, owner.getPhoneNumber());
         assertEquals(email, owner.getEmail());
         assertEquals(password, owner.getPassword());
-
-        // Get owner with ID and update name.
-        id = owner.getId();
-        owner.setName("Owen");
-        ownerRepository.save(owner);
-        owner = ownerRepository.findOwnerById(id);
-        assertNotNull(owner);
-        assertEquals("Owen", owner.getName());
     }
-
-    /*
-     * //TODO
-     * Update name test
-     * Update phone number test
-     * Delete owner test
-     * Duplicate email test
-     * Duplicate phone number test
-     */
 }

@@ -10,9 +10,9 @@ import ca.mcgill.ecse321.rest.models.Person;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@SpringBootTest
+@DataJpaTest
 public class CustomerRepositoryTests {
     @Autowired
     private CustomerRepository customerRepository;
@@ -49,7 +49,7 @@ public class CustomerRepositoryTests {
         customerRepository.save(customer);
 
         // Read customer from database.
-        customer = customerRepository.findCustomerByName(name);
+        customer = customerRepository.findCustomerByEmail(email);
 
         // Assert that customer is not null and has correct attributes.
         assertNotNull(customer);

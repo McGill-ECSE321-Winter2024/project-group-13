@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CustomerRepository extends CrudRepository<Customer, String> {
     Customer findCustomerById(String id);
-    Customer findCustomerByName(String name);
+    Customer findCustomersByName(String name);
     Customer findCustomerByEmail(String email);
 
     void deleteCustomerById(String id);
