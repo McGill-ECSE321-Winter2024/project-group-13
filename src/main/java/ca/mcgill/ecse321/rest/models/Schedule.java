@@ -1,13 +1,19 @@
 package ca.mcgill.ecse321.rest.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Time;
 
 @Entity
 public class Schedule {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, unique = true)
     private String id;
     private Time mondayStart;
     private Time mondayEnd;
@@ -180,6 +186,26 @@ public class Schedule {
 
     public Time getSundayEnd() {
         return sundayEnd;
+    }
+
+    public String toString() {
+        return super.toString() + "["+
+                "id" + ":" + getId()+
+                "mondayStart" + ":" + getMondayStart() +
+                "mondayEnd" + ":" + getMondayEnd() +
+                "tuesdayStart" + ":" + getTuesdayStart() +
+                "tuesdayEnd" + ":" + getTuesdayEnd() +
+                "wednesdayStart" + ":" + getWednesdayStart() +
+                "wednesdayEnd" + ":" + getWednesdayEnd() +
+                "thursdayStart" + ":" + getThursdayStart() +
+                "thursdayEnd" + ":" + getThursdayEnd() +
+                "fridayStart" + ":" + getFridayStart() +
+                "fridayEnd" + ":" + getFridayEnd() +
+                "saturdayStart" + ":" + getSaturdayStart() +
+                "saturdayEnd" + ":" + getSaturdayEnd() +
+                "sundayStart" + ":" + getSundayStart() +
+                "sundayEnd" + ":" + getSundayEnd() + "]";
+
     }
 
 

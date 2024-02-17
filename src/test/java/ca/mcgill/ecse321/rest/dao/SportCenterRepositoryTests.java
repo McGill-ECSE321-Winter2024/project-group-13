@@ -39,9 +39,12 @@ public class SportCenterRepositoryTests {
         SportCenter center = new SportCenter();
         center.setName(name);
         center.setAddress(address);
-        //center.setSchedule(schedule);
+        center.setSchedule(schedule);
         // Save center
         sportCenterRepository.save(center);
+
+        System.out.println(schedule.toString());
+        System.out.println(center);
     }
     /**
      * This method executes after each test. This is done by the "@AfterEach" JPA annotation
