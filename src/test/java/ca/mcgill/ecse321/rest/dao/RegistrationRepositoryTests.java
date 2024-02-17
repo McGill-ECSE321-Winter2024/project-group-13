@@ -21,6 +21,8 @@ public class RegistrationRepositoryTests {
      * This method executes after each test. This is done by the "@AfterEach" JPA annotation
      * The method is used to clear the database after each test, so that we don't fill up our database tables
      * with unwanted data from tests.
+     *
+     * @Author Teddy El-Husseini
      */
     @AfterEach
     public void clearDatabase() {
@@ -37,6 +39,8 @@ public class RegistrationRepositoryTests {
      * In this method, we first create a customer, then a course.
      * We save customer and course. Then, we create and save a registration.
      * Finally, we use "asserts" to check if the values saved in our registration table in the database are correct.
+     *
+     * @Author Teddy El-Husseini
      */
     @Test
     public void testPersistAndLoadRegistration() {
@@ -78,6 +82,11 @@ public class RegistrationRepositoryTests {
         assertEquals(course.getId(), registration.getCourse().getId());
     }
 
+    /**
+     * This test checks that no registration is deleted when using deleteById with a non-existent id.
+     *
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void testDeleteRegistrationWithInvalidId() {
 
@@ -120,6 +129,11 @@ public class RegistrationRepositoryTests {
 
     }
 
+    /**
+     * This test checks that the course, rating and customer will not update if they are set to null/invalid values.
+     *
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void testUpdateRegistrationWithNullValues() {
         // Create Customer
@@ -150,6 +164,12 @@ public class RegistrationRepositoryTests {
         registrationRepository.save(registration);
     }
 
+    /**
+     * This test checks that an error is thrown when a registration with null values is created and that
+     * nothing is saved.
+     *
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void testCreateRegistrationWithNullValues() {
 
@@ -190,6 +210,12 @@ public class RegistrationRepositoryTests {
 
     }
 
+    /**
+     * This test checks that an error is thrown when an invoice with invalid rating is created and that
+     * nothing is saved.
+     *
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void testCreateRegistrationWithInvalidRating() {
         // Create Customer
