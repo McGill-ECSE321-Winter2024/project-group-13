@@ -36,8 +36,8 @@ public class Course
   private Instructor instructor;
   @OneToOne
   private Schedule schedule;
-
   private Double hourlyRateAmount;
+
   public void setId(String id) {
     this.id = id;
   }
@@ -117,6 +117,13 @@ public class Course
     public Schedule getSchedule() {
         return schedule;
     }
+    public void setHourlyRateAmount(Double hourlyRateAmount) {
+        this.hourlyRateAmount = hourlyRateAmount;
+    }
+
+    public Double getHourlyRateAmount() {
+        return hourlyRateAmount;
+  }
 
   public String toString()
   {

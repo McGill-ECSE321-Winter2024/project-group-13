@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +25,8 @@ public class CourseRepositoryTests {
         String name= "Health Plus";
         String description= "The best sports center";
         Course.Level level= Course.Level.Advanced;
-        Date courseStartDate= new Date(2024,1,1);
-        Date courseEndDate= new Date(2024,1,1);
+        Timestamp courseStartDate = new Timestamp(2024,1,1,6,15,0,0);
+        Timestamp courseEndDate = new Timestamp(2024,1,1,6,15,0,0);
         Course course = new Course();
         course.setName(name);
         course.setDescription(description);
@@ -47,10 +48,10 @@ public class CourseRepositoryTests {
         // Retrieve course from database.
         String name= "Health Plus";
         Course course = courseRepository.findCourseByName( name);
-        String description= "The best yoga course";
+        String description= "The best sports center";
         Course.Level level= Course.Level.Advanced;
-        Date courseStartDate= new Date(2024,1,1);
-        Date courseEndDate= new Date(2024,2,1);
+        Timestamp courseStartDate = new Timestamp(2024,1,1,6,15,0,0);
+        Timestamp courseEndDate = new Timestamp(2024,1,1,6,15,0,0);
 
         // Assert that course is not null and has correct attributes.
         assertNotNull(course);
@@ -67,10 +68,10 @@ public class CourseRepositoryTests {
         Course course = courseRepository.findCourseByName( "Health Plus");
         assertNotNull(course);
         String name= "New Center";
-        String description= "The newest fitness course";
+        String description= "The best yoga course";
         Course.Level level= Course.Level.Beginner;
-        Date courseStartDate= new Date(2024,2,20);
-        Date courseEndDate= new Date(2024,3,20);
+        Timestamp courseStartDate = new Timestamp(2024,2,15,8,10,15,1);
+        Timestamp courseEndDate = new Timestamp(2024,4,1,10,10,15,1);
 
         course.setName(name);
         course.setDescription(description);
