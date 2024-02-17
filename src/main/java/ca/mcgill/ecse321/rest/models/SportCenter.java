@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Time;
 import java.util.*;
 import java.sql.Date;
 
@@ -14,8 +15,6 @@ public class SportCenter
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
-  private String openingHour;
-  private String closingHour;
   private String address;
   private String name;
   @OneToOne
@@ -26,21 +25,7 @@ public class SportCenter
 
   }
 
-  public boolean setOpeningHour(String aOpeningHour)
-  {
-    boolean wasSet = false;
-    openingHour = aOpeningHour;
-    wasSet = true;
-    return wasSet;
-  }
 
-  public boolean setClosingHour(String aClosingHour)
-  {
-    boolean wasSet = false;
-    closingHour = aClosingHour;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setAddress(String aAddress)
   {
@@ -48,16 +33,6 @@ public class SportCenter
     address = aAddress;
     wasSet = true;
     return wasSet;
-  }
-
-  public String getOpeningHour()
-  {
-    return openingHour;
-  }
-
-  public String getClosingHour()
-  {
-    return closingHour;
   }
 
   public String getAddress()
@@ -117,8 +92,6 @@ public class SportCenter
   public String toString()
   {
     return super.toString() + "["+
-            "openingHour" + ":" + getOpeningHour()+ "," +
-            "closingHour" + ":" + getClosingHour()+ "," +
             "address" + ":" + getAddress()+ "]" + System.getProperties().getProperty("line.separator");
   }
 }

@@ -9,12 +9,13 @@ import jakarta.persistence.TemporalType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 
-@SpringBootTest
+@DataJpaTest
 public class CourseRepositoryTests {
     @Autowired
     private CourseRepository courseRepository;

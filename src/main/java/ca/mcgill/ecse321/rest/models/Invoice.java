@@ -83,7 +83,10 @@ public class Invoice
     boolean wasSet = false;
     if (aNewRegistration != null)
     {
+
       registration = aNewRegistration;
+
+
       wasSet = true;
     }
     return wasSet;
