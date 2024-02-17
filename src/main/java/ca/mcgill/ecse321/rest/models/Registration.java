@@ -2,8 +2,15 @@
 package ca.mcgill.ecse321.rest.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+@Table(
+    uniqueConstraints=
+    @UniqueConstraint(columnNames={"customer_id", "course_id"})
+)
 @Entity
 public class Registration
 {
@@ -13,7 +20,9 @@ public class Registration
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
-  private int rating;
+  @Min(0)
+  @Max(5)
+  private int rating = 0;
 
   @ManyToOne
   private Customer customer;
@@ -21,6 +30,25 @@ public class Registration
   @ManyToOne
   private Course course;
 
+  public Registration(String aId, int aRating, Customer aCustomer, Course aCourse)
+  {
+
+    if (aRating <= 0){
+      throw new IllegalArgumentException("Rating should be strictly positive.");
+    }
+    id = aId;
+
+
+    rating = aRating;
+    if (!setCustomer(aCustomer))
+    {
+      throw new RuntimeException("Unable to create Registration due to aCustomer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    if (!setCourse(aCourse))
+    {
+      throw new RuntimeException("Unable to create Registration due to aCourse. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
 
   public Registration() {
 
@@ -38,6 +66,11 @@ public class Registration
   public boolean setRating(int aRating)
   {
     boolean wasSet = false;
+
+    if (aRating <= 0){
+      return  wasSet;
+    }
+
     rating = aRating;
     wasSet = true;
     return wasSet;

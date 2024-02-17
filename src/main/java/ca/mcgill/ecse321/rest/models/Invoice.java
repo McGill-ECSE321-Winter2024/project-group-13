@@ -21,14 +21,26 @@ public class Invoice
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  @OneToOne
+  @ManyToOne
   private Registration registrations;
 
+  private int amount;
 
-  public Invoice(String aId, Status aStatus, Registration aRegistrations)
+
+  public Invoice(String aId, Status aStatus, Registration aRegistrations, int aAmount)
   {
+    if (aStatus ==null){
+      throw new RuntimeException("Set valid Status.");
+
+    }
+    if (!setAmount(aAmount))
+    {
+      throw new RuntimeException("Unable to create Invoice due to aAmount. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+
     id = aId;
     status = aStatus;
+    amount = aAmount;
     if (!setRegistrations(aRegistrations))
     {
       throw new RuntimeException("Unable to create Invoice due to aRegistrations. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -47,8 +59,10 @@ public class Invoice
   public boolean setStatus(Status aStatus)
   {
     boolean wasSet = false;
-    status = aStatus;
-    wasSet = true;
+    if (aStatus != null) {
+      status = aStatus;
+      wasSet = true;
+    }
     return wasSet;
   }
 
@@ -75,6 +89,24 @@ public class Invoice
     }
     return wasSet;
   }
+
+  public int getAmount()
+  {
+    return amount;
+  }
+
+  public boolean setAmount(int aAmount)
+  {
+    boolean wasSet = false;
+    if (aAmount >= 0)
+    {
+      amount = aAmount;
+      wasSet = true;
+    }
+    return wasSet;
+  }
+
+
 
   public void delete()
   {
