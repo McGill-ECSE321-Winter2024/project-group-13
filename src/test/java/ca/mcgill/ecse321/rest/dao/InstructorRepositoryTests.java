@@ -67,5 +67,7 @@ public class InstructorRepositoryTests {
      * Update name test
      * Update phone number test
      * Delete instructor test
+     * Duplicate email test
+     * Duplicate phone number test
      */
 }

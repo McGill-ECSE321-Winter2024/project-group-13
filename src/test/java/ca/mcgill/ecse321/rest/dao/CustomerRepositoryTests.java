@@ -68,6 +68,8 @@ public class CustomerRepositoryTests {
      * Update name test
      * Update phone number test
      * Delete customer test
+     * Duplicate email test
+     * Duplicate phone number test
      */
 
 
