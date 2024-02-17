@@ -34,7 +34,7 @@ public class RegistrationRepositoryTests {
     }
 
     /*
-        * This method is used to populate the database with test data.
+     * This method is used to populate the database with test data.
      */
 
     /**
@@ -333,41 +333,24 @@ public class RegistrationRepositoryTests {
     @Test
     public void testDeleteRegistrationWithInvalidId() {
 
-        // Create Customer
-        Customer customer = new Customer();
-        customer.setName("Teddy");
-        customer.setPhoneNumber("111-111-1111");
-        customer.setEmail("teddyw.el-husseini@mailll.mcgill.ca");
-        customer.setPassword("test");
+        CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
-        //Create Course.
-        Course course = new Course();
-        course.setId("456");
-        course.setName("ecse321");
-        course.setDescription("description");
-
-        // Save Customer and Course
-        personRepository.save(customer);
-        courseRepository.save(course);
-
-        // Create and save registration.
         Registration registration = new Registration();
-        int rating = 1;
-        registration.setRating(rating);
-        registration.setCourse(course);
-        registration.setCustomer(customer);
+        registration.setCourse(testData.course);
+        registration.setCustomer(testData.customer);
+
         registrationRepository.save(registration);
 
         String registrationID = registrationRepository.findRegistrationById(registration.getId()).getId();
 
-        registrationID = "HEHEHE"+ registrationID + "HOHOHO";
+        String registrationID2 = "HEHEHE"+ registrationID + "HOHOHO";
 
         long beforeDelete = registrationRepository.count();
+        registrationRepository.deleteById(registrationID2);
 
-        registrationRepository.deleteById(registrationID);
+        assertNotNull(registrationRepository.findRegistrationById(registrationID));
 
         long afterDelete = registrationRepository.count();
-
         assertEquals(beforeDelete, afterDelete);
 
     }
@@ -378,33 +361,34 @@ public class RegistrationRepositoryTests {
      * @Author Teddy El-Husseini
      */
     @Test
-    public void testUpdateRegistrationWithNullValues() {
-        // Create Customer
-        Customer customer = new Customer();
-        customer.setName("Teddy");
-        customer.setPhoneNumber("XXX-XXX-XXXX");
-        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
-        customer.setPassword("test");
+    public void testUpdateRegistrationWithNullAndInvalidValues() {
+        CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
-        //Create Course.
-        Course course = new Course();
-        course.setId("456");
-        course.setName("ecse321");
-        course.setDescription("description");
-
-        // Save Customer and Course
-        personRepository.save(customer);
-        courseRepository.save(course);
-
-        Registration registration = new Registration("something", 1, customer,course);
-
-
-        assertFalse(registration.setCourse(null));
-        assertFalse(registration.setRating(0));
-        assertFalse(registration.setRating(-1));
-        assertFalse(registration.setCustomer(null));
+        Registration registration = new Registration();
+        registration.setCourse(testData.course);
+        registration.setCustomer(testData.customer);
+        registration.setRating(5);
 
         registrationRepository.save(registration);
+
+        registration.setCourse(null);
+        registrationRepository.save(registration);
+        assertNotNull(registrationRepository.findRegistrationById(registration.getId()).getCourse());
+
+        assertFalse(registration.setRating(0));
+        registrationRepository.save(registration);
+        assertNotEquals(0, registrationRepository.findRegistrationById(registration.getId()).getRating());
+
+
+        assertFalse(registration.setRating(-1));
+        registrationRepository.save(registration);
+        assertNotEquals(-1, registrationRepository.findRegistrationById(registration.getId()).getRating());
+
+
+        assertFalse(registration.setCustomer(null));
+        registrationRepository.save(registration);
+        assertNotNull(registrationRepository.findRegistrationById(registration.getId()).getCustomer());
+
     }
 
     /**
@@ -416,22 +400,11 @@ public class RegistrationRepositoryTests {
     @Test
     public void testCreateRegistrationWithNullValues() {
 
-        // Create Customer
-        Customer customer = new Customer();
-        customer.setName("Teddy");
-        customer.setPhoneNumber("XXX-XXX-XXXX");
-        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
-        customer.setPassword("test");
-
-        //Create Course.
-        Course course = new Course();
-        course.setId("456");
-        course.setName("ecse321");
-        course.setDescription("description");
+        CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
         assertThrows(RuntimeException.class, () -> {
             // Create and save registration.
-            Registration registration = new Registration("something", 1, customer, null);
+            Registration registration = new Registration("something", 1, testData.customer, null);
             registrationRepository.save(registration);
 
         });
@@ -445,12 +418,10 @@ public class RegistrationRepositoryTests {
 
         assertThrows(RuntimeException.class, () -> {
             // Create and save registration.
-            Registration registration = new Registration("something", 1, null, course);
+            Registration registration = new Registration("something", 1, null, testData.course);
             registrationRepository.save(registration);
 
         });
-
-
     }
 
     /**
@@ -461,32 +432,22 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testCreateRegistrationWithInvalidRating() {
-        // Create Customer
-        Customer customer = new Customer();
-        customer.setName("Teddy");
-        customer.setPhoneNumber("XXX-XXX-XXXX");
-        customer.setEmail("teddyw.el-husseini@mail.mcgill.ca");
-        customer.setPassword("test");
 
-        //Create Course.
-        Course course = new Course();
-        course.setId("456");
-        course.setName("ecse321");
-        course.setDescription("description");
+        CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
+
 
         assertThrows(IllegalArgumentException.class, () -> {
             // Create and save registration.
-            Registration registration = new Registration("something", 0, customer, course);
+            Registration registration = new Registration("something", 0, testData.customer, testData.course);
             registrationRepository.save(registration);
 
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
             // Create and save registration.
-            Registration registration = new Registration("something", -10, customer, course);
+            Registration registration = new Registration("something", -10, testData.customer, testData.course);
             registrationRepository.save(registration);
 
         });
-
     }
 }
