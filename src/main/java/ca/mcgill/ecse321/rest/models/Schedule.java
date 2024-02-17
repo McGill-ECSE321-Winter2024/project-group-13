@@ -147,5 +147,9 @@ public class Schedule {
         this.sundayEnd = sundayEnd;
     }
 
+    public Time getSundayEnd() {
+        return sundayEnd;
+    }
+
 
 }

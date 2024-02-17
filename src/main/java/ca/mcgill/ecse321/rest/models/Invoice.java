@@ -22,7 +22,7 @@ public class Invoice
   private Status status;
 
   @ManyToOne
-  private Registration registrations;
+  private Registration registration;
 
   private int amount;
 
@@ -77,14 +77,14 @@ public class Invoice
   }
   public Registration getRegistrations()
   {
-    return registrations;
+    return registration;
   }
   public boolean setRegistrations(Registration aNewRegistrations)
   {
     boolean wasSet = false;
     if (aNewRegistrations != null)
     {
-      registrations = aNewRegistrations;
+      registration = aNewRegistrations;
       wasSet = true;
     }
     return wasSet;
@@ -110,7 +110,7 @@ public class Invoice
 
   public void delete()
   {
-    registrations = null;
+    registration = null;
   }
 
 
