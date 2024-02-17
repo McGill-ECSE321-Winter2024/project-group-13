@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.dao;
 
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.CourseSession;
+import org.hibernate.Session;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,6 +14,8 @@ import java.util.List;
 
 public interface CourseSessionRepository extends CrudRepository<CourseSession, String> {
 
+    //
+    CourseSession findCourseSessionById(String id);
     // Find all sessions for a specific course
     List<CourseSession> findCourseSessionsByCourse(Course course);
 

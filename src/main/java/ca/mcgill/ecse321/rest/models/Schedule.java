@@ -189,7 +189,7 @@ public class Schedule {
     }
 
     public String toString() {
-        return super.toString() + "["+
+        return "["+
                 "id" + ":" + getId()+
                 "mondayStart" + ":" + getMondayStart() +
                 "mondayEnd" + ":" + getMondayEnd() +
