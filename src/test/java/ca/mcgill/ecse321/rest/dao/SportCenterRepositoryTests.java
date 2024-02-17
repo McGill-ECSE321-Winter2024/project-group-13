@@ -1,10 +1,7 @@
 package ca.mcgill.ecse321.rest.dao;
 
 import ca.mcgill.ecse321.rest.models.SportCenter;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +16,7 @@ public class SportCenterRepositoryTests {
     @Autowired
     private SportCenterRepository sportCenterRepository;
 
-    @BeforeAll
+    @BeforeEach
     public void CreateSportCenter() {
         // Create SportCenter.
         String name= "McGill Recreation";
@@ -34,13 +31,13 @@ public class SportCenterRepositoryTests {
         sportCenterRepository.save(center);
     }
     /**
-     * This method executes after each test. This is done by the "@AfterAll" JPA annotation
-     * The method is used to clear the database after all tests, so that we don't fill up our database tables
+     * This method executes after each test. This is done by the "@AfterEach" JPA annotation
+     * The method is used to clear the database after each of the tests, so that we don't fill up our database tables
      * with unwanted data from tests.
      *
      * @Author Philippe Aprahamian
      */
-    @AfterAll
+    @AfterEach
     public void clearDatabase() {
         sportCenterRepository.deleteAll();
     }
@@ -51,7 +48,7 @@ public class SportCenterRepositoryTests {
      * @Author Philippe Aprahamian
      */
     @Test
-    public void testCreateAndReadSportCenter() {
+    public void testCreateAndFindSportCenterByName() {
         // Read center from database.
         SportCenter center = sportCenterRepository.findSportCenterByName("McGill Recreation");
 
@@ -59,6 +56,15 @@ public class SportCenterRepositoryTests {
         assertNotNull(center);
         assertEquals("McGill Recreation", center.getName());
         assertEquals("1234 Av Dr.Penfield", center.getAddress());
+    }
+    @Test
+    public void testFindSportCenterByAddress() {
+        // Read center from database.
+        SportCenter center = sportCenterRepository.findSportCenterByAddress("1234 Av Dr.Penfield");
+
+        // Assert that center is not null and has correct attributes.
+        assertNotNull(center);
+        assertEquals("McGill Recreation", center.getName());
     }
     @Test
     public void testUpdateAndReadSportCenter() {
