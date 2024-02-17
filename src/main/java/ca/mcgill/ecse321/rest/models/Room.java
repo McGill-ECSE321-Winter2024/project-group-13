@@ -55,6 +55,7 @@ public class Room
     return id;
   }
 
+
   public String getRoomName()
   {
     return roomName;
@@ -64,35 +65,15 @@ public class Room
   {
     return sportCenter;
   }
+
+
   /* Code from template association_SetOneToMany */
   public boolean setSportCenter(SportCenter aSportCenter)
   {
-    boolean wasSet = false;
-    if (aSportCenter == null)
-    {
-      return wasSet;
-    }
-
-    SportCenter existingSportCenter = sportCenter;
-    sportCenter = aSportCenter;
-    if (existingSportCenter != null && !existingSportCenter.equals(aSportCenter))
-    {
-      existingSportCenter.removeRoom(this);
-    }
-    sportCenter.addRoom(this);
-    wasSet = true;
-    return wasSet;
+    this.sportCenter = aSportCenter;
+    return true;
   }
 
-  public void delete()
-  {
-    SportCenter placeholderSportCenter = sportCenter;
-    this.sportCenter = null;
-    if(placeholderSportCenter != null)
-    {
-      placeholderSportCenter.removeRoom(this);
-    }
-  }
 
 
   public String toString()

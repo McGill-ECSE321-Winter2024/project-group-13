@@ -32,27 +32,11 @@ public abstract class Person
 
   private String password;
   @Column(nullable = false)
-
   private String name;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
-
-  public Person(String aId, String aEmail, String aPhoneNumber, String aPassword, String aName)
-  {
-    id = aId;
-    password = aPassword;
-    name = aName;
-    if (!setEmail(aEmail))
-    {
-      throw new RuntimeException("Cannot create due to duplicate email. See http://manual.umple.org?RE003ViolationofUniqueness.html");
-    }
-    if (!setPhoneNumber(aPhoneNumber))
-    {
-      throw new RuntimeException("Cannot create due to duplicate phoneNumber. See http://manual.umple.org?RE003ViolationofUniqueness.html");
-    }
-  }
 
   public Person() {
 

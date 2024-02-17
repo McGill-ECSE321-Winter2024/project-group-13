@@ -3,6 +3,10 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 
 @Entity
 public class CourseSession
@@ -13,29 +17,13 @@ public class CourseSession
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(updatable = false, nullable = false, unique = true)
   private String id;
-  @Temporal(TemporalType.DATE)
-  private Date day;
-  @Temporal(TemporalType.DATE)
-  private Date startTime;
-  @Temporal(TemporalType.DATE)
-  private Date endTime;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp startTime;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp endTime;
 
   @ManyToOne
   private Course course;
-
-
-  public CourseSession(String aId, Date aDay, Date aStartTime, Date aEndTime, Course aCourse)
-  {
-    id = aId;
-    day = aDay;
-    startTime = aStartTime;
-    endTime = aEndTime;
-    boolean didAddCourse = setCourse(aCourse);
-    if (!didAddCourse)
-    {
-      throw new RuntimeException("Unable to create session due to course. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-  }
 
   public CourseSession() {
 
@@ -49,88 +37,65 @@ public class CourseSession
     return wasSet;
   }
 
-  public boolean setDay(Date aDay)
-  {
-    boolean wasSet = false;
-    day = aDay;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setStartTime(Date aStartTime)
-  {
-    boolean wasSet = false;
-    startTime = aStartTime;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setEndTime(Date aEndTime)
-  {
-    boolean wasSet = false;
-    endTime = aEndTime;
-    wasSet = true;
-    return wasSet;
-  }
-
   public String getId()
   {
     return id;
   }
 
-  public Date getDay()
-  {
-    return day;
-  }
 
-  public Date getStartTime()
-  {
-    return startTime;
-  }
 
-  public Date getEndTime()
-  {
-    return endTime;
-  }
-  public Course getCourse()
-  {
-    return course;
-  }
-  public boolean setCourse(Course aCourse)
-  {
-    boolean wasSet = false;
-    if (aCourse == null)
+    public boolean setStartTime(Timestamp aStartTime)
     {
-      return wasSet;
+        boolean wasSet = false;
+        startTime = aStartTime;
+        wasSet = true;
+        return wasSet;
     }
 
-    Course existingCourse = course;
-    course = aCourse;
-    if (existingCourse != null && !existingCourse.equals(aCourse))
+    public Timestamp getStartTime()
     {
-      existingCourse.removeSession(this);
+        return startTime;
     }
-    course.addSession(this);
-    wasSet = true;
-    return wasSet;
-  }
 
-  public void delete()
-  {
-    Course placeholderCourse = course;
-    this.course = null;
-    if(placeholderCourse != null)
+    public boolean setEndTime(Timestamp aEndTime)
     {
-      placeholderCourse.removeSession(this);
+        boolean wasSet = false;
+        endTime = aEndTime;
+        wasSet = true;
+        return wasSet;
     }
-  }
+
+    public Timestamp getEndTime()
+    {
+        return endTime;
+    }
+
+    public Course getCourse()
+    {
+        return course;
+    }
+
+    public boolean setCourse(Course aNewCourse)
+    {
+        boolean wasSet = false;
+        if (aNewCourse != null)
+        {
+            course = aNewCourse;
+            wasSet = true;
+        }
+        return wasSet;
+    }
+
+    public void delete()
+    {
+        course = null;
+    }
 
 
   public String toString()
   {
     return super.toString() + "["+
             "id" + ":" + getId()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "day" + "=" + (getDay() != null ? !getDay().equals(this)  ? getDay().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "startTime" + "=" + (getStartTime() != null ? !getStartTime().equals(this)  ? getStartTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "endTime" + "=" + (getEndTime() != null ? !getEndTime().equals(this)  ? getEndTime().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "course = "+(getCourse()!=null?Integer.toHexString(System.identityHashCode(getCourse())):"null");
