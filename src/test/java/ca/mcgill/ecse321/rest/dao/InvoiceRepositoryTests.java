@@ -80,7 +80,7 @@ public class InvoiceRepositoryTests {
         Registration registration = registrationRepository.findRegistrationByCourseAndCustomer(registration1.getCourse(), registration1.getCustomer());
 
         invoice.setStatus(Invoice.Status.Open);
-        invoice.setRegistrations(registration);
+        invoice.setRegistration(registration);
         invoiceRepository.save(invoice);
 
         //Get invoiceID
@@ -93,23 +93,23 @@ public class InvoiceRepositoryTests {
         assertNotNull(invoice);
         assertNotNull(invoice.getId());
         assertEquals(Invoice.Status.Open, invoice.getStatus());
-        assertEquals(registration.getId(), invoice.getRegistrations().getId());
+        assertEquals(registration.getId(), invoice.getRegistration().getId());
 
-        assertEquals(registration.getCustomer().getId(), invoice.getRegistrations().getCustomer().getId());
-        assertEquals(registration.getCustomer().getName(), invoice.getRegistrations().getCustomer().getName());
-        assertEquals(registration.getCustomer().getPhoneNumber(), invoice.getRegistrations().getCustomer().getPhoneNumber());
-        assertEquals(registration.getCustomer().getEmail(), invoice.getRegistrations().getCustomer().getEmail());
-        assertEquals(registration.getCustomer().getPassword(), invoice.getRegistrations().getCustomer().getPassword());
-        assertEquals(registration.getCustomer().getSportCenter(), invoice.getRegistrations().getCustomer().getSportCenter());
+        assertEquals(registration.getCustomer().getId(), invoice.getRegistration().getCustomer().getId());
+        assertEquals(registration.getCustomer().getName(), invoice.getRegistration().getCustomer().getName());
+        assertEquals(registration.getCustomer().getPhoneNumber(), invoice.getRegistration().getCustomer().getPhoneNumber());
+        assertEquals(registration.getCustomer().getEmail(), invoice.getRegistration().getCustomer().getEmail());
+        assertEquals(registration.getCustomer().getPassword(), invoice.getRegistration().getCustomer().getPassword());
+        assertEquals(registration.getCustomer().getSportCenter(), invoice.getRegistration().getCustomer().getSportCenter());
 
-        assertEquals(registration.getCourse().getId(), invoice.getRegistrations().getCourse().getId());
-        assertEquals(registration.getCourse().getName(), invoice.getRegistrations().getCourse().getName());
-        assertEquals(registration.getCourse().getDescription(), invoice.getRegistrations().getCourse().getDescription());
-        assertEquals(registration.getCourse().getCourseStartDate(), invoice.getRegistrations().getCourse().getCourseStartDate());
-        assertEquals(registration.getCourse().getCourseEndDate(), invoice.getRegistrations().getCourse().getCourseEndDate());
-        assertEquals(registration.getCourse().getRoom(), invoice.getRegistrations().getCourse().getRoom());
-        assertEquals(registration.getCourse().getSportCenter(), invoice.getRegistrations().getCourse().getSportCenter());
-        assertEquals(registration.getCourse().getInstructor(), invoice.getRegistrations().getCourse().getInstructor());
+        assertEquals(registration.getCourse().getId(), invoice.getRegistration().getCourse().getId());
+        assertEquals(registration.getCourse().getName(), invoice.getRegistration().getCourse().getName());
+        assertEquals(registration.getCourse().getDescription(), invoice.getRegistration().getCourse().getDescription());
+        assertEquals(registration.getCourse().getCourseStartDate(), invoice.getRegistration().getCourse().getCourseStartDate());
+        assertEquals(registration.getCourse().getCourseEndDate(), invoice.getRegistration().getCourse().getCourseEndDate());
+        assertEquals(registration.getCourse().getRoom(), invoice.getRegistration().getCourse().getRoom());
+        assertEquals(registration.getCourse().getSportCenter(), invoice.getRegistration().getCourse().getSportCenter());
+        assertEquals(registration.getCourse().getInstructor(), invoice.getRegistration().getCourse().getInstructor());
 
     }
 
@@ -125,7 +125,7 @@ public class InvoiceRepositoryTests {
         Registration registration = fillDataBase();
 
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         String invoiceID1 = invoice1.getId();
@@ -147,13 +147,13 @@ public class InvoiceRepositoryTests {
         Registration registration = fillDataBase();
 
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         String registrationID = registration.getId();
 
         registration = registrationRepository.findRegistrationById(registrationID);
-        assertEquals(registration.getId(), invoice1.getRegistrations().getId());
+        assertEquals(registration.getId(), invoice1.getRegistration().getId());
 
 
     }
@@ -173,21 +173,21 @@ public class InvoiceRepositoryTests {
         //create and save invoice
         assertThrows(RuntimeException.class, () -> {
             // Create and save registration.
-            Invoice invoice1 = new Invoice("id1", statusTest1, null, 0);
+            Invoice invoice1 = new Invoice(statusTest1, null, 0);
             invoiceRepository.save(invoice1);
 
         });
 
         assertThrows(RuntimeException.class, () -> {
             // Create and save registration.
-            Invoice invoice1 = new Invoice("id1", null, registration, 0);
+            Invoice invoice1 = new Invoice(null, registration, 0);
             invoiceRepository.save(invoice1);
 
         });
 
         assertThrows(RuntimeException.class, () -> {
             // Create and save registration.
-            Invoice invoice1 = new Invoice("id1", null, null, 0);
+            Invoice invoice1 = new Invoice(null, null, 0);
             invoiceRepository.save(invoice1);
 
         });
@@ -207,19 +207,19 @@ public class InvoiceRepositoryTests {
         Invoice.Status statusTest1 = Invoice.Status.Open;
         Invoice.Status statusTest2 = Invoice.Status.Failed;
 
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
-        assertEquals(registration.getId(), invoice1.getRegistrations().getId());
+        assertEquals(registration.getId(), invoice1.getRegistration().getId());
 
         Registration registrationTest2 = new Registration();
         registrationRepository.save(registrationTest2);
 
-        invoice1.setRegistrations(registrationTest2);
+        invoice1.setRegistration(registrationTest2);
         invoiceRepository.save(invoice1);
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
-        assertEquals(registrationTest2.getId(), invoice1.getRegistrations().getId());
+        assertEquals(registrationTest2.getId(), invoice1.getRegistration().getId());
 
         invoice1.setStatus(statusTest2);
         invoiceRepository.save(invoice1);
@@ -241,14 +241,14 @@ public class InvoiceRepositoryTests {
 
         assertEquals(invoiceRepository.count(),0);
 
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         Invoice invoice2 = new Invoice();
-        invoice2.setRegistrations(registration);
+        invoice2.setRegistration(registration);
         invoiceRepository.save(invoice2);
 
-        assertEquals(invoiceRepository.findInvoiceById(invoice2.getId()).getRegistrations(), invoiceRepository.findInvoiceById(invoice1.getId()).getRegistrations());
+        assertEquals(invoiceRepository.findInvoiceById(invoice2.getId()).getRegistration().getId(), invoiceRepository.findInvoiceById(invoice1.getId()).getRegistration().getId());
         assertEquals(invoiceRepository.count(), 2);
 
     }
@@ -268,7 +268,7 @@ public class InvoiceRepositoryTests {
         Invoice.Status statusTest4 = Invoice.Status.Completed;
         Invoice.Status statusTest5 = Invoice.Status.Cancelled;
 
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
@@ -299,7 +299,7 @@ public class InvoiceRepositoryTests {
 
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice);
 
         invoice.setStatus(null);
@@ -307,9 +307,9 @@ public class InvoiceRepositoryTests {
         assertNotNull(invoiceRepository.findInvoiceById(invoice.getId()).getStatus());
 
 
-        invoice.setRegistrations(null);
+        invoice.setRegistration(null);
         invoiceRepository.save(invoice);
-        assertNotNull(invoiceRepository.findInvoiceById(invoice.getId()).getRegistrations());
+        assertNotNull(invoiceRepository.findInvoiceById(invoice.getId()).getRegistration());
 
     }
 
@@ -323,7 +323,7 @@ public class InvoiceRepositoryTests {
 
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice);
 
 
@@ -348,7 +348,7 @@ public class InvoiceRepositoryTests {
 
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice);
 
         long beforeDelete = invoiceRepository.count();
@@ -375,7 +375,7 @@ public class InvoiceRepositoryTests {
 
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
@@ -399,7 +399,7 @@ public class InvoiceRepositoryTests {
     public void testUpdateInvoiceWithInvalidAmount() {
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 0);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 0);
         invoiceRepository.save(invoice1);
 
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
@@ -421,7 +421,7 @@ public class InvoiceRepositoryTests {
     public void testCreateInvoiceWithValidAmount() {
         Registration registration = fillDataBase();
         Invoice.Status statusTest1 = Invoice.Status.Open;
-        Invoice invoice1 = new Invoice("id1", statusTest1, registration, 150);
+        Invoice invoice1 = new Invoice(statusTest1, registration, 150);
         invoiceRepository.save(invoice1);
 
         invoice1 = invoiceRepository.findInvoiceById(invoice1.getId());
@@ -442,7 +442,7 @@ public class InvoiceRepositoryTests {
 
 
         assertThrows(RuntimeException.class, () -> {
-            Invoice invoice1 = new Invoice("id1", statusTest1, registration, -12);
+            Invoice invoice1 = new Invoice(statusTest1, registration, -12);
             invoiceRepository.save(invoice1);
 
         });

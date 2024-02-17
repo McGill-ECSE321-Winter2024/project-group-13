@@ -22,12 +22,12 @@ public class Invoice
   private Status status;
 
   @ManyToOne
-  private Registration registrations;
+  private Registration registration;
 
   private double amount;
 
 
-  public Invoice(String aId, Status aStatus, Registration aRegistrations, int aAmount)
+  public Invoice(Status aStatus, Registration aRegistration, int aAmount)
   {
     if (aStatus ==null){
       throw new RuntimeException("Set valid Status.");
@@ -38,12 +38,11 @@ public class Invoice
       throw new RuntimeException("Unable to create Invoice due to aAmount. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
 
-    id = aId;
     status = aStatus;
     amount = aAmount;
-    if (!setRegistrations(aRegistrations))
+    if (!setRegistration(aRegistration))
     {
-      throw new RuntimeException("Unable to create Invoice due to aRegistrations. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Invoice due to aRegistration. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -75,16 +74,16 @@ public class Invoice
   {
     return status;
   }
-  public Registration getRegistrations()
+  public Registration getRegistration()
   {
-    return registrations;
+    return registration;
   }
-  public boolean setRegistrations(Registration aNewRegistrations)
+  public boolean setRegistration(Registration aNewRegistration)
   {
     boolean wasSet = false;
-    if (aNewRegistrations != null)
+    if (aNewRegistration != null)
     {
-      registrations = aNewRegistrations;
+      registration = aNewRegistration;
       wasSet = true;
     }
     return wasSet;
@@ -110,7 +109,7 @@ public class Invoice
 
   public void delete()
   {
-    registrations = null;
+    registration = null;
   }
 
 
@@ -119,6 +118,6 @@ public class Invoice
     return super.toString() + "["+
             "id" + ":" + getId()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "status" + "=" + (getStatus() != null ? !getStatus().equals(this)  ? getStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "registrations = "+(getRegistrations()!=null?Integer.toHexString(System.identityHashCode(getRegistrations())):"null");
+            "  " + "registration = "+(getRegistration()!=null?Integer.toHexString(System.identityHashCode(getRegistration())):"null");
   }
 }
