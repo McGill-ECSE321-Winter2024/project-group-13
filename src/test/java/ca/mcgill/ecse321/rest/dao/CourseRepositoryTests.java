@@ -1,8 +1,5 @@
 package ca.mcgill.ecse321.rest.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import ca.mcgill.ecse321.rest.models.Course;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -14,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class CourseRepositoryTests {
@@ -48,10 +47,10 @@ public class CourseRepositoryTests {
         // Retrieve course from database.
         String name= "Health Plus";
         Course course = courseRepository.findCourseByName( name);
-        String description= "The best sports center";
+        String description= "The best yoga course";
         Course.Level level= Course.Level.Advanced;
         Date courseStartDate= new Date(2024,1,1);
-        Date courseEndDate= new Date(2024,1,1);
+        Date courseEndDate= new Date(2024,2,1);
 
         // Assert that course is not null and has correct attributes.
         assertNotNull(course);
@@ -63,14 +62,41 @@ public class CourseRepositoryTests {
     }
 
     @Test
-    public void testEditCourseName() {
+    public void testEditCourseAttributes() {
         //get course
         Course course = courseRepository.findCourseByName( "Health Plus");
         assertNotNull(course);
-        course.setName("A random Name");
-        // Save person
+        String name= "New Center";
+        String description= "The newest fitness course";
+        Course.Level level= Course.Level.Beginner;
+        Date courseStartDate= new Date(2024,2,20);
+        Date courseEndDate= new Date(2024,3,20);
+
+        course.setName(name);
+        course.setDescription(description);
+        course.setLevel(level);
+        course.setCourseStartDate(courseStartDate);
+        course.setCourseEndDate(courseEndDate);
+
+        // Save Course
         courseRepository.save(course);
-        assertEquals("A random Name", course.getName());
+        Course course1= courseRepository.findCourseByName("Health Plus");
+        assertNull(course1);
+        course = courseRepository.findCourseByName(name);
+        assertNotNull(course);
+        assertEquals(name, course.getName());
+        assertEquals(description, course.getDescription());
+        assertEquals(level, course.getLevel());
+        assertEquals(name, course.getName());
+        assertEquals(name, course.getName());
+    }
+    @Test
+    public void testDeleteCourse(){
+        Course course= courseRepository.findCourseByName("Health Plus");
+        assertNotNull(course);
+        courseRepository.delete(course);
+        course= courseRepository.findCourseByName("Health Plus");
+        assertNull(course);
     }
 
 }
