@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 public interface CourseSessionRepository extends CrudRepository<CourseSession, String> {
 
@@ -21,10 +20,6 @@ public interface CourseSessionRepository extends CrudRepository<CourseSession, S
     List<CourseSession> findCourseSessionsByStartTimeBefore(Timestamp endTime);
     List<CourseSession> findCourseSessionsByStartTimeAfter(Timestamp startTime);
     List<CourseSession> findCourseSessionsByStartTimeBetween(Timestamp start, Timestamp end);
-
-    // Find sessions by Instructor ID
-    @Query("SELECT cs FROM CourseSession cs WHERE cs.course.instructor.id = :instructorId")
-    List<CourseSession> findByInstructorId(@Param("instructorId") String instructorId);
 
     // Count sessions for a specific course
     long countByCourse(Course course);
