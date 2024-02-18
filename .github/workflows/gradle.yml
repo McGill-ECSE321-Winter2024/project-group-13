@@ -8,6 +8,8 @@
 name: Java CI with Gradle
 
 on:
+  workflow_dispatch:
+    
   push:
     branches: [ "development", "main" ]
   pull_request:
