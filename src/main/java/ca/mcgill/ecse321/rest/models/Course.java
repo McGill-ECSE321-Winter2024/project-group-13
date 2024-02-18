@@ -12,7 +12,7 @@ public class Course
   public Course() {
 
   }
-  public enum CourseState { Approved, Denied, Inactive }
+  public enum CourseState { Approved, Denied, Inactive,AwaitingApproval }
   public enum Level { Beginner, Intermediate, Advanced }
 
   @Id

@@ -102,5 +102,6 @@ enum Status {
 enum CourseState {
 	Approved,
   	Denied,
-  	Inactive
+  	Inactive,
+  	AwaitingApproval
 }
