@@ -12,8 +12,9 @@ public class Course
   public Course() {
 
   }
-
+  public enum CourseState { Approved, Denied, Inactive }
   public enum Level { Beginner, Intermediate, Advanced }
+
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -37,6 +38,7 @@ public class Course
   @OneToOne
   private Schedule schedule;
   private Double hourlyRateAmount;
+  private CourseState courseState;
 
   public void setId(String id) {
     this.id = id;
@@ -124,7 +126,13 @@ public class Course
     public Double getHourlyRateAmount() {
         return hourlyRateAmount;
   }
+    public CourseState getCourseState() {
+        return courseState;
+    }
 
+    public void setCourseState(CourseState courseState) {
+        this.courseState = courseState;
+    }
   public String toString()
   {
     return super.toString() + "["+
