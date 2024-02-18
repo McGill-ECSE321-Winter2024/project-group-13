@@ -5,12 +5,12 @@ import ca.mcgill.ecse321.rest.models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@SpringBootTest
 public class RegistrationRepositoryTests {
     @Autowired
     private PersonRepository personRepository;
@@ -332,25 +332,27 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testDeleteRegistrationWithInvalidId() {
-
+        //getting some test data from helper method
         CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
+        //creating and saving new registration.
         Registration registration = new Registration();
         registration.setCourse(testData.course);
         registration.setCustomer(testData.customer);
-
         registrationRepository.save(registration);
 
+        //getting registration Id and changing it
         String registrationID = registrationRepository.findRegistrationById(registration.getId()).getId();
+        String registrationID2 = "test"+ registrationID + "test";
 
-        String registrationID2 = "HEHEHE"+ registrationID + "HOHOHO";
 
+        //deleting by id and invalid registration
         long beforeDelete = registrationRepository.count();
         registrationRepository.deleteById(registrationID2);
-
         assertNotNull(registrationRepository.findRegistrationById(registrationID));
-
         long afterDelete = registrationRepository.count();
+
+        //number of registration should not change
         assertEquals(beforeDelete, afterDelete);
 
     }
@@ -362,15 +364,17 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testUpdateRegistrationWithNullAndInvalidValues() {
+        //getting some test data from helper method
         CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
+        //creating and saving new registration.
         Registration registration = new Registration();
         registration.setCourse(testData.course);
         registration.setCustomer(testData.customer);
         registration.setRating(5);
-
         registrationRepository.save(registration);
 
+        //changing course, registration and rating to invalid values, saving and then making sure they did not change
         registration.setCourse(null);
         registrationRepository.save(registration);
         assertNotNull(registrationRepository.findRegistrationById(registration.getId()).getCourse());
@@ -379,11 +383,9 @@ public class RegistrationRepositoryTests {
         registrationRepository.save(registration);
         assertNotEquals(0, registrationRepository.findRegistrationById(registration.getId()).getRating());
 
-
         assertFalse(registration.setRating(-1));
         registrationRepository.save(registration);
         assertNotEquals(-1, registrationRepository.findRegistrationById(registration.getId()).getRating());
-
 
         assertFalse(registration.setCustomer(null));
         registrationRepository.save(registration);
@@ -399,25 +401,23 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testCreateRegistrationWithNullValues() {
-
+        //getting some test data from helper method
         CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
+        //making sure registration with invalid customer and course cannot be created or saved.
         assertThrows(RuntimeException.class, () -> {
-            // Create and save registration.
             Registration registration = new Registration("something", 1, testData.customer, null);
             registrationRepository.save(registration);
 
         });
 
         assertThrows(RuntimeException.class, () -> {
-            // Create and save registration.
             Registration registration = new Registration("something", 1, null, null);
             registrationRepository.save(registration);
 
         });
 
         assertThrows(RuntimeException.class, () -> {
-            // Create and save registration.
             Registration registration = new Registration("something", 1, null, testData.course);
             registrationRepository.save(registration);
 
@@ -432,19 +432,17 @@ public class RegistrationRepositoryTests {
      */
     @Test
     public void testCreateRegistrationWithInvalidRating() {
-
+        //getting some test data from helper method
         CourseCustomerTuple testData = CourseCustomerTuple.populateTestCustomersAndCourses(personRepository, courseRepository);
 
-
+        //making sure registration with invalid rating cannot be created or saved.
         assertThrows(IllegalArgumentException.class, () -> {
-            // Create and save registration.
             Registration registration = new Registration("something", 0, testData.customer, testData.course);
             registrationRepository.save(registration);
 
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            // Create and save registration.
             Registration registration = new Registration("something", -10, testData.customer, testData.course);
             registrationRepository.save(registration);
 
