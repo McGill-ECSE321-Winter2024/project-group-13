@@ -47,13 +47,6 @@ public class Invoice
   }
 
 
-  public boolean setId(String aId)
-  {
-    boolean wasSet = false;
-    id = aId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setStatus(Status aStatus)
   {
