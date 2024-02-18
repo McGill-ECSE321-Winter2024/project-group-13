@@ -57,6 +57,6 @@ All our documentation for this project, except for this README file, can be foun
 | Mohamed Abdelrahmanibrahim| Full Stack Engineer | 8.5 |  |  |
 | Philippe Aprahamian| Backend Engineer | 10 |  |  |
 | Teddy El-Husseini| Frontend Engineer | 12.5 |  |  |
-| Achraf Ghellach| Full Stack Engineer |  |  |  |
+| Achraf Ghellach| Full Stack Engineer | 15 |  |  |
 | Omar Moussa| Testing Engineer | 15 |  |  |
 | Rafael Reis| Project Manager | 18 |  |  |
