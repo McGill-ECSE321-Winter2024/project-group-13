@@ -1,5 +1,7 @@
 # README.md
 
+[![Java CI with Gradle](https://github.com/McGill-ECSE321-Winter2024/project-group-13/actions/workflows/gradle.yml/badge.svg)](https://github.com/McGill-ECSE321-Winter2024/project-group-13/actions/workflows/gradle.yml)
+
 ## **McGill University - Department of Electrical and Computer Engineering**
 
 ### **ECSE 321 Introduction to Software Engineering**
