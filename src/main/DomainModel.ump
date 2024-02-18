@@ -39,8 +39,10 @@ class Course {
   unique String name;
   String description;
   Level level;
-  Date courseStartDate;
-  Date courseEndDate;
+  Timestamp courseStartDate;
+  Timestamp courseEndDate;
+  CourseState courseState;
+  Double hourlyRateAmount;
 
   1 course <@>- 0..* CourseSession sessions;
   * course -> 1 Room room;
@@ -95,4 +97,10 @@ enum Status {
   	Void,
   	Completed,
   	Cancelled
+}
+
+enum CourseState {
+	Approved,
+  	Denied,
+  	Inactive
 }
