@@ -4,17 +4,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.rest.models.Course;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import ca.mcgill.ecse321.rest.models.CourseSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class CourseRepositoryTests {
   @Autowired private CourseRepository courseRepository;
+  @Autowired private CourseSessionRepository courseSessionRepository;
 
   /**
    * Sets the attributes of a course, saves it to the database, and ensures persistence.
@@ -206,6 +211,51 @@ public class CourseRepositoryTests {
     Course course = courseRepository.findCourseByName("Health Plus");
     assertNotNull(course);
     courseRepository.deleteCourseById(course.getId());
+    // Attempt to retrieve deleted course
+    course = courseRepository.findCourseByName("Health Plus");
+    // Assume course is null
+    assertNull(course);
+  }
+
+  /**
+   * Creates and persists 10 course sessions related to a given course
+   *
+   * @author Mohamed Abdelrahman, Omar Moussa
+   */
+  private void createTenSessions(Course course){
+    // Creating 10 courses with the same timing but different days
+    for (int day = 1; day < 11; day++) {
+      CourseSession session = new CourseSession();
+      session.setStartTime(Timestamp.valueOf(LocalDateTime.of(2023, 1, day, 9, 0)));
+      session.setEndTime(Timestamp.valueOf(LocalDateTime.of(2023, 1, day, 11, 0)));
+      session.setCourse(course);
+      courseSessionRepository.save(session);
+    }
+  }
+
+  /**
+   * Validates course deletion capabilities along with associated sessions
+   *
+   * @author Mohamed Abdelrahman, Omar Moussa
+   */
+  @Test
+  @Transactional
+  public void testDeleteCourseAndAssociatedSessions() {
+    Course course = courseRepository.findCourseByName("Health Plus");
+    createTenSessions(course);
+
+    assertNotNull(course);
+    long courseSessionsCount = courseSessionRepository.countByCourse(course);
+    assertEquals(10, courseSessionsCount);
+
+    //Delete course and course sessions
+    courseSessionRepository.deleteAllByCourseId(course.getId());
+    courseRepository.deleteCourseById(course.getId());
+    // Then no sessions should exist for the course
+    List<CourseSession> sessionsAfterDeletion = courseSessionRepository.findCourseSessionsByCourse(course);
+    assertTrue(
+            sessionsAfterDeletion.isEmpty(),
+            "No CourseSession entities should exist for the course after deletion.");
     // Attempt to retrieve deleted course
     course = courseRepository.findCourseByName("Health Plus");
     // Assume course is null
