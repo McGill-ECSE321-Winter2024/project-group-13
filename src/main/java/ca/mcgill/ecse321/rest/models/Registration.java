@@ -5,11 +5,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Table(
-    uniqueConstraints=
-    @UniqueConstraint(columnNames={"customer_id", "course_id"})
+        uniqueConstraints=
+        @UniqueConstraint(columnNames={"customer_id", "course_id"})
 )
 @Entity
 public class Registration
@@ -26,7 +25,6 @@ public class Registration
 
   @ManyToOne
   private Customer customer;
-  private Double amount;
   @ManyToOne
   private Course course;
 
@@ -52,15 +50,6 @@ public class Registration
 
   public Registration() {
 
-  }
-
-
-  public boolean setId(String aId)
-  {
-    boolean wasSet = false;
-    id = aId;
-    wasSet = true;
-    return wasSet;
   }
 
   public boolean setRating(int aRating)
@@ -120,13 +109,6 @@ public class Registration
     course = null;
   }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
 
   public String toString()
   {
