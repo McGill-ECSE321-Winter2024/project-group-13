@@ -1,0 +1,107 @@
+namespace ca.mcgill.ecse321.rest.models;
+
+class SportCenter {
+  String name;
+  Time openingHour;
+  Time closingHour;
+  String address;
+  1 sportCenter <@>- * Room rooms;
+  1 sportCenter <@>- 1 Owner owner;
+  1 sportCenter <@>- * Instructor instructors;
+  1 sportCenter <@>- * Customer customers;
+  1 sportCenter <@>- * Course courses;
+}
+
+class Person {
+  abstract;
+  id;
+  unique String email;
+  unique String phoneNumber;
+  String password;
+  String name;
+}
+
+class Owner {
+  isA Person;
+}
+
+class Instructor {
+  isA Person;
+}
+
+class Customer {
+  isA Person;
+}
+
+
+class Course {
+  id;
+  unique String name;
+  String description;
+  Level level;
+  Timestamp courseStartDate;
+  Timestamp courseEndDate;
+  CourseState courseState;
+  Double hourlyRateAmount;
+
+  1 course <@>- 0..* CourseSession sessions;
+  * course -> 1 Room room;
+
+}
+
+class CourseSession {
+  id;
+  Date day;
+  Date startTime;
+  Date endTime;
+
+  }
+
+class Registration
+{
+  id;
+  Integer rating;
+  * registrations -> 1 Customer customer ;
+  * registrations -> 1 Course course;
+}
+
+
+association {
+  1 Instructor instructor <- 0..* Course sessions;
+}
+
+enum Level {
+	Beginner,
+  	Intermediate,
+  	Advanced
+}
+
+class Room
+{
+  	id;
+  	String roomName;
+}
+
+class Invoice
+{
+  id;
+  0..* invoices -> 1 Registration registrations;
+  Status status;
+}
+
+
+
+enum Status {
+	Open,
+  	Failed,
+  	Void,
+  	Completed,
+  	Cancelled
+}
+
+enum CourseState {
+	Approved,
+  	Denied,
+  	Inactive,
+  	AwaitingApproval
+}
