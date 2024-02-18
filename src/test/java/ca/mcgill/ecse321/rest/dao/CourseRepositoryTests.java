@@ -199,7 +199,7 @@ public class CourseRepositoryTests {
   /**
    * Validates course deletion capabilities
    *
-   * @author Mohamed Abdelrahman
+   * @author Mohamed Abdelrahman, Omar Moussa
    */
   @Test
   public void testDeleteCourse() {
