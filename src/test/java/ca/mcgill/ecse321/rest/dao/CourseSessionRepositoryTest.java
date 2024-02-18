@@ -15,6 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Tests for the CourseSessionRepository to validate the correct functioning of CRUD operations
+ * for course sessions, including creating sessions, finding them by various criteria, updating,
+ * and deleting them.
+ * @author Omar Moussa
+ */
 @SpringBootTest
 public class CourseSessionRepositoryTest {
 
@@ -51,6 +57,11 @@ public class CourseSessionRepositoryTest {
     courseRepository.deleteAll();
   }
 
+  /**
+   * Verifies that finding course sessions by their associated course works as expected,
+   * ensuring that the correct number of sessions are returned and they all belong to the specified course.
+   * @author Omar Moussa
+   */
   @Test
   public void testFindCourseSessionsByCourse() {
     // Fetch all sessions for the test course
@@ -66,6 +77,11 @@ public class CourseSessionRepositoryTest {
         "All fetched sessions should belong to the test course");
   }
 
+  /**
+   * Tests that finding course sessions with a start time before a specified timestamp works correctly,
+   * ensuring that only sessions starting before the given timestamp are returned.
+   * @author Omar Moussa
+   */
   @Test
   public void testFindSessionsByStartTimeBefore() {
     // Fetch sessions that start before the end of the first day
@@ -80,6 +96,11 @@ public class CourseSessionRepositoryTest {
         "Should find 1 session that starts before the end of the first day");
   }
 
+  /**
+   * Tests that finding course sessions with a start time after a specified timestamp correctly returns
+   * all applicable sessions, verifying accurate retrieval based on start time criteria.
+   * @author Omar Moussa
+   */
   @Test
   public void testFindSessionsByStartTimeAfter() {
     // Fetch sessions that start after the beginning of the 1st day (effectively, sessions from day
@@ -96,6 +117,11 @@ public class CourseSessionRepositoryTest {
         "Should find all sessions starting after the beginning of the first day");
   }
 
+  /**
+   * Verifies that course sessions can be correctly found within a specified time range,
+   * ensuring accurate filtering based on start time boundaries.
+   * @author Omar Moussa
+   */
   @Test
   public void testFindSessionsByStartTimeBetween() {
     // Fetch sessions for the first day
@@ -114,12 +140,22 @@ public class CourseSessionRepositoryTest {
     assertEquals(10, allSessions.size(), "Should find 10 sessions in total");
   }
 
+  /**
+   * Tests the functionality to count the number of course sessions associated with a specific course,
+   * ensuring the count reflects the actual number of associated sessions.
+   * @author Omar Moussa
+   */
   @Test
   public void testCountByCourse() {
     long sessionCount = courseSessionRepository.countByCourse(testCourse);
     assertEquals(10, sessionCount);
   }
 
+  /**
+   * Verifies that updating the start and end times of a course session persists correctly,
+   * ensuring that changes are accurately stored in the database.
+   * @author Omar Moussa
+   */
   @Test
   @Transactional
   public void testUpdateSessionTimes() {
@@ -146,6 +182,10 @@ public class CourseSessionRepositoryTest {
     assertEquals(newEndTime, updatedSession.getEndTime(), "The end time should be updated.");
   }
 
+  /**
+   * Tests the deletion of a course session by its ID, verifying that the session is properly removed from the database.
+   * @author Omar Moussa
+   */
   @Test
   @Transactional
   public void testDeleteById() {
@@ -173,6 +213,11 @@ public class CourseSessionRepositoryTest {
     assertFalse(deletedSession.isPresent(), "CourseSession should not exist after deletion.");
   }
 
+  /**
+   * Verifies that deleting all course sessions associated with a specific course works as expected,
+   * ensuring no sessions remain for the course post-deletion.
+   * @author Omar Moussa
+   */
   @Test
   @Transactional
   public void testDeleteByCourse() {
