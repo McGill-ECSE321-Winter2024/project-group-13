@@ -117,7 +117,7 @@ public class CourseRepositoryTests {
     public void testDeleteCourse(){
         Course course= courseRepository.findCourseByName("Health Plus");
         assertNotNull(course);
-        courseRepository.delete(course);
+        courseRepository.deleteCourseById(course.getId());
         //Attempt to retrieve deleted course
         course= courseRepository.findCourseByName("Health Plus");
         //Assume course is null

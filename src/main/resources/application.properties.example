@@ -1,4 +1,4 @@
-git pull## Copy this as application.properties in this folder,
+## Copy this as application.properties in this folder,
 # and change credentials if required for your local setup
 
 server.port = ${PORT:8080}
