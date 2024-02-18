@@ -71,21 +71,11 @@ public abstract class Person
 
   public boolean setPhoneNumber(String aPhoneNumber)
   {
-    boolean wasSet = false;
-    String anOldPhoneNumber = getPhoneNumber();
-    if (anOldPhoneNumber != null && anOldPhoneNumber.equals(aPhoneNumber)) {
+    if(phoneNumber != aPhoneNumber){
+      phoneNumber = aPhoneNumber;
       return true;
     }
-    if (hasWithPhoneNumber(aPhoneNumber)) {
-      return wasSet;
-    }
-    phoneNumber = aPhoneNumber;
-    wasSet = true;
-    if (anOldPhoneNumber != null) {
-      personsByPhoneNumber.remove(anOldPhoneNumber);
-    }
-    personsByPhoneNumber.put(aPhoneNumber, this);
-    return wasSet;
+    return false;
   }
 
   public boolean setPassword(String aPassword)

@@ -16,26 +16,23 @@ public interface CourseSessionRepository extends CrudRepository<CourseSession, S
 
     //
     CourseSession findCourseSessionById(String id);
+
     // Find all sessions for a specific course
     List<CourseSession> findCourseSessionsByCourse(Course course);
 
     // Overloaded methods to find sessions by date
     List<CourseSession> findCourseSessionsByStartTimeBefore(Timestamp endTime);
+
     List<CourseSession> findCourseSessionsByStartTimeAfter(Timestamp startTime);
+
     List<CourseSession> findCourseSessionsByStartTimeBetween(Timestamp start, Timestamp end);
 
     // Count sessions for a specific course
     long countByCourse(Course course);
 
-    // Update session details (example: start time and end time)
-    @Modifying
-    @Transactional
-    @Query("UPDATE CourseSession cs SET cs.startTime = :startTime, cs.endTime = :endTime WHERE cs.id = :id")
-    void updateSessionTimes(@Param("id") String id, @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
-
     // Deletion
     void deleteById(String id);
-    @Modifying
-    @Query("DELETE FROM CourseSession cs WHERE cs.course = :course")
-    void deleteByCourse(@Param("course") Course course);
+
+    void deleteAllByCourseId(String courseId);
 }
+

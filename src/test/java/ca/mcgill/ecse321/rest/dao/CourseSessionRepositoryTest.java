@@ -174,7 +174,7 @@ public class CourseSessionRepositoryTest {
         // Given the setUp method, we have a course and its associated sessions
 
         // When we delete sessions by the course
-        courseSessionRepository.deleteByCourse(testCourse);
+        courseSessionRepository.deleteAllByCourseId(testCourse.getId());
 
         // Then no sessions should exist for the course
         List<CourseSession> sessionsAfterDeletion = courseSessionRepository.findCourseSessionsByCourse(testCourse);
