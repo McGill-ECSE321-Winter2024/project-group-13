@@ -3,12 +3,11 @@ package ca.mcgill.ecse321.rest.dao;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.rest.models.Course;
+import ca.mcgill.ecse321.rest.models.CourseSession;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import ca.mcgill.ecse321.rest.models.CourseSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
