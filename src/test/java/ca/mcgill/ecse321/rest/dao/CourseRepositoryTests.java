@@ -20,6 +20,10 @@ public class CourseRepositoryTests {
     @Autowired
     private CourseRepository courseRepository;
 
+    /**
+     * Makes a course before every test, setting most of its attributes
+     * @author Mohamed Abdelrahman
+     */
     @BeforeEach
     public void makeCourse() {
         String name= "Health Plus";
@@ -37,31 +41,44 @@ public class CourseRepositoryTests {
         // Save Course
         courseRepository.save(course);
     }
-
+    /**
+     * Clears all objets in the database after each test
+     * @author Mohamed Abdelrahman
+     */
     @AfterEach
     public void clearDatabase() {
         courseRepository.deleteAll();
     }
 
+    /**
+     * Meant to ensure successful course creation from makeCourse() and
+     * that we can read the attributes in existing courses
+     * @author Mohamed Abdelrahman
+     */
     @Test
     public void testReadWriteCourse() {
         // Retrieve course from database.
         String name= "Health Plus";
-        Course course = courseRepository.findCourseByName( name);
+        Course course = courseRepository.findCourseByName(name);
+        // Assert that course is not null and has correct attributes.
+        assertNotNull(course);
+
         String description= "The best sports center";
         Course.Level level= Course.Level.Advanced;
         Timestamp courseStartDate = new Timestamp(2024,1,1,6,15,0,0);
         Timestamp courseEndDate = new Timestamp(2024,1,1,6,15,0,0);
 
-        // Assert that course is not null and has correct attributes.
-        assertNotNull(course);
         assertEquals(name, course.getName());
         assertEquals(description, course.getDescription());
         assertEquals(level, course.getLevel());
-        assertEquals(name, course.getName());
-        assertEquals(name, course.getName());
+        assertEquals(courseStartDate, course.getCourseStartDate());
+        assertEquals(courseEndDate, course.getCourseEndDate());
     }
 
+    /**
+     * Meant to ensure that we can read and update the attributes in existing courses
+     * @author Mohamed Abdelrahman
+      */
     @Test
     public void testEditCourseAttributes() {
         //get course
@@ -91,12 +108,19 @@ public class CourseRepositoryTests {
         assertEquals(name, course.getName());
         assertEquals(name, course.getName());
     }
+
+    /**
+     * Validates course deletion capabilities
+     * @author Mohamed Abdelrahman
+     */
     @Test
     public void testDeleteCourse(){
         Course course= courseRepository.findCourseByName("Health Plus");
         assertNotNull(course);
-        courseRepository.deleteCourseById(course.getId());
+        courseRepository.delete(course);
+        //Attempt to retrieve deleted course
         course= courseRepository.findCourseByName("Health Plus");
+        //Assume course is null
         assertNull(course);
     }
 
