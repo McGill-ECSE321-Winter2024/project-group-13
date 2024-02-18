@@ -5,10 +5,9 @@ import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Registration;
 import org.springframework.data.repository.CrudRepository;
 
-public interface RegistrationRepository extends CrudRepository<Registration, String>{
+public interface RegistrationRepository extends CrudRepository<Registration, String> {
 
-    Registration findRegistrationById(String id);
+  Registration findRegistrationById(String id);
 
-    Registration findRegistrationByCourseAndCustomer(Course course, Customer customer);
-
+  Registration findRegistrationByCourseAndCustomer(Course course, Customer customer);
 }

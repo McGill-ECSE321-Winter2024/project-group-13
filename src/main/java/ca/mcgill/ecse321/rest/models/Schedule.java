@@ -4,9 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.sql.Time;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Schedule {
@@ -66,126 +65,125 @@ public class Schedule {
         this.sundayStart=weekEndsOpeningHour;
         this.sundayEnd=weekEndClosingHour;
     }
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getId() {
         return id;
     }
 
-    public void setMondayStart(Time mondayStart) {
-        this.mondayStart = mondayStart;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Time getMondayStart() {
         return mondayStart;
     }
 
-    public void setMondayEnd(Time mondayEnd) {
-        this.mondayEnd = mondayEnd;
+    public void setMondayStart(Time mondayStart) {
+        this.mondayStart = mondayStart;
     }
 
     public Time getMondayEnd() {
         return mondayEnd;
     }
 
-    public void setTuesdayStart(Time tuesdayStart) {
-        this.tuesdayStart = tuesdayStart;
+    public void setMondayEnd(Time mondayEnd) {
+        this.mondayEnd = mondayEnd;
     }
 
     public Time getTuesdayStart() {
         return tuesdayStart;
     }
 
-    public void setTuesdayEnd(Time tuesdayEnd) {
-        this.tuesdayEnd = tuesdayEnd;
+    public void setTuesdayStart(Time tuesdayStart) {
+        this.tuesdayStart = tuesdayStart;
     }
 
     public Time getTuesdayEnd() {
         return tuesdayEnd;
     }
 
-    public void setWednesdayStart(Time wednesdayStart) {
-        this.wednesdayStart = wednesdayStart;
+    public void setTuesdayEnd(Time tuesdayEnd) {
+        this.tuesdayEnd = tuesdayEnd;
     }
 
     public Time getWednesdayStart() {
         return wednesdayStart;
     }
 
-    public void setWednesdayEnd(Time wednesdayEnd) {
-        this.wednesdayEnd = wednesdayEnd;
+    public void setWednesdayStart(Time wednesdayStart) {
+        this.wednesdayStart = wednesdayStart;
     }
 
     public Time getWednesdayEnd() {
         return wednesdayEnd;
     }
 
-
-
-    public void setThursdayStart(Time thursdayStart) {
-        this.thursdayStart = thursdayStart;
+    public void setWednesdayEnd(Time wednesdayEnd) {
+        this.wednesdayEnd = wednesdayEnd;
     }
 
     public Time getThursdayStart() {
         return thursdayStart;
     }
 
-    public void setThursdayEnd(Time thursdayEnd) {
-        this.thursdayEnd = thursdayEnd;
+    public void setThursdayStart(Time thursdayStart) {
+        this.thursdayStart = thursdayStart;
     }
 
     public Time getThursdayEnd() {
         return thursdayEnd;
     }
 
-    public void setFridayStart(Time fridayStart) {
-        this.fridayStart = fridayStart;
+    public void setThursdayEnd(Time thursdayEnd) {
+        this.thursdayEnd = thursdayEnd;
     }
 
     public Time getFridayStart() {
         return fridayStart;
     }
 
-    public void setFridayEnd(Time fridayEnd) {
-        this.fridayEnd = fridayEnd;
+    public void setFridayStart(Time fridayStart) {
+        this.fridayStart = fridayStart;
     }
 
     public Time getFridayEnd() {
         return fridayEnd;
     }
 
-    public void setSaturdayStart(Time saturdayStart) {
-        this.saturdayStart = saturdayStart;
+    public void setFridayEnd(Time fridayEnd) {
+        this.fridayEnd = fridayEnd;
     }
 
     public Time getSaturdayStart() {
         return saturdayStart;
     }
 
-    public void setSaturdayEnd(Time saturdayEnd) {
-        this.saturdayEnd = saturdayEnd;
+    public void setSaturdayStart(Time saturdayStart) {
+        this.saturdayStart = saturdayStart;
     }
 
     public Time getSaturdayEnd() {
         return saturdayEnd;
     }
 
-    public void setSundayStart(Time sundayStart) {
-        this.sundayStart = sundayStart;
+    public void setSaturdayEnd(Time saturdayEnd) {
+        this.saturdayEnd = saturdayEnd;
     }
 
     public Time getSundayStart() {
         return sundayStart;
     }
 
-    public void setSundayEnd(Time sundayEnd) {
-        this.sundayEnd = sundayEnd;
+    public void setSundayStart(Time sundayStart) {
+        this.sundayStart = sundayStart;
     }
 
     public Time getSundayEnd() {
         return sundayEnd;
+    }
+
+    public void setSundayEnd(Time sundayEnd) {
+        this.sundayEnd = sundayEnd;
     }
 
     public String toString() {

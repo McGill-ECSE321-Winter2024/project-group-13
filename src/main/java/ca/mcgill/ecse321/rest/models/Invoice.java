@@ -7,12 +7,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 public class Invoice
 {
-  public Invoice() {
-
-  }
-
-  public enum Status { Open, Failed, Void, Completed, Cancelled }
-
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -20,12 +14,13 @@ public class Invoice
   private String id;
   @Enumerated(EnumType.STRING)
   private Status status;
-
   @ManyToOne
   private Registration registration;
-
   private double amount;
 
+  public Invoice() {
+
+  }
 
   public Invoice(Status aStatus, Registration aRegistration, int aAmount)
   {
@@ -46,8 +41,6 @@ public class Invoice
     }
   }
 
-
-
   public boolean setStatus(Status aStatus)
   {
     boolean wasSet = false;
@@ -67,10 +60,12 @@ public class Invoice
   {
     return status;
   }
+
   public Registration getRegistration()
   {
     return registration;
   }
+
   public boolean setRegistration(Registration aNewRegistration)
   {
     boolean wasSet = false;
@@ -101,13 +96,10 @@ public class Invoice
     return wasSet;
   }
 
-
-
   public void delete()
   {
     registration = null;
   }
-
 
   public String toString()
   {
@@ -116,4 +108,7 @@ public class Invoice
             "  " + "status" + "=" + (getStatus() != null ? !getStatus().equals(this)  ? getStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "registration = "+(getRegistration()!=null?Integer.toHexString(System.identityHashCode(getRegistration())):"null");
   }
+
+
+  public enum Status { Open, Failed, Void, Completed, Cancelled }
 }

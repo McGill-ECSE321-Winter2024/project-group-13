@@ -2,10 +2,8 @@
 package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.util.*;
-
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public abstract class Person
@@ -40,6 +38,30 @@ public abstract class Person
 
   public Person() {
 
+  }
+
+  /* Code from template attribute_GetUnique */
+  public static Person getWithEmail(String aEmail)
+  {
+    return personsByEmail.get(aEmail);
+  }
+
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithEmail(String aEmail)
+  {
+    return getWithEmail(aEmail) != null;
+  }
+
+  /* Code from template attribute_GetUnique */
+  public static Person getWithPhoneNumber(String aPhoneNumber)
+  {
+    return personsByPhoneNumber.get(aPhoneNumber);
+  }
+
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithPhoneNumber(String aPhoneNumber)
+  {
+    return getWithPhoneNumber(aPhoneNumber) != null;
   }
 
   public boolean setId(String aId)
@@ -103,30 +125,10 @@ public abstract class Person
   {
     return email;
   }
-  /* Code from template attribute_GetUnique */
-  public static Person getWithEmail(String aEmail)
-  {
-    return personsByEmail.get(aEmail);
-  }
-  /* Code from template attribute_HasUnique */
-  public static boolean hasWithEmail(String aEmail)
-  {
-    return getWithEmail(aEmail) != null;
-  }
 
   public String getPhoneNumber()
   {
     return phoneNumber;
-  }
-  /* Code from template attribute_GetUnique */
-  public static Person getWithPhoneNumber(String aPhoneNumber)
-  {
-    return personsByPhoneNumber.get(aPhoneNumber);
-  }
-  /* Code from template attribute_HasUnique */
-  public static boolean hasWithPhoneNumber(String aPhoneNumber)
-  {
-    return getWithPhoneNumber(aPhoneNumber) != null;
   }
 
   public String getPassword()

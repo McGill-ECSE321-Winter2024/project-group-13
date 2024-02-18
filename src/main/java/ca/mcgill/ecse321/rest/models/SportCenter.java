@@ -2,10 +2,6 @@ package ca.mcgill.ecse321.rest.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Time;
-import java.util.*;
-import java.sql.Date;
-
 @Entity
 public class SportCenter
 {
@@ -25,7 +21,26 @@ public class SportCenter
 
   }
 
+  public static int minimumNumberOfRooms()
+  {
+    return 0;
+  }
 
+  public static int minimumNumberOfInstructors()
+  {
+    return 0;
+  }
+
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfCustomers()
+  {
+    return 0;
+  }
+
+  public static int minimumNumberOfCourses()
+  {
+    return 0;
+  }
 
   public boolean setAddress(String aAddress)
   {
@@ -39,6 +54,7 @@ public class SportCenter
   {
     return address;
   }
+
   /* Code from template association_GetMany */
   public String getName()
   {
@@ -49,33 +65,11 @@ public class SportCenter
     {
         name = aName;
     }
+  /* Code from template association_AddManyToOne */
 
-  public static int minimumNumberOfRooms()
-  {
-    return 0;
-  }
   public Room addRoom(String aId, String aRoomName)
   {
     return new Room(aId, aRoomName, this);
-  }
-
-
-
-  public static int minimumNumberOfInstructors()
-  {
-    return 0;
-  }
-
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfCustomers()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToOne */
-
-  public static int minimumNumberOfCourses()
-  {
-    return 0;
   }
 
   public Schedule getSchedule()
