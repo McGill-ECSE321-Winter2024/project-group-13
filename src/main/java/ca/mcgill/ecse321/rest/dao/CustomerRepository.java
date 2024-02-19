@@ -15,6 +15,5 @@ public interface CustomerRepository extends CrudRepository<Customer, String> {
   void deleteCustomerById(String id);
 
   @Transactional
-
   void deleteCustomerByEmail(String email);
 }

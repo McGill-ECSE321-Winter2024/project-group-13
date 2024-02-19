@@ -9,6 +9,5 @@ public interface SportCenterRepository extends CrudRepository<SportCenter, Strin
   SportCenter findSportCenterByName(String name);
 
   SportCenter findSportCenterByAddress(String address);
-
-  Integer deleteSportCenterByName(String name);
+  
 }
