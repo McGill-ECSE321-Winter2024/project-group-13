@@ -221,7 +221,7 @@ public class CourseRepositoryTests {
    *
    * @author Mohamed Abdelrahman, Omar Moussa
    */
-  private void createTenSessions(Course course){
+  private void createTenSessions(Course course) {
     // Creating 10 courses with the same timing but different days
     for (int day = 1; day < 11; day++) {
       CourseSession session = new CourseSession();
@@ -247,14 +247,15 @@ public class CourseRepositoryTests {
     long courseSessionsCount = courseSessionRepository.countByCourse(course);
     assertEquals(10, courseSessionsCount);
 
-    //Delete course and course sessions
+    // Delete course and course sessions
     courseSessionRepository.deleteAllByCourseId(course.getId());
     courseRepository.deleteCourseById(course.getId());
     // Then no sessions should exist for the course
-    List<CourseSession> sessionsAfterDeletion = courseSessionRepository.findCourseSessionsByCourse(course);
+    List<CourseSession> sessionsAfterDeletion =
+        courseSessionRepository.findCourseSessionsByCourse(course);
     assertTrue(
-            sessionsAfterDeletion.isEmpty(),
-            "No CourseSession entities should exist for the course after deletion.");
+        sessionsAfterDeletion.isEmpty(),
+        "No CourseSession entities should exist for the course after deletion.");
     // Attempt to retrieve deleted course
     course = courseRepository.findCourseByName("Health Plus");
     // Assume course is null

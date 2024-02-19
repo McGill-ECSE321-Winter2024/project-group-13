@@ -16,9 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Tests for the CourseSessionRepository to validate the correct functioning of CRUD operations
- * for course sessions, including creating sessions, finding them by various criteria, updating,
- * and deleting them.
+ * Tests for the CourseSessionRepository to validate the correct functioning of CRUD operations for
+ * course sessions, including creating sessions, finding them by various criteria, updating, and
+ * deleting them.
+ *
  * @author Omar Moussa
  */
 @SpringBootTest
@@ -58,8 +59,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Verifies that finding course sessions by their associated course works as expected,
-   * ensuring that the correct number of sessions are returned and they all belong to the specified course.
+   * Verifies that finding course sessions by their associated course works as expected, ensuring
+   * that the correct number of sessions are returned and they all belong to the specified course.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -78,8 +80,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Tests that finding course sessions with a start time before a specified timestamp works correctly,
-   * ensuring that only sessions starting before the given timestamp are returned.
+   * Tests that finding course sessions with a start time before a specified timestamp works
+   * correctly, ensuring that only sessions starting before the given timestamp are returned.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -97,8 +100,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Tests that finding course sessions with a start time after a specified timestamp correctly returns
-   * all applicable sessions, verifying accurate retrieval based on start time criteria.
+   * Tests that finding course sessions with a start time after a specified timestamp correctly
+   * returns all applicable sessions, verifying accurate retrieval based on start time criteria.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -118,8 +122,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Verifies that course sessions can be correctly found within a specified time range,
-   * ensuring accurate filtering based on start time boundaries.
+   * Verifies that course sessions can be correctly found within a specified time range, ensuring
+   * accurate filtering based on start time boundaries.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -141,8 +146,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Tests the functionality to count the number of course sessions associated with a specific course,
-   * ensuring the count reflects the actual number of associated sessions.
+   * Tests the functionality to count the number of course sessions associated with a specific
+   * course, ensuring the count reflects the actual number of associated sessions.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -152,8 +158,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Verifies that updating the start and end times of a course session persists correctly,
-   * ensuring that changes are accurately stored in the database.
+   * Verifies that updating the start and end times of a course session persists correctly, ensuring
+   * that changes are accurately stored in the database.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -183,7 +190,9 @@ public class CourseSessionRepositoryTest {
   }
 
   /**
-   * Tests the deletion of a course session by its ID, verifying that the session is properly removed from the database.
+   * Tests the deletion of a course session by its ID, verifying that the session is properly
+   * removed from the database.
+   *
    * @author Omar Moussa
    */
   @Test
@@ -216,6 +225,7 @@ public class CourseSessionRepositoryTest {
   /**
    * Verifies that deleting all course sessions associated with a specific course works as expected,
    * ensuring no sessions remain for the course post-deletion.
+   *
    * @author Omar Moussa
    */
   @Test
