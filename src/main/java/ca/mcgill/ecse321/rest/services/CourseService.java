@@ -2,29 +2,25 @@ package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
 import ca.mcgill.ecse321.rest.dao.CourseSessionRepository;
-import ca.mcgill.ecse321.rest.models.*;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
+import ca.mcgill.ecse321.rest.models.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
-public class courseService {
+@Service
+public class CourseService {
     @Autowired
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
     @Autowired
-    CourseRepository courseRepository;
+    private CourseRepository courseRepository;
     @Autowired
-    CourseSessionRepository courseSessionRepository;
+    private CourseSessionRepository courseSessionRepository;
     @Autowired
-    RegistrationRepository registrationRepository;
+    private RegistrationRepository registrationRepository;
 
     @Transactional
     public Course createCourse(String name, String description, Course.Level level,Timestamp courseStartDate,Timestamp courseEndDate, Room room, SportCenter sportCenter,Instructor instructor,Schedule schedule, Double hourlyRateAmount) {
