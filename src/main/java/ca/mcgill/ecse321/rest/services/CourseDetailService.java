@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CourseDetailService {
@@ -39,6 +41,30 @@ public class CourseDetailService {
             customers.add(registration.getCustomer());
         }
         return customers;
+    }
+
+    public List<Course> getActiveCourses() {
+        // This will retrieve only the courses with the state 'Approved'
+        return courseRepository.findCoursesByCourseState(Course.CourseState.Approved);
+    }
+
+    public List<Course> getAllActiveAndInstructorSpecificCourses(String instructorId) {
+        List<Course> activeCourses = getActiveCourses(); // get all active courses
+        List<Course> instructorCourses = courseRepository.findCoursesByInstructorId(instructorId); // get all courses by the instructor
+
+        // Combine both lists using a Set to remove duplicates
+        Set<Course> combinedCourses = new HashSet<>(activeCourses);
+        combinedCourses.addAll(instructorCourses); // This will not add duplicates
+
+        // Convert the Set back to a List
+        return new ArrayList<>(combinedCourses);
+    }
+
+
+    public boolean isInstructorOfCourse(String courseId, String instructorId) {
+        // Check if the instructor is associated with the course
+        Course course = courseRepository.findCourseById(courseId);
+        return course != null && course.getInstructor().getId().equals(instructorId);
     }
 
 }
