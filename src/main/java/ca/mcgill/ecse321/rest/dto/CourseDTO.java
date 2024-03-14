@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.rest.dto;
 
+import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.models.*;
 import jakarta.persistence.*;
 
@@ -16,25 +17,27 @@ public class CourseDTO {
 
     private Timestamp courseEndDate;
 
-    private String roomName;
-    private SportCenterDTO sportCenterDTO;
-    private InstructorDTO instructorDTO;
-    private ScheduleDTO scheduleDTO;
+    private String room;
+    private String sportCenter;
+    private String instructor;
+    private String schedule;
     private Double hourlyRateAmount;
     private String courseState;
 
-    public CourseDTO(String id,String name,String description,Timestamp courseStartDate,Timestamp courseEndDate, String roomName,SportCenterDTO sportCenterDTO,InstructorDTO instructorDTO, ScheduleDTO scheduleDTO, Double hourlyRateAmount, String courseState){
-        this.id=id;
-        this.name=name;
-        this.description=description;
-        this.courseStartDate=courseStartDate;
-        this.courseEndDate=courseEndDate;
-        this.roomName=roomName;
-        this.sportCenterDTO=sportCenterDTO;
-        this.instructorDTO= instructorDTO;
-        this.scheduleDTO=scheduleDTO;
-        this.hourlyRateAmount=hourlyRateAmount;
-        this.courseState=courseState;
+    public CourseDTO(Course course){
+        this.id=course.getId();
+        this.name=course.getName();
+        this.description=course.getDescription();
+        this.courseStartDate=course.getCourseStartDate();
+        this.courseEndDate=course.getCourseEndDate();
+        this.room=course.getRoom().getId();
+        this.sportCenter= course.getSportCenter().getId();
+        this.instructor=course.getInstructor().getId();
+        this.schedule= course.getSchedule().getId();
+        this.hourlyRateAmount=course.getHourlyRateAmount();
+        this.courseState=course.getCourseState().toString();
+        this.level=course.getLevel().toString();
+
     }
 
     public String getId() {
@@ -60,27 +63,24 @@ public class CourseDTO {
     public Timestamp getCourseEndDate() {
         return courseEndDate;
     }
-
-    public String getRoomName() {
-        return roomName;
+    public String getRoom() {
+        return room;
     }
-
-    public SportCenterDTO getSportCenterDTO() {
-        return sportCenterDTO;
+    public String getSportCenter() {
+        return sportCenter;
     }
-
-    public InstructorDTO getInstructorDTO() {
-        return instructorDTO;
+    public String getInstructor() {
+        return instructor;
     }
-
-    public ScheduleDTO getScheduleDTO() {
-        return scheduleDTO;
+    public String getSchedule() {
+        return schedule;
     }
-
     public Double getHourlyRateAmount() {
         return hourlyRateAmount;
     }
     public String getCourseState() {
         return courseState;
     }
+
+
 }
