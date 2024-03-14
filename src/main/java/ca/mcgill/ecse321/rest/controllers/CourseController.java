@@ -1,9 +1,7 @@
 package ca.mcgill.ecse321.rest.controllers;
-import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
-import ca.mcgill.ecse321.rest.dto.SessionDTO;
+import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
 import ca.mcgill.ecse321.rest.models.Course;
-import ca.mcgill.ecse321.rest.models.Owner;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
