@@ -1,9 +1,7 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.dao.CourseRepository;
-import ca.mcgill.ecse321.rest.dao.CourseSessionRepository;
-import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
+import ca.mcgill.ecse321.rest.dao.*;
+import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,20 +19,28 @@ public class CourseService {
     private CourseSessionRepository courseSessionRepository;
     @Autowired
     private RegistrationRepository registrationRepository;
+    @Autowired
+    private InstructorRepository instructorRepository;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+    @Autowired
+    private SportCenterRepository sportCenterRepository;
 
     @Transactional
-    public Course createCourse(String name, String description, Course.Level level,Timestamp courseStartDate,Timestamp courseEndDate, Room room, SportCenter sportCenter,Instructor instructor,Schedule schedule, Double hourlyRateAmount) {
+    public Course createCourse(CourseDTO courseDTO){
         Course course = new Course();
-        course.setName(name);
-        course.setDescription(description);
-        course.setLevel(level);
-        course.setCourseStartDate(courseStartDate);
-        course.setCourseEndDate(courseEndDate);
-        course.setHourlyRateAmount(hourlyRateAmount);
-        course.setInstructor(instructor);
-        course.setRoom(room);
-        course.setSchedule(schedule);
-        course.setSportCenter(sportCenter);
+        course.setName(courseDTO.getName());
+        course.setDescription(courseDTO.getDescription());
+//        course.setLevel(courseDTO.getLevel());
+        course.setCourseStartDate(courseDTO.getCourseStartDate());
+        course.setCourseEndDate(courseDTO.getCourseEndDate());
+        course.setHourlyRateAmount(courseDTO.getHourlyRateAmount());
+        course.setInstructor(instructorRepository.findInstructorById(courseDTO.getInstructor()));
+        course.setRoom(roomRepository.findRoomById(courseDTO.getRoom()));
+        course.setSchedule(scheduleRepository.findScheduleById(courseDTO.getSchedule()));
+        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getId()));
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
         return course;
