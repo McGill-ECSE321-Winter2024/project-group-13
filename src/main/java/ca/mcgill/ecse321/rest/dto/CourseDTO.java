@@ -1,8 +1,6 @@
 package ca.mcgill.ecse321.rest.dto;
 
-import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.models.*;
-import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 
@@ -24,6 +22,7 @@ public class CourseDTO {
     private Double hourlyRateAmount;
     private String courseState;
 
+
     public CourseDTO(Course course){
         this.id=course.getId();
         this.name=course.getName();
@@ -37,7 +36,6 @@ public class CourseDTO {
         this.hourlyRateAmount=course.getHourlyRateAmount();
         this.courseState=course.getCourseState().toString();
         this.level=course.getLevel().toString();
-
     }
 
     public String getId() {
