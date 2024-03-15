@@ -26,7 +26,7 @@ public class CourseController {
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
     @ResponseStatus(HttpStatus.OK)
     public CourseDTO approveCourse(@PathVariable String course_id, @RequestBody SessionDTO session) {
-//        PersonSession session= courseService.verifyTokenAndGetUser();
+//        PersonSession session= courseService.verifyTokenAndGetUser(session);
 //        Course approvedCourse = courseService.approveCourse(course_id, owner);
 //        return new CourseDTO(approvedCourse);
         return null;

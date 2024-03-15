@@ -33,7 +33,7 @@ public class CourseService {
         Course course = new Course();
         course.setName(courseDTO.getName());
         course.setDescription(courseDTO.getDescription());
-//        course.setLevel(courseDTO.getLevel());
+        course.setLevel(courseDTO.getLevel());
         course.setCourseStartDate(courseDTO.getCourseStartDate());
         course.setCourseEndDate(courseDTO.getCourseEndDate());
         course.setHourlyRateAmount(courseDTO.getHourlyRateAmount());
