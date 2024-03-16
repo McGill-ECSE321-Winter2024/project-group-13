@@ -82,8 +82,14 @@ public class AuthenticationService {
                         isOwner ? PersonSession.PersonType.Owner :
                                 isInstructor ? PersonSession.PersonType.Instructor :
                                         null;
+        String sportCenterId = null;
+        sportCenterId = isOwner
+                ? ((Owner) person).getSportCenter().getId() :
+                isInstructor
+                ? ((Instructor) person).getSportCenter().getId() :
+                        isCustomer ? ((Customer) person).getSportCenter().getId() : null;
         if (personType == null) throw new IllegalArgumentException("Invalid person role");
-        return new PersonSession(person.getId(), personType);
+        return new PersonSession(person.getId(), personType, sportCenterId);
     }
 
     public String registerCustomer(String email, String password, String name, String phoneNumber){
