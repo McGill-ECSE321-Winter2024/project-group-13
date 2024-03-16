@@ -14,6 +14,8 @@ public interface CourseRepository extends CrudRepository<Course, String> {
 
   List<Course> findCoursesByCourseState(Course.CourseState courseState);
 
+  List<Course> findCoursesByInstructorId(String instructorId);
+
   @Transactional
   void deleteCourseById(String id);
 }
