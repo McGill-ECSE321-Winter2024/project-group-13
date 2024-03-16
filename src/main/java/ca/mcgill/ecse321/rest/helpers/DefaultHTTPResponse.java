@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.rest.helpers;
 
-import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
