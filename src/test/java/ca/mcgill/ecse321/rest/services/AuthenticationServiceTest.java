@@ -1,0 +1,232 @@
+package ca.mcgill.ecse321.rest.services;
+
+import ca.mcgill.ecse321.rest.dao.PersonRepository;
+import ca.mcgill.ecse321.rest.models.Customer;
+import ca.mcgill.ecse321.rest.models.Person;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class AuthenticationServiceTest {
+
+    @Mock
+    private PersonRepository personRepository;
+
+    @InjectMocks
+    private AuthenticationService authenticationService;
+
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void isValidCredentials_ValidCredentials_ReturnsTrue() {
+        // Arrange
+        String email = "test@example.com";
+        String password = "passsword";
+        Person person = new Customer();
+        when(personRepository.findPersonByEmailAndPassword(email, password)).thenReturn(person);
+
+        boolean result = authenticationService.isValidCredentials(email, password);
+
+        assertTrue(result);
+        verify(personRepository).findPersonByEmailAndPassword(email, password);
+    }
+
+    @Test
+    void isValidCredentials_InvalidCredentials_ReturnsFalse() {
+        // Arrange
+        String email = "test@example.com";
+        String password = "password";
+        when(personRepository.findPersonByEmailAndPassword(email, password)).thenReturn(null);
+
+        // Act
+        boolean result = authenticationService.isValidCredentials(email, password);
+
+        // Assert
+        assertFalse(result);
+        verify(personRepository).findPersonByEmailAndPassword(email, password);
+    }
+
+    @Test
+    void registerCustomer_ValidInput_ReturnsToken() {
+        // Arrange
+        String email = "new@examsple.com";
+        String password = "password";
+        String name = "Test User";
+        String phoneNumber = "1234567890";
+        Customer customer = new Customer();
+        customer.setEmail(email);
+        customer.setPassword(password);
+        customer.setName(name);
+        customer.setPhoneNumber(phoneNumber);
+        when(personRepository.findPersonByEmail(email))
+                .thenReturn(null);
+        when(personRepository.save(any(Customer.class))).thenReturn(customer);
+
+        String token = authenticationService.registerCustomer(email, password, name, phoneNumber);
+
+        assertNotNull(token);
+        verify(personRepository, times(1)).findPersonByEmail(email);
+        verify(personRepository).save(any(Customer.class));
+    }
+
+    @Test
+    void changePassword_ValidInput_ReturnsToken() {
+        // Arrange
+        String personId = "123";
+        String password = "password";
+        Person person = new Customer();
+        person.setId(personId);
+        person.setPassword(password);
+        when(personRepository.findPersonById(personId)).thenReturn(person);
+        when(personRepository.save(any(Person.class))).thenReturn(person);
+
+        authenticationService.changePassword(personId, password);
+        assertEquals(password, person.getPassword());
+
+        verify(personRepository).findPersonById(personId);
+        verify(personRepository).save(any(Person.class));
+
+    }
+
+    @Test
+    void changePassword_InvalidInput_ThrowsException() {
+        // Arrange
+        String personId = "123";
+        String password = "password";
+        when(personRepository.findPersonById(personId)).
+                thenReturn(null);
+
+        // Act
+        String error = authenticationService.changePassword(personId, password);
+        assertEquals("Person not found", error);
+        // Assert
+        verify(personRepository).findPersonById(personId);
+    }
+
+    @Test
+    void changeEmail_ExistingEmail() {
+        // Arrange
+        String personId = "123";
+        String email = "test1@example.com";
+        Person person = new Customer();
+        person.setId(personId);
+        person.setEmail(email);
+        when(personRepository.findPersonByEmail(email)).thenReturn(person);
+
+        // Act
+        String error = authenticationService.changeEmail(personId, email);
+        assertNotNull(error);
+        // Assert
+        verify(personRepository).findPersonByEmail(email);
+    }
+
+    @Test
+    void changeEmail_ValidInput_ReturnsToken() {
+        // Arrange
+        String personId = "123";
+        String oldEmail = "test1@example.com";
+        String newEmail = "text2@example.com";
+
+        Person person = new Customer();
+        person.setId(personId);
+        person.setEmail(oldEmail);
+
+
+        when(personRepository.findPersonByEmail(newEmail)).thenReturn(null);
+        when(personRepository.findPersonById(personId)).thenReturn(person);
+        when(personRepository.save(any(Person.class))).thenReturn(person);
+
+        assertDoesNotThrow(() -> {
+            authenticationService.changeEmail(personId, newEmail);
+        });
+
+        assertEquals(newEmail, person.getEmail());
+
+        verify(personRepository).findPersonById(personId);
+        verify(personRepository).findPersonByEmail(newEmail);
+    }
+
+    @Test
+    void changePhoneNumber_ValidInput_ReturnsToken() {
+        // Arrange
+        String personId = "123";
+        String phoneNumber = "1234567890";
+        Person person = new Customer();
+        person.setId(personId);
+        person.setPhoneNumber(phoneNumber);
+        when(personRepository.findPersonById(personId)).thenReturn(person);
+        when(personRepository.save(any(Person.class))).thenReturn(person);
+
+        authenticationService.changePhoneNumber(personId, phoneNumber);
+        assertEquals(phoneNumber, person.getPhoneNumber());
+
+        verify(personRepository).findPersonById(personId);
+        verify(personRepository).save(any(Person.class));
+    }
+
+    @Test
+    void changePhoneNumber_InvalidInput_ThrowsException() {
+        // Arrange
+        String personId = "123";
+        String phoneNumber = "1234567890";
+        Customer customer = new Customer();
+        customer.setId(personId);
+        customer.setPhoneNumber(phoneNumber);
+        when(personRepository.findPersonByPhoneNumber(phoneNumber)).thenReturn(customer);
+
+        String error = authenticationService.changePhoneNumber(personId, phoneNumber);
+        assertNotNull(error);
+
+        verify(personRepository).findPersonByPhoneNumber(phoneNumber);
+    }
+
+    @Test
+    void verifyTokenAndGetUser_ValidToken_ReturnsPersonSession() {
+        // Arrange
+        String personId = "123";
+        Person customer = new Customer();
+        customer.setId(personId);
+        String jwt = authenticationService.issueToken(personId);
+        when(personRepository.findPersonById(personId)).thenReturn(customer);
+
+        String authorization = "Bearer " + jwt;
+        authenticationService.verifyTokenAndGetUser(authorization);
+
+        verify(personRepository, times(2)).findPersonById(personId);
+
+    }
+
+    @Test
+    void verifyTokenAndGetUser_NonExistantUserId_ThrowsException() {
+        // Arrange
+        String token = authenticationService.issueToken("invalidtoken");
+        String authorization = "Bearer " + token;
+        when(personRepository.findPersonById("invalidtoken")).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            authenticationService.verifyTokenAndGetUser(authorization);
+        });
+
+        verify(personRepository).findPersonById("invalidtoken");
+    }
+
+    @Test
+    void verifyTokenAndGetUser_InvalidToken_ThrowsException() {
+        // Arrange
+        String token = "Bearer invalidtoken";
+        assertThrows(IllegalArgumentException.class, () -> {
+            authenticationService.verifyTokenAndGetUser(token);
+        });
+    }
+}

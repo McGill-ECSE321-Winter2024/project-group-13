@@ -4,6 +4,8 @@ import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dto.LoginDTO;
 import ca.mcgill.ecse321.rest.dto.auth.RegisterDTO;
 import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
+import ca.mcgill.ecse321.rest.dto.http.ErrorHTTPDTO;
+import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
-
 @RestController
 public class AuthenticationController {
     @Autowired
@@ -22,13 +22,13 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<SessionDTO> login(@RequestBody LoginDTO body) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO body) {
 
         String email = body.getEmail();
         String password = body.getPassword();
         if (!authenticationService.isValidCredentials(email, password))
-            throw new IllegalArgumentException("Invalid credentials");
-        String session = authenticationService.issueToken(email);
+            return DefaultHTTPResponse.unauthorized("Invalid credentials");
+        String session = authenticationService.issueTokenWithEmail(email);
         System.out.println(session);
 
         return new ResponseEntity<>(new SessionDTO(session), HttpStatus.OK);
@@ -36,18 +36,18 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/verify", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<SessionDTO> verify(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<?> verify(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if (person.getPersonId() == null) throw new IllegalArgumentException("Invalid token");
+        if (person.getPersonId() == null) return DefaultHTTPResponse.unauthorized();
         return new ResponseEntity<>(new SessionDTO(person.getPersonId()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/auth/register/customer", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<SessionDTO> registerCustomer(@RequestBody RegisterDTO body) {
-        System.out.println(body.getEmail()
-        );
-         String session = authenticationService.registerCustomer(
+    public ResponseEntity<?> registerCustomer(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RegisterDTO body) {
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        if(person.getPersonType() != PersonSession.PersonType.Owner) return DefaultHTTPResponse.unauthorized();
+        String session = authenticationService.registerCustomer(
             body.getEmail(),
             body.getPassword(),
             body.getName(),
@@ -59,28 +59,30 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/password", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity<SessionDTO> changePassword(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody LoginDTO body) {
+    public ResponseEntity<?> changePassword(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody LoginDTO body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if (person.getPersonId() == null) throw new IllegalArgumentException("Invalid token");
+        if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         authenticationService.changePassword(person.getPersonId(), body.getPassword());
         return new ResponseEntity<>(new SessionDTO("Password changed"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/auth/email", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity<SessionDTO> changeEmail(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> changeEmail(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if (person.getPersonId() == null) throw new IllegalArgumentException("Invalid token");
-        authenticationService.changeEmail(person.getPersonId(), body.get("email"));
+        if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
+        String error = authenticationService.changeEmail(person.getPersonId(), body.get("email"));
+        if (error != null) return new ResponseEntity<>(new ErrorHTTPDTO(error), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(new SessionDTO("Email changed"), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/auth/phoneNumber", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity<SessionDTO> changePhoneNumber(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> changePhoneNumber(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if (person.getPersonId() == null) throw new IllegalArgumentException("Invalid token");
-        authenticationService.changePhoneNumber(person.getPersonId(), body.get("phoneNumber"));
+        if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
+        String error = authenticationService.changePhoneNumber(person.getPersonId(), body.get("phoneNumber"));
+        if (error != null) return new ResponseEntity<>(new ErrorHTTPDTO(error), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(new SessionDTO("Phone number changed"), HttpStatus.OK);
     }
 
