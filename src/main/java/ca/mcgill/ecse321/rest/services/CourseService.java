@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
+import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.models.*;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class CourseService {
@@ -27,6 +29,39 @@ public class CourseService {
     private ScheduleRepository scheduleRepository;
     @Autowired
     private SportCenterRepository sportCenterRepository;
+    @Autowired
+    private OwnerRepository ownerRepository;
+
+    public static class CourseMessagePair{
+        private Course course;
+        private String message;
+        public CourseMessagePair(Course course, String message) {
+            this.course = course;
+            this.message = message;
+        }
+        public Course getCourse() {
+            return course;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
+    public CourseMessagePair getCourse(String course_id, PersonSession personSession){
+        String message="";
+        Course course = courseRepository.findCourseById(course_id);
+        if (personSession.getPersonType()!= PersonSession.PersonType.Owner){
+            Owner owner=ownerRepository.findOwnerById(personSession.getPersonId());
+            if (owner ==null || !owner.getSportCenter().getId().equals(course.getSportCenter().getId())){
+                message= "Must be an owner of the course's sports center";
+            }
+        }
+        else if (course== null){
+            message= "Invalid Course";
+        };
+        return new CourseMessagePair(course,message);
+    }
 
     @Transactional
     public Course createCourse(CourseDTO courseDTO){
@@ -46,24 +81,20 @@ public class CourseService {
         return course;
     }
     @Transactional
-    public boolean approveCourse(String id,Owner owner) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null && course.getSportCenter().equals(owner.getSportCenter())){
-            course.setCourseState(Course.CourseState.Approved);
-            courseRepository.save(course);
-            return true;
-        }
-        return false;
+    public String approveCourse(String course_id, PersonSession personSession) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        course.setCourseState(Course.CourseState.Approved);
+        courseRepository.save(course);
+        return courseMessagePair.getMessage() ;
     }
     @Transactional
-    public boolean updateCourseName(String id,String name) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
-            course.setName(name);
-            courseRepository.save(course);
-            return true;
-        }
-        return false;
+    public String updateCourseName(PersonSession personSession,String course_id,String name) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        course.setName(name);
+        courseRepository.save(course);
+        return courseMessagePair.getMessage();
     }
     @Transactional
     public boolean updateCourseDescription(String id,String description) {
