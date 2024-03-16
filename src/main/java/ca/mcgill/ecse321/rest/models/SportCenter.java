@@ -68,6 +68,9 @@ public class SportCenter {
   public void setSchedule(Schedule aSchedule) {
     schedule = aSchedule;
   }
+  public String getId() {
+    return id;
+  }
 
   public String toString() {
     return super.toString()
@@ -78,4 +81,6 @@ public class SportCenter {
         + "]"
         + System.getProperties().getProperty("line.separator");
   }
+
+
 }

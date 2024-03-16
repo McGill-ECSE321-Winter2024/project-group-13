@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.rest.dto;
+package ca.mcgill.ecse321.rest.dto.auth;
 
 public class SessionDTO {
 

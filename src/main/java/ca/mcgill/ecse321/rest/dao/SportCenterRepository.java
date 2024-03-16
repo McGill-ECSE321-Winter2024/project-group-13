@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface SportCenterRepository extends CrudRepository<SportCenter, String> {
 
   SportCenter findSportCenterByName(String name);
+  SportCenter findSportCenterById(String id);
 
   SportCenter findSportCenterByAddress(String address);
-  
 }
