@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.rest.dto.auth;
 
-public class SessionDTO {
+import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
+
+public class SessionDTO extends DefaultHTTPResponse {
 
     private String session;
 

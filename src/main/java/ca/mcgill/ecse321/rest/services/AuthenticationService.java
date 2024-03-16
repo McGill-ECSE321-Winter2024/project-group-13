@@ -18,9 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuthenticationService {
 
-    private long accessTokenValidity = 60*60*1000;
     private final String secret_key = "mysecretkey";
-
 
     @Autowired
     private PersonRepository personRepository;
@@ -29,16 +27,20 @@ public class AuthenticationService {
         return personRepository.findPersonByEmailAndPassword(email, password) != null;
     }
 
-    public String issueToken(String email){
+    public String issueTokenWithEmail(String email){
         Person person = personRepository.findPersonByEmail(email);
+        return issueToken(person.getId());
+    }
+
+    public String issueToken(String personId){
         try {
             Algorithm algorithm = Algorithm.HMAC512(secret_key);
-            String token = JWT.create()
-                    .withIssuer("auth0")
-                    .withClaim("id", person.getId())
+            long accessTokenValidity = 60 * 60 * 1000;
+            return JWT.create()
+                    .withIssuer("ecse321")
+                    .withClaim("id", personId)
                     .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidity))
                     .sign(algorithm);
-            return token;
         } catch (JWTCreationException exception){
             throw new IllegalArgumentException("Invalid token");
         }
@@ -48,27 +50,30 @@ public class AuthenticationService {
         try {
             Algorithm algorithm = Algorithm.HMAC512(secret_key);
             String id = JWT.require(algorithm)
-                    .withIssuer("auth0")
+                    .withIssuer("ecse321")
                     .build()
                     .verify(token)
                     .getClaim("id")
                     .asString();
             Person person = personRepository.findPersonById(id);
+            if (person == null) throw new IllegalArgumentException("Invalid token");
+            System.out.println(person);
             return person.getId();
         } catch (Exception exception){
             throw new IllegalArgumentException("Invalid token");
         }
     }
 
-    private void validatePhoneNumber(String phoneNumber){
-        if (phoneNumber.length() != 10) throw new IllegalArgumentException("Invalid phone number");
-        if (!phoneNumber.matches("[0-9]+")) throw new IllegalArgumentException("Invalid phone number");
+    private String validatePhoneNumber(String phoneNumber){
+        if (phoneNumber.length() != 10 || !phoneNumber.matches("[0-9]+")) return "Invalid phone number";
+        return null;
     }
 
     public PersonSession verifyTokenAndGetUser(String rawToken){
         String token = rawToken.split(" ")[1];
         String id = verifyToken(token);
         Person person = personRepository.findPersonById(id);
+        System.out.println(person);
         boolean isCustomer = person instanceof Customer;
         boolean isOwner = person instanceof Owner;
         boolean isInstructor = person instanceof Instructor;
@@ -77,8 +82,14 @@ public class AuthenticationService {
                         isOwner ? PersonSession.PersonType.Owner :
                                 isInstructor ? PersonSession.PersonType.Instructor :
                                         null;
+        String sportCenterId = null;
+        sportCenterId = isOwner
+                ? ((Owner) person).getSportCenter().getId() :
+                isInstructor
+                ? ((Instructor) person).getSportCenter().getId() :
+                        isCustomer ? ((Customer) person).getSportCenter().getId() : null;
         if (personType == null) throw new IllegalArgumentException("Invalid person role");
-        return new PersonSession(person.getId(), personType);
+        return new PersonSession(person.getId(), personType, sportCenterId);
     }
 
     public String registerCustomer(String email, String password, String name, String phoneNumber){
@@ -95,27 +106,29 @@ public class AuthenticationService {
 
     }
 
-    public void changePassword(String personId, String password){
+    public String changePassword(String personId, String password){
         Person person = personRepository.findPersonById(personId);
+        if (person == null) return "Person not found";
         person.setPassword(password);
         personRepository.save(person);
+        return null;
     }
 
-    public void changeEmail(String personId, String email){
-        if(personRepository.findPersonByEmail(email) != null){
-            throw new IllegalArgumentException("Email already exists");
-        }
+    public String changeEmail(String personId, String email){
+        if(personRepository.findPersonByEmail(email) != null) return "Email already in use";
         Person person = personRepository.findPersonById(personId);
         person.setEmail(email);
         personRepository.save(person);
+        return null;
     }
 
-    public void changePhoneNumber(String personId, String phoneNumber){
-        validatePhoneNumber(phoneNumber);
-        if (personRepository.findPersonByPhoneNumber(phoneNumber) != null) throw new IllegalArgumentException("Phone number already exists");
+    public String changePhoneNumber(String personId, String phoneNumber){
+        String error = validatePhoneNumber(phoneNumber);
+        if (personRepository.findPersonByPhoneNumber(phoneNumber) != null) return "Phone number already in use";
         Person person = personRepository.findPersonById(personId);
         person.setPhoneNumber(phoneNumber);
         personRepository.save(person);
+        return null;
     }
 
 }

@@ -5,6 +5,8 @@ public class PersonSession {
 
     String personId;
 
+    String sportCenterId;
+
     PersonType personType;
 
     public enum PersonType {
@@ -13,9 +15,10 @@ public class PersonSession {
         Owner
     }
 
-    public PersonSession(String personId, PersonType personType){
+    public PersonSession(String personId, PersonType personType, String sportCenterId){
         this.personId = personId;
         this.personType = personType;
+        this.sportCenterId = sportCenterId;
     }
 
     public String getPersonId(){
@@ -24,6 +27,10 @@ public class PersonSession {
 
     public PersonType getPersonType(){
         return personType;
+    }
+
+    public String getSportCenterId(){
+        return sportCenterId;
     }
 
 
