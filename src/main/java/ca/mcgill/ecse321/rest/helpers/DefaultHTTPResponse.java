@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class DefaultHTTPResponse {
-    public static ResponseEntity<HTTPDTO> unauthorized(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.UNAUTHORIZED);
+    public static ResponseEntity<HTTPDTO> success(String message) {
+        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.OK);
     }
 
-    public static ResponseEntity<HTTPDTO> unauthorized() {
-        return new ResponseEntity<>(new HTTPDTO("Unauthorized"), HttpStatus.UNAUTHORIZED);
+    public static ResponseEntity<HTTPDTO> success() {
+        return new ResponseEntity<>(new HTTPDTO("Success"), HttpStatus.OK);
     }
     
     public static ResponseEntity<HTTPDTO> unauthorized(String message) {
