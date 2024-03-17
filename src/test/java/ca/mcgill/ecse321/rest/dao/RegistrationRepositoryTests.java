@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
+
 @SpringBootTest
 public class RegistrationRepositoryTests {
   @Autowired private PersonRepository personRepository;
@@ -19,7 +21,8 @@ public class RegistrationRepositoryTests {
   /**
    * This method executes after each test. This is done by the "@AfterEach" JPA annotation The
    * method is used to clear the database after each test, so that we don't fill up our database
-   * tables with unwanted data from tests. @Author Teddy El-Husseini
+   * tables with unwanted data from tests.
+   * @Author Teddy El-Husseini
    */
   @AfterEach
   public void clearDatabase() {
@@ -28,17 +31,14 @@ public class RegistrationRepositoryTests {
     personRepository.deleteAll();
   }
 
-  /*
-   * This method is used to populate the database with test data.
-   */
-
   /**
    * This method is a "@TEST" that tests the Persistance and Loading of the registration class. A
    * registration needs a customer and a course in order to be relevant. Once the customer and
    * course are set, we cannot delete registration, to do so We have to delete course and customer
    * first. In this method, we first create a customer, then a course. We save customer and course.
    * Then, we create and save a registration. Finally, we use "asserts" to check if the values saved
-   * in our registration table in the database are correct. @Author Teddy El-Husseini
+   * in our registration table in the database are correct.
+   * @Author Teddy El-Husseini
    */
   @Test
   public void testPersistAndLoadRegistration() {
@@ -82,8 +82,7 @@ public class RegistrationRepositoryTests {
 
   /**
    * This method tests the deletion of a registration from the database.
-   *
-   * @author Achraf Ghellach
+   * @Author Achraf Ghellach
    */
   @Test
   public void testDeleteRegistration() {
@@ -101,7 +100,8 @@ public class RegistrationRepositoryTests {
     assertNull(registrationRepository.findRegistrationById(registrationID));
   }
 
-  /** This method tests the update of a registration from the database. @Author Achraf Ghellach */
+  /** This method tests the update of a registration from the database.
+   * @Author Achraf Ghellach */
   @Test
   public void testUpdateRegistrationValidRating() {
 
@@ -125,7 +125,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This method tests the update of a registration from the database with a negative
-   * rating. @Author Achraf Ghellach
+   * rating.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testUpdateRegistrationNegativeRating() {
@@ -149,7 +150,9 @@ public class RegistrationRepositoryTests {
     assertNotEquals(newRating, registration.getRating());
   }
 
-  /** This method tests the update of a registration from the database with a rating of 0. */
+  /** This method tests the update of a registration from the database with a rating of 0.
+   * @Author Achraf Ghellach
+   * */
   @Test
   public void testCustomerId() {
 
@@ -170,6 +173,7 @@ public class RegistrationRepositoryTests {
   /**
    * This method tests the equivalence of the course id in the database and the course id in the
    * registration.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testCourseId() {
@@ -189,8 +193,8 @@ public class RegistrationRepositoryTests {
   }
 
   /**
-   * This method the foreign key constraint on the customer id in the registration table. @Author
-   * Achraf Ghellach
+   * This method the foreign key constraint on the customer id in the registration table.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testDeleteCustomerWithRegistration() {
@@ -212,8 +216,8 @@ public class RegistrationRepositoryTests {
   }
 
   /**
-   * This method the foreign key constraint on the course id in the registration table. @Author
-   * Achraf Ghellach
+   * This method the foreign key constraint on the course id in the registration table.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testDeleteCourseWithRegistration() {
@@ -236,7 +240,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This method tests the impossibility of creating two registrations with the same course and
-   * customer. @Author Achraf Ghellach
+   * customer.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testAttemptCreateTwoRegistrationsWithSameCourseAndCustomer() {
@@ -262,7 +267,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This method tests the possibility of creating two registrations with the same course and
-   * different customers. @Author Achraf Ghellach
+   * different customers.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testCreateTwoRegistrationsWithSameCourseAndDifferentCustomer() {
@@ -294,6 +300,7 @@ public class RegistrationRepositoryTests {
   /**
    * This method tests the possibility of creating two registrations with the same customer and
    * different courses.
+   * @Author Achraf Ghellach
    */
   @Test
   public void testCreateTwoRegistrationsWithSameCustomerAndDifferentCourse() {
@@ -322,7 +329,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This test checks that no registration is deleted when using deleteById with a non-existent
-   * id. @Author Teddy El-Husseini
+   * id.
+   * @Author Teddy El-Husseini
    */
   @Test
   public void testDeleteRegistrationWithInvalidId() {
@@ -353,7 +361,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This test checks that the course, rating and customer will not update if they are set to
-   * null/invalid values. @Author Teddy El-Husseini
+   * null/invalid values.
+   * @Author Teddy El-Husseini
    */
   @Test
   public void testUpdateRegistrationWithNullAndInvalidValues() {
@@ -391,7 +400,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This test checks that an error is thrown when a registration with null values is created and
-   * that nothing is saved. @Author Teddy El-Husseini
+   * that nothing is saved.
+   * @Author Teddy El-Husseini
    */
   @Test
   public void testCreateRegistrationWithNullValues() {
@@ -424,7 +434,8 @@ public class RegistrationRepositoryTests {
 
   /**
    * This test checks that an error is thrown when an invoice with invalid rating is created and
-   * that nothing is saved. @Author Teddy El-Husseini
+   * that nothing is saved.
+   * @Author Teddy El-Husseini
    */
   @Test
   public void testCreateRegistrationWithInvalidRating() {
@@ -449,4 +460,62 @@ public class RegistrationRepositoryTests {
           registrationRepository.save(registration);
         });
   }
+
+
+  /**
+   * Test to verify that finding registrations by course ID correctly returns all registrations for multiple customers.
+   * This test creates a single course and two customers, registers both customers to the course,
+   * and then retrieves the registrations using the course ID. It checks that both registrations are
+   * correctly retrieved, ensuring the method works for multiple registrations associated with a single course.
+   * @Author Omar Moussa
+   */
+  @Test
+  public void testFindRegistrationsByCourseIdWithMultipleCustomers() {
+    // Create and save a course
+    Course course = new Course();
+    course.setName("ecse321");
+    course.setDescription("Software Engineering");
+    courseRepository.save(course);
+
+    // Create and save first customer
+    Customer customer1 = new Customer();
+    customer1.setName("Customer1");
+    customer1.setPhoneNumber("123-456-7890");
+    customer1.setEmail("customer1@mail.com");
+    customer1.setPassword("password1");
+    personRepository.save(customer1);
+
+    // Create and save second customer
+    Customer customer2 = new Customer();
+    customer2.setName("Customer2");
+    customer2.setPhoneNumber("098-765-4321");
+    customer2.setEmail("customer2@mail.com");
+    customer2.setPassword("password2");
+    personRepository.save(customer2);
+
+    // Create and save registrations for both customers in the same course
+    Registration registration1 = new Registration();
+    registration1.setCourse(course);
+    registration1.setCustomer(customer1);
+    registrationRepository.save(registration1);
+
+    Registration registration2 = new Registration();
+    registration2.setCourse(course);
+    registration2.setCustomer(customer2);
+    registrationRepository.save(registration2);
+
+    // Attempt to retrieve registrations by the course ID
+    List<Registration> registrations = registrationRepository.findRegistrationByCourseId(course.getId());
+
+    // Assert that the retrieved list is not null, has exactly two elements and contains the expected registrations
+    assertNotNull(registrations, "The retrieved registration list should not be null.");
+    assertEquals(2, registrations.size(), "There should be exactly two registrations associated with the course ID.");
+
+    // Verify that the list contains registrations for both customers
+    assertTrue(registrations.stream().anyMatch(r -> r.getCustomer().getId().equals(customer1.getId())),
+            "The list should contain a registration for customer1.");
+    assertTrue(registrations.stream().anyMatch(r -> r.getCustomer().getId().equals(customer2.getId())),
+            "The list should contain a registration for customer2.");
+  }
+
 }
