@@ -17,6 +17,9 @@ public class SportCenter {
   @OneToOne private Schedule schedule;
 
   public SportCenter() {}
+  public SportCenter(String id) {
+    this.id=id;
+  }
 
   public static int minimumNumberOfRooms() {
     return 0;

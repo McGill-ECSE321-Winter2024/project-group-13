@@ -74,7 +74,7 @@ public class CourseService {
         if (!courseDTO.getSportCenter().equals(personSession.getSportCenterId())){
             return "Invalid sport's center id";
         }
-        if (courseDTO.getName() == null){
+        if (courseDTO.getName().isEmpty()){
             return "Course requires name to be created";
         }
         Course course = new Course();
