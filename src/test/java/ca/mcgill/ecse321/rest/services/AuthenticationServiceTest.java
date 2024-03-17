@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.rest.services;
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
 import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Person;
+import ca.mcgill.ecse321.rest.models.SportCenter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -195,8 +196,11 @@ class AuthenticationServiceTest {
     void verifyTokenAndGetUser_ValidToken_ReturnsPersonSession() {
         // Arrange
         String personId = "123";
-        Person customer = new Customer();
+        Customer customer = new Customer();
         customer.setId(personId);
+        SportCenter sportCenter = new SportCenter();
+        sportCenter.setId("123");
+        customer.setSportCenter(sportCenter);
         String jwt = authenticationService.issueToken(personId);
         when(personRepository.findPersonById(personId)).thenReturn(customer);
 
