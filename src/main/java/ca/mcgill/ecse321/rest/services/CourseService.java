@@ -9,18 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.List;
+
 
 @Service
 public class CourseService {
     @Autowired
-    private PersonRepository personRepository;
-    @Autowired
     private CourseRepository courseRepository;
-    @Autowired
-    private CourseSessionRepository courseSessionRepository;
-    @Autowired
-    private RegistrationRepository registrationRepository;
     @Autowired
     private InstructorRepository instructorRepository;
     @Autowired
@@ -29,12 +23,10 @@ public class CourseService {
     private ScheduleRepository scheduleRepository;
     @Autowired
     private SportCenterRepository sportCenterRepository;
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     public static class CourseMessagePair{
-        private Course course;
-        private String message;
+        private final Course course;
+        private final String message;
         public CourseMessagePair(Course course, String message) {
             this.course = course;
             this.message = message;
@@ -46,143 +38,171 @@ public class CourseService {
         public String getMessage() {
             return message;
         }
+
     }
 
     public CourseMessagePair getCourse(String course_id, PersonSession personSession){
         String message="";
         Course course = courseRepository.findCourseById(course_id);
-        if (personSession.getPersonType()!= PersonSession.PersonType.Owner){
-            Owner owner=ownerRepository.findOwnerById(personSession.getPersonId());
-            if (owner ==null || !owner.getSportCenter().getId().equals(course.getSportCenter().getId())){
+        if (personSession.getPersonType()!= PersonSession.PersonType.Owner ){
+            if (personSession.getSportCenterId().equals(course.getSportCenter().getId())){
                 message= "Must be an owner of the course's sports center";
             }
         }
         else if (course== null){
-            message= "Invalid Course";
-        };
+            message= "Course does not exist";
+        }
         return new CourseMessagePair(course,message);
     }
 
     @Transactional
-    public Course createCourse(CourseDTO courseDTO){
+    public String createCourse(CourseDTO courseDTO, PersonSession personSession){
+        if (personSession.getPersonType()== PersonSession.PersonType.Customer ){
+            return "Must be an owner or instructor";
+        }
+        if (!courseDTO.getSportCenter().equals(personSession.getSportCenterId())){
+            return "Invalid sport's center id";
+        }
+        if (courseDTO.getName().isEmpty()){
+            return "Course requires name to be created";
+        }
         Course course = new Course();
         course.setName(courseDTO.getName());
-        course.setDescription(courseDTO.getDescription());
-        course.setLevel(courseDTO.getLevel());
-        course.setCourseStartDate(courseDTO.getCourseStartDate());
-        course.setCourseEndDate(courseDTO.getCourseEndDate());
-        course.setHourlyRateAmount(courseDTO.getHourlyRateAmount());
-        course.setInstructor(instructorRepository.findInstructorById(courseDTO.getInstructor()));
-        course.setRoom(roomRepository.findRoomById(courseDTO.getRoom()));
-        course.setSchedule(scheduleRepository.findScheduleById(courseDTO.getSchedule()));
-        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getId()));
+        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getSportCenter()));
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
-        return course;
+        return "";
     }
     @Transactional
     public String approveCourse(String course_id, PersonSession personSession) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
-        Course course=courseMessagePair.getCourse();
-        course.setCourseState(Course.CourseState.Approved);
-        courseRepository.save(course);
+        if (courseMessagePair.getMessage().isEmpty()) {
+          Course course = courseMessagePair.getCourse();
+          course.setCourseState(Course.CourseState.Approved);
+          courseRepository.save(course);
+        }
         return courseMessagePair.getMessage() ;
     }
     @Transactional
     public String updateCourseName(PersonSession personSession,String course_id,String name) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
-        course.setName(name);
-        courseRepository.save(course);
+        if (courseMessagePair.getMessage().isEmpty() && !name.isBlank()){
+            course.setName(name);
+            courseRepository.save(course);
+        }
+        else return "Name must not be null";
         return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseDescription(String id,String description) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseDescription(PersonSession personSession, String course_id,String description) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        if (courseMessagePair.getMessage().isEmpty() && !description.isBlank()){
             course.setDescription(description);
             courseRepository.save(course);
-            return true;
         }
-        return false;
+        else return "Description must not be null";
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseLevel(String id, Course.Level level) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
-            course.setLevel(level);
-            courseRepository.save(course);
-            return true;
+    public String updateCourseLevel(PersonSession personSession, String course_id, String level) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        if (courseMessagePair.getMessage().isEmpty()){
+            if(level.equals("Beginner") || level.equals("Intermediate") || level.equals("Advanced")){
+                course.setLevel(level);
+                courseRepository.save(course);
+            }
+            else {
+                return "Invalid level";
+            }
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseRate(String id, Double hourlyRateAmount) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseRate(PersonSession personSession,String course_id, Double hourlyRateAmount) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        if (courseMessagePair.getMessage().isEmpty()){
+          if (hourlyRateAmount >= 0) {
             course.setHourlyRateAmount(hourlyRateAmount);
             courseRepository.save(course);
-            return true;
+          } else return "Course rate must be a positive number";
         }
-        return false;
+        return courseMessagePair.getMessage();
+
     }
     @Transactional
-    public boolean updateCourseStartDate(String id, Timestamp courseStartDate) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseStartDate(PersonSession personSession,String course_id, Timestamp courseStartDate) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        if (courseMessagePair.getMessage().isEmpty()){
+          if (course.getCourseEndDate().after(courseStartDate)) {
             course.setCourseStartDate(courseStartDate);
             courseRepository.save(course);
-            return true;
+          }
+          else return "Course start date must be before course end date";
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseEndDate(String id, Timestamp courseEndDate) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseEndDate(PersonSession personSession, String course_id, Timestamp courseEndDate) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        if (courseMessagePair.getMessage().isEmpty()){
+          if (course.getCourseStartDate().before(courseEndDate)) {
             course.setCourseEndDate(courseEndDate);
             courseRepository.save(course);
-            return true;
+          } else return "Course end date must be after course start date";
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseRoom(String id, Room room) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseRoom(PersonSession personSession,String course_id, String roomID) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        Room room = roomRepository.findRoomById(roomID);
+        if (courseMessagePair.getMessage().isEmpty()){
+            if (room==null)
+                return "Room not found";
             course.setRoom(room);
             courseRepository.save(course);
-            return true;
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseInstructor(String id, Instructor instructor) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseInstructor(PersonSession personSession,String course_id, String instructorID) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        Instructor instructor= instructorRepository.findInstructorById(instructorID);
+        if (courseMessagePair.getMessage().isEmpty()){
+            if (instructor==null)
+                return "Instructor not found";
             course.setInstructor(instructor);
             courseRepository.save(course);
-            return true;
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean updateCourseSchedule(String id, Schedule schedule) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null){
+    public String updateCourseSchedule(PersonSession personSession,String course_id, String scheduleID) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        Course course=courseMessagePair.getCourse();
+        Schedule schedule= scheduleRepository.findScheduleById(scheduleID);
+        if (courseMessagePair.getMessage().isEmpty()){
+            if (schedule==null)
+                return "Schedule not found";
             course.setSchedule(schedule);
             courseRepository.save(course);
-            return true;
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
     @Transactional
-    public boolean deleteCourse(String id, Owner owner) {
-        Course course = courseRepository.findCourseById(id);
-        if (course!= null && course.getSportCenter().equals(owner.getSportCenter())){
-            courseRepository.deleteCourseById(id);
-            return true;
+    public String deleteCourse(PersonSession personSession,String course_id) {
+        CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
+        if (courseMessagePair.getMessage().isEmpty()){
+            courseRepository.deleteCourseById(course_id);
         }
-        return false;
+        return courseMessagePair.getMessage();
     }
 }
