@@ -2,6 +2,8 @@ package ca.mcgill.ecse321.rest.controllers;
 
 import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.CustomerDTO;
+import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Schedule;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -23,8 +26,8 @@ public class CourseDetailRestController {
     private AuthenticationService authenticationService;
 
     @GetMapping("/courses/{course_id}/schedule")
-    public ResponseEntity<Schedule> getSchedule(@PathVariable("course_id") String courseId,
-                                                @RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<ScheduleDTO> getSchedule(@PathVariable("course_id") String courseId,
+                                                   @RequestHeader("Authorization") String bearerToken) {
         try {
             // Verify the token and get user details
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
@@ -65,7 +68,8 @@ public class CourseDetailRestController {
 
             // Check if a schedule was successfully retrieved and return it
             if (schedule != null) {
-                return ResponseEntity.ok(schedule);
+                ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
+                return ResponseEntity.ok(scheduleDTO);
             } else {
                 // If schedule is null, it means the user role did not match any of the cases with access
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -80,7 +84,7 @@ public class CourseDetailRestController {
 
 
     @GetMapping("/courses")
-    public ResponseEntity<List<Course>> getAllCourses(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<List<CourseDTO>> getAllCourses(@RequestHeader("Authorization") String bearerToken) {
         try {
             // Verify the token and get user details
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
@@ -102,7 +106,11 @@ public class CourseDetailRestController {
             }
 
             // Return the list of courses with a 200 OK status
-            return ResponseEntity.ok(courses);
+            List<CourseDTO> courseDTOS = new ArrayList<>();
+            for(Course course: courses){
+                courseDTOS.add(new CourseDTO(course));
+            }
+            return ResponseEntity.ok(courseDTOS);
 
         } catch (IllegalArgumentException e) {
             // If token verification failed or an illegal argument was provided
@@ -112,7 +120,7 @@ public class CourseDetailRestController {
 
 
     @GetMapping("/courses/{course_id}")
-    public ResponseEntity<Course> getCourse(@PathVariable("course_id") String courseId,
+    public ResponseEntity<CourseDTO> getCourse(@PathVariable("course_id") String courseId,
                                             @RequestHeader("Authorization") String bearerToken) {
         try {
             // Verify the token to ensure it is valid.
@@ -123,17 +131,17 @@ public class CourseDetailRestController {
             if (course == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-
+            CourseDTO courseDTO = new CourseDTO(course);
             switch (personSession.getPersonType()) {
                 case Owner:
                     // For owner, show any course
-                    return ResponseEntity.ok(course);
+                    return ResponseEntity.ok(courseDTO);
 
                 case Instructor:
                     // For instructor, show all active courses + courses created by them
                     boolean isCreator = courseDetailService.isInstructorOfCourse(courseId, personSession.getPersonId());
                     if (course.getCourseState().equals(Course.CourseState.Approved) || isCreator) {
-                        return ResponseEntity.ok(course);
+                        return ResponseEntity.ok(courseDTO);
                     } else {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                     }
@@ -141,7 +149,7 @@ public class CourseDetailRestController {
                 case Customer:
                     // For customer, only show active courses
                     if (course.getCourseState().equals(Course.CourseState.Approved)) {
-                        return ResponseEntity.ok(course);
+                        return ResponseEntity.ok(courseDTO);
                     } else {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                     }
@@ -161,7 +169,7 @@ public class CourseDetailRestController {
 
 
     @GetMapping("/courses/{course_id}/customers")
-    public ResponseEntity<List<Customer>> getCustomers(@PathVariable("course_id") String courseId, @RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<List<CustomerDTO>> getCustomers(@PathVariable("course_id") String courseId, @RequestHeader("Authorization") String bearerToken) {
         try {
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
             Course course = courseDetailService.getSpecificCourse(courseId);
@@ -176,7 +184,11 @@ public class CourseDetailRestController {
 
             if(isOwner || isInstructorOfCourse) {
                 List<Customer> customers = courseDetailService.getCustomers(courseId);
-                return ResponseEntity.ok(customers); // Return the list of customers with a 200 OK status
+                List<CustomerDTO> customerDTOS = new ArrayList<>();
+                for(Customer customer: customers){
+                    customerDTOS.add(new CustomerDTO(customer));
+                }
+                return ResponseEntity.ok(customerDTOS); // Return the list of customers with a 200 OK status
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Return a 403 Forbidden status if not authorized
             }
