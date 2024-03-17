@@ -177,8 +177,9 @@ public class CourseService {
         Course course=courseMessagePair.getCourse();
         Instructor instructor= instructorRepository.findInstructorById(instructorID);
         if (courseMessagePair.getMessage().isEmpty()){
-            if (instructor==null)
+            if (instructor==null ){
                 return "Instructor not found";
+            }
             course.setInstructor(instructor);
             courseRepository.save(course);
         }
