@@ -4,26 +4,17 @@ import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.models.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
-import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.badRequest;
-import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.forbidden;
 
 @Service
 public class CourseService {
     @Autowired
-    private PersonRepository personRepository;
-    @Autowired
     private CourseRepository courseRepository;
-    @Autowired
-    private CourseSessionRepository courseSessionRepository;
-    @Autowired
-    private RegistrationRepository registrationRepository;
     @Autowired
     private InstructorRepository instructorRepository;
     @Autowired
@@ -32,8 +23,6 @@ public class CourseService {
     private ScheduleRepository scheduleRepository;
     @Autowired
     private SportCenterRepository sportCenterRepository;
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     public static class CourseMessagePair{
         private Course course;
