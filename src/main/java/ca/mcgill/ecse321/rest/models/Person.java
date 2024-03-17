@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.rest.models;
 
+import ca.mcgill.ecse321.rest.dto.PersonDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.util.*;
@@ -40,6 +41,7 @@ public abstract class Person {
   // ------------------------
 
   public Person() {}
+
 
   /* Code from template attribute_GetUnique */
   public static Person getWithEmail(String aEmail) {
@@ -157,4 +159,6 @@ public abstract class Person {
         + getName()
         + "]";
   }
+
+
 }
