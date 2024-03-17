@@ -25,8 +25,8 @@ public class CourseService {
     private SportCenterRepository sportCenterRepository;
 
     public static class CourseMessagePair{
-        private Course course;
-        private String message;
+        private final Course course;
+        private final String message;
         public CourseMessagePair(Course course, String message) {
             this.course = course;
             this.message = message;
@@ -51,7 +51,7 @@ public class CourseService {
         }
         else if (course== null){
             message= "Course does not exist";
-        };
+        }
         return new CourseMessagePair(course,message);
     }
 
@@ -200,7 +200,6 @@ public class CourseService {
     @Transactional
     public String deleteCourse(PersonSession personSession,String course_id) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
-        Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
             courseRepository.deleteCourseById(course_id);
         }
