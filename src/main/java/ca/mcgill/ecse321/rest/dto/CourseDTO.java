@@ -37,6 +37,10 @@ public class CourseDTO {
         this.courseState=course.getCourseState().toString();
         this.level=course.getLevel().toString();
     }
+    public CourseDTO(String name, String sportCenterID){
+        this.name=name;
+        this.sportCenter= sportCenterID;
+    }
 
     public String getId() {
         return id;
