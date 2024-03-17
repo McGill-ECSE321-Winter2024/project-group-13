@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 
+import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.badRequest;
+import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.forbidden;
+
 @Service
 public class CourseService {
     @Autowired
@@ -64,21 +67,22 @@ public class CourseService {
     }
 
     @Transactional
-    public Course createCourse(CourseDTO courseDTO){
+    public String createCourse(CourseDTO courseDTO, PersonSession personSession){
+        if (personSession.getPersonType()== PersonSession.PersonType.Customer ){
+            return "Must be an owner or instructor";
+        }
+        if (!courseDTO.getSportCenter().equals(personSession.getSportCenterId())){
+            return "Invalid sport's center id";
+        }
+        if (courseDTO.getName() == null){
+            return "Course requires name to be created";
+        }
         Course course = new Course();
         course.setName(courseDTO.getName());
-        course.setDescription(courseDTO.getDescription());
-        course.setLevel(courseDTO.getLevel());
-        course.setCourseStartDate(courseDTO.getCourseStartDate());
-        course.setCourseEndDate(courseDTO.getCourseEndDate());
-        course.setHourlyRateAmount(courseDTO.getHourlyRateAmount());
-        course.setInstructor(instructorRepository.findInstructorById(courseDTO.getInstructor()));
-        course.setRoom(roomRepository.findRoomById(courseDTO.getRoom()));
-        course.setSchedule(scheduleRepository.findScheduleById(courseDTO.getSchedule()));
-        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getId()));
+        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getSportCenter()));
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
-        return course;
+        return "";
     }
     @Transactional
     public String approveCourse(String course_id, PersonSession personSession) {
@@ -92,20 +96,22 @@ public class CourseService {
     public String updateCourseName(PersonSession personSession,String course_id,String name) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
-        if (courseMessagePair.getMessage().isEmpty()){
+        if (courseMessagePair.getMessage().isEmpty() && !name.isBlank()){
             course.setName(name);
             courseRepository.save(course);
         }
+        else return "Name must not be null";
         return courseMessagePair.getMessage();
     }
     @Transactional
     public String updateCourseDescription(PersonSession personSession, String course_id,String description) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
-        if (courseMessagePair.getMessage().isEmpty()){
+        if (courseMessagePair.getMessage().isEmpty() && !description.isBlank()){
             course.setDescription(description);
             courseRepository.save(course);
         }
+        else return "Description must not be null";
         return courseMessagePair.getMessage();
     }
     @Transactional
@@ -128,8 +134,10 @@ public class CourseService {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
+          if (hourlyRateAmount >= 0) {
             course.setHourlyRateAmount(hourlyRateAmount);
             courseRepository.save(course);
+          } else return "Course rate must be a positive number";
         }
         return courseMessagePair.getMessage();
 
@@ -139,8 +147,11 @@ public class CourseService {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
+          if (course.getCourseEndDate().after(courseStartDate)) {
             course.setCourseStartDate(courseStartDate);
             courseRepository.save(course);
+          }
+          else return "Course start date must be before course end date";
         }
         return courseMessagePair.getMessage();
     }
@@ -149,8 +160,10 @@ public class CourseService {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
+          if (course.getCourseStartDate().before(courseEndDate)) {
             course.setCourseEndDate(courseEndDate);
             courseRepository.save(course);
+          } else return "Course end date must be after course start date";
         }
         return courseMessagePair.getMessage();
     }

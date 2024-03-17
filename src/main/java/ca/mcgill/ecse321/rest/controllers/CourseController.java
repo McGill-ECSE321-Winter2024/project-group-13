@@ -24,18 +24,8 @@ public class CourseController {
     @PostMapping(value = { "/courses", "/courses/" })
     public ResponseEntity<?> createCourse(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody CourseDTO courseDTO) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        if (person.getPersonType()== PersonSession.PersonType.Customer ){
-            return forbidden("Must be an owner or instructor");
-        }
-        if (!courseDTO.getSportCenter().equals(person.getSportCenterId())){
-            return badRequest("Invalid sport's center id");
-        }
-        if (courseDTO.getName() == null){
-            return badRequest("Course requires name to be created");
-        }
-        Course createdCourse = courseService.createCourse(courseDTO);
-        if (createdCourse!= null) return success("Course Created successfully");
-        else return badRequest("Course creation failed");
+        String errorMessage= courseService.createCourse(courseDTO,person);
+        return getResponse(errorMessage,"Course Created successfully");
     }
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
     public ResponseEntity<?> approveCourse(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
@@ -119,7 +109,8 @@ public class CourseController {
         if (errorMessage.isEmpty()){
             return success(successMessage);
         }
-        else if(errorMessage.equals("Must be an owner of the course's sports center")){
+        else if(errorMessage.equals("Must be an owner of the course's sports center")
+        || errorMessage.equals("Must be an owner or instructor")){
             return forbidden(errorMessage);
         }
         else {
