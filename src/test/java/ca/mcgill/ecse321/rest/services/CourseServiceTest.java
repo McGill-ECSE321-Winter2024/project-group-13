@@ -22,7 +22,6 @@ class CourseServiceTest {
     private CourseRepository courseRepository;
     @Mock
     private SportCenterRepository sportCenterRepository;
-    @Mock
     @InjectMocks
     private CourseService courseService;
 
