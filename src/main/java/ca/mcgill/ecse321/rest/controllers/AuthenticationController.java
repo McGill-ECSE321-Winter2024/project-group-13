@@ -4,7 +4,7 @@ import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dto.LoginDTO;
 import ca.mcgill.ecse321.rest.dto.auth.RegisterDTO;
 import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
-import ca.mcgill.ecse321.rest.dto.http.ErrorHTTPDTO;
+import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +72,7 @@ public class AuthenticationController {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         String error = authenticationService.changeEmail(person.getPersonId(), body.get("email"));
-        if (error != null) return new ResponseEntity<>(new ErrorHTTPDTO(error), HttpStatus.BAD_REQUEST);
+        if (error != null) return new ResponseEntity<>(new HTTPDTO(error), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(new SessionDTO("Email changed"), HttpStatus.OK);
     }
 
@@ -82,7 +82,7 @@ public class AuthenticationController {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         String error = authenticationService.changePhoneNumber(person.getPersonId(), body.get("phoneNumber"));
-        if (error != null) return new ResponseEntity<>(new ErrorHTTPDTO(error), HttpStatus.BAD_REQUEST);
+        if (error != null) return new ResponseEntity<>(new HTTPDTO(error), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(new SessionDTO("Phone number changed"), HttpStatus.OK);
     }
 
