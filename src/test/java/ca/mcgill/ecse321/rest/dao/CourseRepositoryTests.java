@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import ca.mcgill.ecse321.rest.models.Instructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseRepositoryTests {
   @Autowired private CourseRepository courseRepository;
   @Autowired private CourseSessionRepository courseSessionRepository;
+  @Autowired private PersonRepository personRepository;
 
   /**
    * Sets the attributes of a course, saves it to the database, and ensures persistence.
@@ -82,7 +85,9 @@ public class CourseRepositoryTests {
    */
   @AfterEach
   public void clearDatabase() {
+
     courseRepository.deleteAll();
+    personRepository.deleteAll();
   }
 
   /**
@@ -260,5 +265,42 @@ public class CourseRepositoryTests {
     course = courseRepository.findCourseByName("Health Plus");
     // Assume course is null
     assertNull(course);
+  }
+
+  /**
+   * Tests finding courses by an instructor's ID.
+   * @Author Omar Moussa
+   */
+  @Test
+  public void testFindCoursesByInstructorId() {
+    // Create an instructor
+    Instructor instructor = new Instructor();
+    instructor.setName("John Doe");
+    instructor.setEmail("johndoe@example.com");
+    instructor.setPhoneNumber("123-456-7890");
+    instructor.setPassword("password");
+    instructor = personRepository.save(instructor); // Save and capture to get generated ID
+
+    // Create two courses and associate them with the instructor
+    createAndSaveCourse("Course 1", instructor);
+    createAndSaveCourse("Course 2", instructor);
+
+    // Attempt to find courses by the instructor's ID
+    List<Course> courses = courseRepository.findCoursesByInstructorId(instructor.getId());
+
+    // Assertions to ensure the correct courses are retrieved
+    assertEquals(2, courses.size(), "Expected to find exactly two courses for the instructor.");
+  }
+
+  private void createAndSaveCourse(String courseName, Instructor instructor) {
+    Course course = new Course();
+    course.setName(courseName);
+    course.setDescription("A course description.");
+    course.setLevel(Course.Level.Beginner);
+    course.setCourseStartDate(new Timestamp(System.currentTimeMillis()));
+    course.setCourseEndDate(new Timestamp(System.currentTimeMillis() + 86400000)); // +1 day
+    course.setCourseState(Course.CourseState.Approved);
+    course.setInstructor(instructor); // Associate instructor
+    courseRepository.save(course);
   }
 }
