@@ -87,9 +87,11 @@ public class CourseService {
     @Transactional
     public String approveCourse(String course_id, PersonSession personSession) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
-        Course course=courseMessagePair.getCourse();
-        course.setCourseState(Course.CourseState.Approved);
-        courseRepository.save(course);
+        if (courseMessagePair.getMessage().isEmpty()) {
+          Course course = courseMessagePair.getCourse();
+          course.setCourseState(Course.CourseState.Approved);
+          courseRepository.save(course);
+        }
         return courseMessagePair.getMessage() ;
     }
     @Transactional
