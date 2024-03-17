@@ -127,7 +127,7 @@ public class Course {
     return courseState;
   }
   public void setLevel(String level) {
-    this.courseState = CourseState.valueOf(level);
+    this.level = Level.valueOf(level);
   }
   public void setCourseState(String courseState) {
     this.courseState = CourseState.valueOf(courseState);
