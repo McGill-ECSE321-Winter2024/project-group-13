@@ -164,6 +164,11 @@ public class CourseDetailRestController {
     public ResponseEntity<List<Customer>> getCustomers(@PathVariable("course_id") String courseId, @RequestHeader("Authorization") String bearerToken) {
         try {
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
+            Course course = courseDetailService.getSpecificCourse(courseId);
+            // Check for null if the course is not found
+            if (course == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
 
             // Only accessible to owner and instructor of the class
             boolean isOwner = personSession.getPersonType().equals(PersonSession.PersonType.Owner);
