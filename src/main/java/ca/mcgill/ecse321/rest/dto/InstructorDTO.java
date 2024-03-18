@@ -4,6 +4,9 @@ import ca.mcgill.ecse321.rest.models.Instructor;
 
 public class InstructorDTO extends PersonDTO{
     private String sportCenterId;
+    public InstructorDTO() {
+        super();
+    }
 
     public InstructorDTO(Instructor instructor) {
         super(instructor);
