@@ -1,7 +1,5 @@
 package ca.mcgill.ecse321.rest.models;
 
-import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
-import ca.mcgill.ecse321.rest.dto.InstructorDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 
@@ -12,7 +10,6 @@ public class Instructor extends Person {
   public Instructor() {
     super();
   }
-
 
   public SportCenter getSportCenter() {
     return sportCenter;
