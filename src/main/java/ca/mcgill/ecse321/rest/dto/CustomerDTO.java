@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Customer;
-import ca.mcgill.ecse321.rest.models.Person;
 
 public class CustomerDTO extends PersonDTO{
 
@@ -12,10 +11,6 @@ public class CustomerDTO extends PersonDTO{
     }
     public String getSportCenterId() {
         return sportCenterId;
-    }
-
-    public void setSportCenterId(String sportCenterId) {
-        this.sportCenterId = sportCenterId;
     }
 
 }

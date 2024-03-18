@@ -2,8 +2,6 @@ package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Schedule;
 
-import java.sql.Time;
-
 public class ScheduleDTO {
     private String id;
     private String mondayStart;

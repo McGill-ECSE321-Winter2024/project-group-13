@@ -1,15 +1,11 @@
 package ca.mcgill.ecse321.rest.controllers;
 import ca.mcgill.ecse321.rest.dto.CustomerDTO;
 import ca.mcgill.ecse321.rest.dto.InstructorDTO;
-import ca.mcgill.ecse321.rest.dto.LoginDTO;
-import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
 import ca.mcgill.ecse321.rest.services.CustomerService;
 import ca.mcgill.ecse321.rest.services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController

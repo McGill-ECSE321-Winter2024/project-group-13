@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
+import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.dto.SportCenterDTO;
@@ -21,26 +22,35 @@ public class SportCenterService {
         return convertToDto(sportCenter);
     }
 
-    public SportCenterDTO updateName(String newName) {
-        SportCenter sportCenter = sportCenterRepository.findFirst();
-        sportCenter.setName(newName);
-        sportCenter = sportCenterRepository.save(sportCenter);
-        return convertToDto(sportCenter);
+    public boolean updateName(String newName, PersonSession personSession) {
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
+            SportCenter sportCenter = sportCenterRepository.findFirst();
+            sportCenter.setName(newName);
+            sportCenter = sportCenterRepository.save(sportCenter);
+            return true;
+        }
+        return false;
     }
 
-    public SportCenterDTO updateAddress(String newAddress) {
-        SportCenter sportCenter = sportCenterRepository.findFirst();
-        sportCenter.setAddress(newAddress);
-        sportCenter = sportCenterRepository.save(sportCenter);
-        return convertToDto(sportCenter);
+    public boolean updateAddress(String newAddress, PersonSession personSession) {
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+              SportCenter sportCenter = sportCenterRepository.findFirst();
+              sportCenter.setAddress(newAddress);
+              sportCenter = sportCenterRepository.save(sportCenter);
+              return true;
+        }
+        return false;
     }
 
-    public SportCenterDTO updateSchedule(ScheduleDTO newScheduleDTO) {
-        SportCenter sportCenter = sportCenterRepository.findFirst();
-        Schedule newSchedule = convertToEntity(newScheduleDTO);
-        sportCenter.setSchedule(newSchedule);
-        sportCenter = sportCenterRepository.save(sportCenter);
-        return convertToDto(sportCenter);
+    public boolean updateSchedule(ScheduleDTO newScheduleDTO, PersonSession personSession) {
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+              SportCenter sportCenter = sportCenterRepository.findFirst();
+              Schedule newSchedule = convertToEntity(newScheduleDTO);
+              sportCenter.setSchedule(newSchedule);
+              sportCenter = sportCenterRepository.save(sportCenter);
+              return true;
+        }
+        return false;
     }
 
     private Schedule convertToEntity(ScheduleDTO scheduleDTO) {
