@@ -18,13 +18,13 @@ public class SportCenterService {
     private SportCenterRepository sportCenterRepository;
 
     public SportCenterDTO getSportCenterDTO() {
-        SportCenter sportCenter = sportCenterRepository.findFirst();
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
         return convertToDto(sportCenter);
     }
 
     public boolean updateName(String newName, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
-            SportCenter sportCenter = sportCenterRepository.findFirst();
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
             sportCenter.setName(newName);
             sportCenter = sportCenterRepository.save(sportCenter);
             return true;
@@ -34,7 +34,7 @@ public class SportCenterService {
 
     public boolean updateAddress(String newAddress, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
-              SportCenter sportCenter = sportCenterRepository.findFirst();
+              SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
               sportCenter.setAddress(newAddress);
               sportCenter = sportCenterRepository.save(sportCenter);
               return true;
@@ -44,7 +44,7 @@ public class SportCenterService {
 
     public boolean updateSchedule(ScheduleDTO newScheduleDTO, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
-              SportCenter sportCenter = sportCenterRepository.findFirst();
+              SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
               Schedule newSchedule = convertToEntity(newScheduleDTO);
               sportCenter.setSchedule(newSchedule);
               sportCenter = sportCenterRepository.save(sportCenter);
