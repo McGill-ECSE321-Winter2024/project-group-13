@@ -1,48 +1,46 @@
 package ca.mcgill.ecse321.rest.dto;
 
-import java.sql.Time;
 import ca.mcgill.ecse321.rest.models.Schedule;
 
 public class ScheduleDTO {
-
     private String id;
-    private Time mondayStart;
-    private Time mondayEnd;
-    private Time tuesdayStart;
-    private Time tuesdayEnd;
-    private Time wednesdayStart;
-    private Time wednesdayEnd;
-    private Time thursdayStart;
-    private Time thursdayEnd;
-    private Time fridayStart;
-    private Time fridayEnd;
-    private Time saturdayStart;
-    private Time saturdayEnd;
-    private Time sundayStart;
-    private Time sundayEnd;
+    private String mondayStart;
+    private String mondayEnd;
+    private String tuesdayStart;
+    private String tuesdayEnd;
+    private String wednesdayStart;
+    private String wednesdayEnd;
+    private String thursdayStart;
+    private String thursdayEnd;
+    private String fridayStart;
+    private String fridayEnd;
+    private String saturdayStart;
+    private String saturdayEnd;
+    private String sundayStart;
+    private String sundayEnd;
 
-    public ScheduleDTO() {}
 
-    // Constructor that accepts a Schedule object
     public ScheduleDTO(Schedule schedule) {
-        this.id = schedule.getId();
-        this.mondayStart = schedule.getMondayStart();
-        this.mondayEnd = schedule.getMondayEnd();
-        this.tuesdayStart = schedule.getTuesdayStart();
-        this.tuesdayEnd = schedule.getTuesdayEnd();
-        this.wednesdayStart = schedule.getWednesdayStart();
-        this.wednesdayEnd = schedule.getWednesdayEnd();
-        this.thursdayStart = schedule.getThursdayStart();
-        this.thursdayEnd = schedule.getThursdayEnd();
-        this.fridayStart = schedule.getFridayStart();
-        this.fridayEnd = schedule.getFridayEnd();
-        this.saturdayStart = schedule.getSaturdayStart();
-        this.saturdayEnd = schedule.getSaturdayEnd();
-        this.sundayStart = schedule.getSundayStart();
-        this.sundayEnd = schedule.getSundayEnd();
+        if (schedule != null) {
+            this.id = schedule.getId();
+            this.mondayStart = schedule.getMondayStart().toString();
+            this.mondayEnd = schedule.getMondayEnd().toString();
+            this.tuesdayStart = schedule.getTuesdayStart().toString();
+            this.tuesdayEnd = schedule.getTuesdayEnd().toString();
+            this.wednesdayStart = schedule.getWednesdayStart().toString();
+            this.wednesdayEnd = schedule.getWednesdayEnd().toString();
+            this.thursdayStart = schedule.getThursdayStart().toString();
+            this.thursdayEnd = schedule.getThursdayEnd().toString();
+            this.fridayStart = schedule.getFridayStart().toString();
+            this.fridayEnd = schedule.getFridayEnd().toString();
+            this.saturdayStart = schedule.getSaturdayStart().toString();
+            this.saturdayEnd = schedule.getSaturdayEnd().toString();
+            this.sundayStart = schedule.getSundayStart().toString();
+            this.sundayEnd = schedule.getSundayEnd().toString();
+        }
+
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -51,137 +49,137 @@ public class ScheduleDTO {
         this.id = id;
     }
 
-    public Time getMondayStart() {
+    public String getMondayStart() {
         return mondayStart;
     }
 
-    public void setMondayStart(Time mondayStart) {
+    public void setMondayStart(String mondayStart) {
         this.mondayStart = mondayStart;
     }
 
-    public Time getMondayEnd() {
+    public String getMondayEnd() {
         return mondayEnd;
     }
 
-    public void setMondayEnd(Time mondayEnd) {
+    public void setMondayEnd(String mondayEnd) {
         this.mondayEnd = mondayEnd;
     }
 
-    public Time getTuesdayStart() {
+    public String getTuesdayStart() {
         return tuesdayStart;
     }
 
-    public void setTuesdayStart(Time tuesdayStart) {
+    public void setTuesdayStart(String tuesdayStart) {
         this.tuesdayStart = tuesdayStart;
     }
 
-    public Time getTuesdayEnd() {
+    public String getTuesdayEnd() {
         return tuesdayEnd;
     }
 
-    public void setTuesdayEnd(Time tuesdayEnd) {
+    public void setTuesdayEnd(String tuesdayEnd) {
         this.tuesdayEnd = tuesdayEnd;
     }
 
-    public Time getWednesdayStart() {
+    public String getWednesdayStart() {
         return wednesdayStart;
     }
 
-    public void setWednesdayStart(Time wednesdayStart) {
+    public void setWednesdayStart(String wednesdayStart) {
         this.wednesdayStart = wednesdayStart;
     }
 
-    public Time getWednesdayEnd() {
+    public String getWednesdayEnd() {
         return wednesdayEnd;
     }
 
-    public void setWednesdayEnd(Time wednesdayEnd) {
+    public void setWednesdayEnd(String wednesdayEnd) {
         this.wednesdayEnd = wednesdayEnd;
     }
 
-    public Time getThursdayStart() {
+    public String getThursdayStart() {
         return thursdayStart;
     }
 
-    public void setThursdayStart(Time thursdayStart) {
+    public void setThursdayStart(String thursdayStart) {
         this.thursdayStart = thursdayStart;
     }
 
-    public Time getThursdayEnd() {
+    public String getThursdayEnd() {
         return thursdayEnd;
     }
 
-    public void setThursdayEnd(Time thursdayEnd) {
+    public void setThursdayEnd(String thursdayEnd) {
         this.thursdayEnd = thursdayEnd;
     }
 
-    public Time getFridayStart() {
+    public String getFridayStart() {
         return fridayStart;
     }
 
-    public void setFridayStart(Time fridayStart) {
+    public void setFridayStart(String fridayStart) {
         this.fridayStart = fridayStart;
     }
 
-    public Time getFridayEnd() {
+    public String getFridayEnd() {
         return fridayEnd;
     }
 
-    public void setFridayEnd(Time fridayEnd) {
+    public void setFridayEnd(String fridayEnd) {
         this.fridayEnd = fridayEnd;
     }
 
-    public Time getSaturdayStart() {
+    public String getSaturdayStart() {
         return saturdayStart;
     }
 
-    public void setSaturdayStart(Time saturdayStart) {
+    public void setSaturdayStart(String saturdayStart) {
         this.saturdayStart = saturdayStart;
     }
 
-    public Time getSaturdayEnd() {
+    public String getSaturdayEnd() {
         return saturdayEnd;
     }
 
-    public void setSaturdayEnd(Time saturdayEnd) {
+    public void setSaturdayEnd(String saturdayEnd) {
         this.saturdayEnd = saturdayEnd;
     }
 
-    public Time getSundayStart() {
+    public String getSundayStart() {
         return sundayStart;
     }
 
-    public void setSundayStart(Time sundayStart) {
+    public void setSundayStart(String sundayStart) {
         this.sundayStart = sundayStart;
     }
 
-    public Time getSundayEnd() {
+    public String getSundayEnd() {
         return sundayEnd;
     }
 
-    public void setSundayEnd(Time sundayEnd) {
+    public void setSundayEnd(String sundayEnd) {
         this.sundayEnd = sundayEnd;
     }
-
+  
     @Override
-    public String toString() {
-        return "ScheduleDTO{" +
-                "id='" + id + '\'' +
-                ", mondayStart=" + mondayStart +
-                ", mondayEnd=" + mondayEnd +
-                ", tuesdayStart=" + tuesdayStart +
-                ", tuesdayEnd=" + tuesdayEnd +
-                ", wednesdayStart=" + wednesdayStart +
-                ", wednesdayEnd=" + wednesdayEnd +
-                ", thursdayStart=" + thursdayStart +
-                ", thursdayEnd=" + thursdayEnd +
-                ", fridayStart=" + fridayStart +
-                ", fridayEnd=" + fridayEnd +
-                ", saturdayStart=" + saturdayStart +
-                ", saturdayEnd=" + saturdayEnd +
-                ", sundayStart=" + sundayStart +
-                ", sundayEnd=" + sundayEnd +
-                '}';
-    }
-}
+      public String toString() {
+          return "ScheduleDTO{" +
+                  "id='" + id + '\'' +
+                  ", mondayStart=" + mondayStart +
+                  ", mondayEnd=" + mondayEnd +
+                  ", tuesdayStart=" + tuesdayStart +
+                  ", tuesdayEnd=" + tuesdayEnd +
+                  ", wednesdayStart=" + wednesdayStart +
+                  ", wednesdayEnd=" + wednesdayEnd +
+                  ", thursdayStart=" + thursdayStart +
+                  ", thursdayEnd=" + thursdayEnd +
+                  ", fridayStart=" + fridayStart +
+                  ", fridayEnd=" + fridayEnd +
+                  ", saturdayStart=" + saturdayStart +
+                  ", saturdayEnd=" + saturdayEnd +
+                  ", sundayStart=" + sundayStart +
+                  ", sundayEnd=" + sundayEnd +
+                  '}';
+      }
 
+}
