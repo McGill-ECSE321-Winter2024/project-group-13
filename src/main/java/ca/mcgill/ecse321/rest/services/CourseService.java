@@ -164,8 +164,7 @@ public class CourseService {
         Course course=courseMessagePair.getCourse();
         Room room = roomRepository.findRoomById(roomID);
         if (courseMessagePair.getMessage().isEmpty()){
-            if (room==null)
-                return "Room not found";
+            if (room==null) return "Room not found";
             course.setRoom(room);
             courseRepository.save(course);
         }
