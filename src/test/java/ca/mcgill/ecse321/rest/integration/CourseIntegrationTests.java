@@ -308,36 +308,36 @@ public class CourseIntegrationTests {
         assertEquals(courseEndDate, updatedCourse.getCourseEndDate());
         assertEquals("Course end date changed", response.getBody().getMessage());
     }
-//    @Test
-//    @Order(10)
-//    public void updateCourseRoomTest(){
-//        // Set up
-//        String authentication = authenticationService.issueTokenWithEmail(ownerEmail);
-//        CourseDTO course = new CourseDTO(courseRepository.findCourseByName("Spin"));
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(authentication);
-//        assertNotNull(course);
-//        String url = "/courses/" + course.getId() + "/room";
-//        Room room = new Room();
-//        room.setSportCenter(sportCenterRepository.findSportCenterByName(sportCenterName));
-//        room.setRoomName("Spin room");
-//        String roomID="roomID";
-//        room.setId(roomID);
-//        System.out.println(roomID);
-//        roomRepository.save(room);
+    @Test
+    @Order(10)
+    public void updateCourseRoomTest(){
+        // Set up
+        String authentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        CourseDTO course = new CourseDTO(courseRepository.findCourseByName("Spin"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        assertNotNull(course);
+        String url = "/courses/" + course.getId() + "/room";
+        Room room = new Room();
+        room.setSportCenter(sportCenterRepository.findSportCenterByName(sportCenterName));
+        room.setRoomName("Spin room");
+        String roomID="roomID";
+        room.setId(roomID);
+        System.out.println(roomID);
+        roomRepository.save(room);
 //        assertNotNull(roomRepository.findRoomById(room.getId()));
-//        // Act
-//        HttpEntity<String> request = new HttpEntity<>(roomID,headers);
-//        ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
-//
-//        assertNotNull(response);
-//        CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
-//        assertNotNull(updatedCourse);
-//        assertEquals("Spin", updatedCourse.getName());
-//        assertEquals(course.getId(), updatedCourse.getId());
+        // Act
+        HttpEntity<String> request = new HttpEntity<>(roomID,headers);
+        ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+
+        assertNotNull(response);
+        CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
+        assertNotNull(updatedCourse);
+        assertEquals("Spin", updatedCourse.getName());
+        assertEquals(course.getId(), updatedCourse.getId());
 //        assertEquals(roomID, updatedCourse.getRoom());
 //        assertEquals("Course room changed", response.getBody().getMessage());
-//    }
+    }
     @Test
     @Order(11)
     public void updateCourseInstructorTest(){
