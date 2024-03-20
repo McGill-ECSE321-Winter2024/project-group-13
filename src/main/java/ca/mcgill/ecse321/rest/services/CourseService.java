@@ -87,7 +87,7 @@ public class CourseService {
     public String updateCourseName(PersonSession personSession,String course_id,String name) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
-        if (courseMessagePair.getMessage().isEmpty() && !name.isBlank()){
+        if (courseMessagePair.getMessage().isEmpty() && !name.isEmpty()){
             course.setName(name);
             courseRepository.save(course);
         }
@@ -138,7 +138,7 @@ public class CourseService {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
-          if (course.getCourseEndDate().after(courseStartDate)) {
+          if (course.getCourseEndDate()== null || course.getCourseEndDate().after(courseStartDate)) {
             course.setCourseStartDate(courseStartDate);
             courseRepository.save(course);
           }
@@ -151,7 +151,7 @@ public class CourseService {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
         if (courseMessagePair.getMessage().isEmpty()){
-          if (course.getCourseStartDate().before(courseEndDate)) {
+          if (course.getCourseStartDate()== null || course.getCourseStartDate().before(courseEndDate)) {
             course.setCourseEndDate(courseEndDate);
             courseRepository.save(course);
           } else return "Course end date must be after course start date";

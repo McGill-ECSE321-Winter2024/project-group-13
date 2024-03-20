@@ -97,7 +97,7 @@ public class CourseController {
         return getResponse(errorMessage,"Course schedule changed");
     }
     @DeleteMapping(value = { "/courses/{course_id}", "/courses/{course_id}/" })
-    public ResponseEntity<HTTPDTO> updateCourseSchedule(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<HTTPDTO> deleteCourse(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.deleteCourse(person, course_id);
         return getResponse(errorMessage,"Course deleted");
