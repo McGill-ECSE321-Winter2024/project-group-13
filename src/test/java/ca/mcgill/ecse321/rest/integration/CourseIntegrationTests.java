@@ -5,6 +5,8 @@ import ca.mcgill.ecse321.rest.dao.OwnerRepository;
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
 import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
+import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -44,7 +46,6 @@ public class CourseIntegrationTests {
 
     @BeforeAll
     public void set_up(){
-        clearDatabase();
         String personPassword = "password";
         String personName = "Dave";
         SportCenter sportCenter=new SportCenter();
@@ -76,8 +77,45 @@ public class CourseIntegrationTests {
 
         sportCenterRepository.deleteAll();
     }
+
     @Test
     @Order(1)
+    public void createInvalidCourseTest(){
+        // Set up
+        String instructorAuthentication= authenticationService.issueTokenWithEmail(instructorEmail);
+        String customerAuthentication= authenticationService.issueTokenWithEmail(customerEmail);
+        String name = "Yoga";
+        SportCenter sportCenter=sportCenterRepository.findSportCenterByName(sportCenterName);
+        CourseDTO requestBody = new CourseDTO("",sportCenter.getId());
+        CourseDTO requestBody1 = new CourseDTO(name,"");
+        CourseDTO requestBody2 = new CourseDTO(name,sportCenter.getId());
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(instructorAuthentication);
+        HttpEntity<CourseDTO> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
+
+        HttpEntity<CourseDTO> request1 = new HttpEntity<>(requestBody1, headers);
+        ResponseEntity<HTTPDTO> response1 = client.postForEntity("/courses", request1,HTTPDTO.class);
+
+        headers.setBearerAuth(customerAuthentication);
+        HttpEntity<CourseDTO> request2 = new HttpEntity<>(requestBody2, headers);
+        ResponseEntity<HTTPDTO> response2 = client.postForEntity("/courses", request2, HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertNotNull(response1);
+        assertNotNull(response2);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Course requires name to be created", response.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
+        assertEquals("Invalid sport's center id", response1.getBody().getMessage());
+        assertEquals(HttpStatus.FORBIDDEN, response2.getStatusCode());
+        assertEquals("Must be an owner or instructor", response2.getBody().getMessage());
+    }
+    @Test
+    @Order(2)
     public void createCourseTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
@@ -100,8 +138,8 @@ public class CourseIntegrationTests {
         assertEquals(name, createdCourse.getName());
         assertNotNull(createdCourse.getId());
         assertEquals("AwaitingApproval", createdCourse.getCourseState());
-
     }
+
     public static void createPerson(Person person, String email, String phoneNumber,String name,String password){
         person.setName(name);
         person.setPassword(password);
