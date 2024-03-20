@@ -72,7 +72,7 @@ public class AuthenticationController {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         String error = authenticationService.changeEmail(person.getPersonId(), body.get("email"));
-        if (error != null) return new ResponseEntity<>(new HTTPDTO(error), HttpStatus.BAD_REQUEST);
+        if (error != null) return DefaultHTTPResponse.badRequest(error);
         return new ResponseEntity<>(new SessionDTO("Email changed"), HttpStatus.OK);
     }
 
@@ -82,7 +82,8 @@ public class AuthenticationController {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         String error = authenticationService.changePhoneNumber(person.getPersonId(), body.get("phoneNumber"));
-        if (error != null) return new ResponseEntity<>(new HTTPDTO(error), HttpStatus.BAD_REQUEST);
+
+        if (error != null) return DefaultHTTPResponse.badRequest(error);
         return new ResponseEntity<>(new SessionDTO("Phone number changed"), HttpStatus.OK);
     }
 

@@ -24,37 +24,44 @@ public class CourseDTO {
 
 
     public CourseDTO(Course course){
-        this.id=course.getId();
-        this.name=course.getName();
-        this.sportCenter= course.getSportCenter().getId();
-        if (course.getDescription() != null){
-            this.description=course.getDescription();
+        if (course != null){
+            if (course.getId() != null){
+                this.id=course.getId();
+            }
+            if (course.getName() != null){
+                this.name=course.getName();
+            }
+            if (course.getSportCenter() != null){
+                this.sportCenter= course.getSportCenter().getId();
+            }
+            if (course.getDescription() != null){
+                this.description=course.getDescription();
+            }
+            if (course.getCourseStartDate() != null){
+                this.courseStartDate=course.getCourseStartDate();
+            }
+            if (course.getCourseEndDate() != null){
+                this.courseEndDate=course.getCourseEndDate();
+            }
+            if (course.getInstructor() != null){
+                this.instructor=course.getInstructor().getId();
+            }
+            if (course.getRoom() != null){
+                this.room=course.getRoom().getId();
+            }
+            if (course.getSchedule() != null){
+                this.schedule= course.getSchedule().getId();
+            }
+            if (course.getHourlyRateAmount() != null){
+                this.hourlyRateAmount=course.getHourlyRateAmount();
+            }
+            if (course.getCourseState() != null){
+                this.courseState=course.getCourseState().toString();
+            }
+            if (course.getLevel() != null){
+                this.level=course.getLevel().toString();
+            }
         }
-        if (course.getCourseStartDate() != null){
-            this.courseStartDate=course.getCourseStartDate();
-        }
-        if (course.getCourseEndDate() != null){
-            this.courseEndDate=course.getCourseEndDate();
-        }
-        if (course.getInstructor() != null){
-            this.instructor=course.getInstructor().getId();
-        }
-        if (course.getRoom() != null){
-            this.room=course.getRoom().getId();
-        }
-        if (course.getSchedule() != null){
-            this.schedule= course.getSchedule().getId();
-        }
-        if (course.getHourlyRateAmount() != null){
-            this.hourlyRateAmount=course.getHourlyRateAmount();
-        }
-        if (course.getCourseState() != null){
-            this.courseState=course.getCourseState().toString();
-        }
-        if (course.getLevel() != null){
-            this.level=course.getLevel().toString();
-        }
-
     }
     public CourseDTO(String name, String sportCenterID){
         this.name=name;
