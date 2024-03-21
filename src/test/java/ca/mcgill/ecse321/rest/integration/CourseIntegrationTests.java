@@ -321,13 +321,10 @@ public class CourseIntegrationTests {
         Room room = new Room();
         room.setSportCenter(sportCenterRepository.findSportCenterByName(sportCenterName));
         room.setRoomName("Spin room");
-        String roomID="roomID";
-        room.setId(roomID);
-        System.out.println(roomID);
         roomRepository.save(room);
-//        assertNotNull(roomRepository.findRoomById(room.getId()));
+        assertNotNull(roomRepository.findRoomById(room.getId()));
         // Act
-        HttpEntity<String> request = new HttpEntity<>(roomID,headers);
+        HttpEntity<String> request = new HttpEntity<>(room.getId(),headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
 
         assertNotNull(response);
@@ -335,8 +332,8 @@ public class CourseIntegrationTests {
         assertNotNull(updatedCourse);
         assertEquals("Spin", updatedCourse.getName());
         assertEquals(course.getId(), updatedCourse.getId());
-//        assertEquals(roomID, updatedCourse.getRoom());
-//        assertEquals("Course room changed", response.getBody().getMessage());
+        assertEquals(room.getId(), updatedCourse.getRoom());
+        assertEquals("Course room changed", response.getBody().getMessage());
     }
     @Test
     @Order(11)
