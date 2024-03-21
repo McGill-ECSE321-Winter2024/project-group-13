@@ -49,10 +49,6 @@ public class Invoice {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public Status getStatus() {
     return status;
   }
@@ -76,7 +72,7 @@ public class Invoice {
     return amount;
   }
 
-  public boolean setAmount(double aAmount) {
+  public boolean setAmount(int aAmount) {
     boolean wasSet = false;
     if (aAmount >= 0) {
       amount = aAmount;

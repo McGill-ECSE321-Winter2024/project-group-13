@@ -54,7 +54,7 @@ public class RegistrationController {
     List<InvoiceDTO> getInvoicesForRegistration(@RequestHeader("Authorization") String bearerToken, @PathVariable("registration_id") String registration_id) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
-        return convertInvoiceListToDTO(registrationService.getInvoices(personSession, registration_id));
+        return convertInvoiceListToDTO(registrationService.getInvoicess(personSession, registration_id));
     }
 
     private RegistrationDTO convertToDTO(Registration registration){
@@ -74,11 +74,19 @@ public class RegistrationController {
         return registrationDTOS;
 
     }
+
+    private InvoiceDTO convertToDTO(Invoice invoice){
+
+        InvoiceDTO invoiceDTO = new InvoiceDTO();
+        invoiceDTO.setRegistrationDTO(convertToDTO(invoice.getRegistration()));
+        return invoiceDTO;
+    }
+
     private List<InvoiceDTO> convertInvoiceListToDTO(List<Invoice> invoices){
         List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
 
         for (Invoice i : invoices) {
-            invoiceDTOS.add(new InvoiceDTO(i));
+            invoiceDTOS.add(convertToDTO(i));
         }
         return invoiceDTOS;
 

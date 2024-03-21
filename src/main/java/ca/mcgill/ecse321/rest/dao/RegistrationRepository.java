@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface RegistrationRepository extends CrudRepository<Registration, String> {
 
-  Registration findRegistrationById(String registrationId);
-
-  Registration findRegistrationByIdAndCustomerId(String registrationId, String customerId);
+  Registration findRegistrationById(String id);
 
   Registration findRegistrationByCourseAndCustomer(Course course, Customer customer);
 

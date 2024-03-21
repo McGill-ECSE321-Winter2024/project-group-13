@@ -58,10 +58,6 @@ public class Registration {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public int getRating() {
     return rating;
   }
