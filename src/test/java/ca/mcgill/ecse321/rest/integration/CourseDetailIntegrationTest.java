@@ -1,13 +1,11 @@
 package ca.mcgill.ecse321.rest.integration;
 
-import ca.mcgill.ecse321.rest.dao.CourseRepository;
-import ca.mcgill.ecse321.rest.dao.CustomerRepository;
-import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.dao.ScheduleRepository;
+import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Schedule;
+import ca.mcgill.ecse321.rest.models.SportCenter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +30,10 @@ public class CourseDetailIntegrationTest {
     @Autowired private ScheduleRepository scheduleRepository;
     @Autowired private PersonRepository personRepository;
     @Autowired private CustomerRepository customerRepository;
+    @Autowired private SportCenterRepository sportCenterRepository;
     @Autowired private AuthenticationService authenticationService;
 
+    private Customer customer;
     private String unapprovedCourseId;
     private String approvedCourseId;
     private Schedule scheduleForUnapprovedCourse;
@@ -45,6 +45,20 @@ public class CourseDetailIntegrationTest {
         courseRepository.deleteAll();
         scheduleRepository.deleteAll();
         personRepository.deleteAll();
+        sportCenterRepository.deleteAll();
+        customerRepository.deleteAll();
+
+        //Creating a sports center
+        SportCenter sportCenter = new SportCenter();
+        sportCenterRepository.save(sportCenter);
+        //Create the customer and persist
+        customer = new Customer();
+        customer.setName("Hamid");
+        customer.setPassword("test");
+        customer.setPhoneNumber("8198888888");
+        customer.setEmail("my-customer@mail.com");
+        customer.setSportCenter(sportCenter);
+        customerRepository.save(customer);
 
         // Create and save the schedule for the unapproved course
         scheduleForUnapprovedCourse = new Schedule();
@@ -81,17 +95,12 @@ public class CourseDetailIntegrationTest {
         courseRepository.deleteAll();
         scheduleRepository.deleteAll();
         personRepository.deleteAll();
+        sportCenterRepository.deleteAll();
+        customerRepository.deleteAll();
     }
 
     @Test
-    public void anCustomerTriesToAccessTheScheduleOfAnApprovedCourse_ValidRequest() {
-        //Create the customer and persist
-        Customer customer = new Customer();
-        customer.setName("Hamid");
-        customer.setPassword("test");
-        customer.setPhoneNumber("8198888888");
-        customer.setEmail("my-customer@mail.com");
-        customerRepository.save(customer);
+    public void customerTriesToAccessTheScheduleOfAnApprovedCourse_ValidRequest() {
 
         //Issue token for customer
         String customerToken = authenticationService.issueToken(customer.getId());
@@ -119,6 +128,31 @@ public class CourseDetailIntegrationTest {
         assertEquals(expectedSchedule.getSundayEnd(), response.getBody().getSundayEnd(), "Sunday end times should match");
 
     }
+
+    @Test
+    public void customerTriesToAccessScheduleOfUnapprovedCourse_ForbiddenRequest() {
+
+        // Issue a token for the customer
+        String customerToken = authenticationService.issueToken(customer.getId());
+
+        // Set up the Authorization header with the bearer token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + customerToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Make a GET request to the endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
+                "/courses/{course_id}/schedule",
+                HttpMethod.GET,
+                entity,
+                ScheduleDTO.class,
+                unapprovedCourseId);
+
+        // Assertions
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response status should be FORBIDDEN");
+        assertNull(response.getBody(), "Response body should be null because access is not allowed");
+    }
+
 
 
 }
