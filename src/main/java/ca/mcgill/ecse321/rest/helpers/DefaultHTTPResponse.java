@@ -6,42 +6,62 @@ import org.springframework.http.ResponseEntity;
 
 public class DefaultHTTPResponse {
     public static ResponseEntity<HTTPDTO> success(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.OK);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage(message);
+        return new ResponseEntity<>(httpdto, HttpStatus.OK);
     }
 
     public static ResponseEntity<HTTPDTO> success() {
-        return new ResponseEntity<>(new HTTPDTO("Success"), HttpStatus.OK);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage("Success");
+        return new ResponseEntity<>(httpdto, HttpStatus.OK);
     }
     
     public static ResponseEntity<HTTPDTO> unauthorized(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.UNAUTHORIZED);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage(message);
+        return new ResponseEntity<>(httpdto, HttpStatus.UNAUTHORIZED);
     }
 
     public static ResponseEntity<HTTPDTO> unauthorized() {
-        return new ResponseEntity<>(new HTTPDTO("Unauthorized"), HttpStatus.UNAUTHORIZED);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage("Unauthorized");
+        return new ResponseEntity<>(httpdto, HttpStatus.UNAUTHORIZED);
     }
 
     public static ResponseEntity<HTTPDTO> forbidden(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.FORBIDDEN);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage(message);
+        return new ResponseEntity<>(httpdto, HttpStatus.FORBIDDEN);
     }
 
     public static ResponseEntity<HTTPDTO> forbidden() {
-        return new ResponseEntity<>(new HTTPDTO("Forbidden"), HttpStatus.FORBIDDEN);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage("Forbidden");
+        return new ResponseEntity<>(httpdto,HttpStatus.FORBIDDEN);
     }
 
     public static ResponseEntity<HTTPDTO> notFound(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.NOT_FOUND);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage(message);
+        return new ResponseEntity<>(httpdto, HttpStatus.NOT_FOUND);
     }
 
     public static ResponseEntity<HTTPDTO> notFound() {
-        return new ResponseEntity<>(new HTTPDTO("Not Found"), HttpStatus.NOT_FOUND);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage("Not Found");
+        return new ResponseEntity<>(httpdto, HttpStatus.NOT_FOUND);
     }
 
     public static ResponseEntity<HTTPDTO> badRequest(String message) {
-        return new ResponseEntity<>(new HTTPDTO(message), HttpStatus.BAD_REQUEST);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage(message);
+        return new ResponseEntity<>(httpdto, HttpStatus.BAD_REQUEST);
     }
 
     public static ResponseEntity<HTTPDTO> badRequest() {
-        return new ResponseEntity<>(new HTTPDTO("Bad Request"), HttpStatus.BAD_REQUEST);
+        HTTPDTO httpdto= new HTTPDTO();
+        httpdto.setMessage("Bad Request");
+        return new ResponseEntity<>(httpdto,HttpStatus.BAD_REQUEST);
     }
 }
