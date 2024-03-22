@@ -58,7 +58,7 @@ class CourseDetailServiceTest {
         when(courseRepository.findAll()).thenReturn(Arrays.asList(new Course(), new Course()));
 
         // Act
-        List<Course> result = courseDetailService.getAllCourses();
+        List<Course> result = courseDetailService.getCoursesWithFilters(null, null, null);
 
         // Assert
         assertNotNull(result);

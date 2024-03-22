@@ -10,12 +10,16 @@ import ca.mcgill.ecse321.rest.models.Schedule;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -84,32 +88,40 @@ public class CourseDetailRestController {
 
 
     @GetMapping("/courses")
-    public ResponseEntity<List<CourseDTO>> getAllCourses(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<List<CourseDTO>> getAllCourses(@RequestHeader("Authorization") String bearerToken,
+                                                         @RequestParam(required = false) String state,
+                                                         @RequestParam(required = false) String instructorName,
+                                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Timestamp startDate) {
         try {
             // Verify the token and get user details
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
-            // Logic to determine which courses to return based on the person type
-            List<Course> courses;
-            switch (personSession.getPersonType()) {
-                case Owner:
-                    courses = courseDetailService.getAllCourses();
-                    break;
-                case Instructor:
-                    courses = courseDetailService.getAllActiveAndInstructorSpecificCourses(personSession.getPersonId());
-                    break;
-                case Customer:
-                    courses = courseDetailService.getActiveCourses();
-                    break;
-                default:
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Or throw an exception
+            Course.CourseState courseState = null;
+            if (state != null) {
+                courseState = Course.CourseState.valueOf(state.toUpperCase());
             }
 
-            // Return the list of courses with a 200 OK status
-            List<CourseDTO> courseDTOS = new ArrayList<>();
-            for(Course course: courses){
-                courseDTOS.add(new CourseDTO(course));
+            // Initially apply filters based on query params, which is most useful for owners
+            List<Course> courses = courseDetailService.getCoursesWithFilters(courseState, instructorName, startDate);
+
+            // For instructors, further filter the initially fetched courses
+            if (personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
+                courses = courses.stream()
+                        .filter(course -> course.getInstructor() != null && course.getInstructor().getId().equals(personSession.getPersonId()) ||
+                                course.getCourseState() == Course.CourseState.Approved)
+                        .collect(Collectors.toList());
+            } else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)) {
+                // For customers, filter out only approved courses
+                courses = courses.stream()
+                        .filter(course -> course.getCourseState() == Course.CourseState.Approved)
+                        .collect(Collectors.toList());
+            } else if (!personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+                // If the person is neither an owner, instructor, nor customer, forbid access
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
+
+            // Convert to DTOs
+            List<CourseDTO> courseDTOS = courses.stream().map(CourseDTO::new).collect(Collectors.toList());
             return ResponseEntity.ok(courseDTOS);
 
         } catch (IllegalArgumentException e) {

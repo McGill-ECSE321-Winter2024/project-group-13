@@ -1,14 +1,14 @@
 package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
+import ca.mcgill.ecse321.rest.dao.InstructorRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
-import ca.mcgill.ecse321.rest.models.Course;
-import ca.mcgill.ecse321.rest.models.Customer;
-import ca.mcgill.ecse321.rest.models.Registration;
-import ca.mcgill.ecse321.rest.models.Schedule;
+import ca.mcgill.ecse321.rest.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,19 +16,29 @@ import java.util.Set;
 
 @Service
 public class CourseDetailService {
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private RegistrationRepository registrationRepository;
+    @Autowired private CourseRepository courseRepository;
+    @Autowired private RegistrationRepository registrationRepository;
+    @Autowired private InstructorRepository instructorRepository;
 
     public Schedule getSchedule(String courseId){
         Course course = courseRepository.findCourseById(courseId);
         return course != null ? course.getSchedule() : null;
     }
 
-    public List<Course> getAllCourses(){
-        return (List<Course>) courseRepository.findAll();
+    public List<Course> getCoursesWithFilters(Course.CourseState state, String instructorName, Timestamp startDate) {
+        if(state == null && instructorName == null && startDate == null){
+            return (List<Course>) courseRepository.findAll();
+        }
+        String instructorId = null;
+        if (instructorName != null) {
+            Instructor instructor = (Instructor) instructorRepository.findInstructorByName(instructorName); // Implement this method as needed
+            if (instructor != null) {
+                instructorId = instructor.getId(); // Assuming getId() returns the UUID as String
+            }
+        }
+        return courseRepository.findCoursesByFilters(state, instructorId, startDate);
     }
+
 
     public Course getSpecificCourse(String courseId){
         return courseRepository.findCourseById(courseId);
