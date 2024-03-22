@@ -150,6 +150,7 @@ class CourseServiceTest {
         String errorMessageNull= courseService.updateCourseName(personSession,courseID,"");
 
         assertEquals("",errorMessage);
+        assertNull(courseRepository.findCourseByName(courseName));
         assertEquals("Name must not be null",errorMessageNull);
 
         verify(courseRepository,times(2)).findCourseById(courseID);

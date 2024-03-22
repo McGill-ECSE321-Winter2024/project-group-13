@@ -19,27 +19,29 @@ public class ScheduleDTO {
     private String sundayStart;
     private String sundayEnd;
 
-
+    // No-argument constructor
+    public ScheduleDTO() {
+    }
     public ScheduleDTO(Schedule schedule) {
         if (schedule != null) {
             this.id = schedule.getId();
-            this.mondayStart = schedule.getMondayStart().toString();
-            this.mondayEnd = schedule.getMondayEnd().toString();
-            this.tuesdayStart = schedule.getTuesdayStart().toString();
-            this.tuesdayEnd = schedule.getTuesdayEnd().toString();
-            this.wednesdayStart = schedule.getWednesdayStart().toString();
-            this.wednesdayEnd = schedule.getWednesdayEnd().toString();
-            this.thursdayStart = schedule.getThursdayStart().toString();
-            this.thursdayEnd = schedule.getThursdayEnd().toString();
-            this.fridayStart = schedule.getFridayStart().toString();
-            this.fridayEnd = schedule.getFridayEnd().toString();
-            this.saturdayStart = schedule.getSaturdayStart().toString();
-            this.saturdayEnd = schedule.getSaturdayEnd().toString();
-            this.sundayStart = schedule.getSundayStart().toString();
-            this.sundayEnd = schedule.getSundayEnd().toString();
+            this.mondayStart = schedule.getMondayStart() != null ? schedule.getMondayStart().toString() : null;
+            this.mondayEnd = schedule.getMondayEnd() != null ? schedule.getMondayEnd().toString() : null;
+            this.tuesdayStart = schedule.getTuesdayStart() != null ? schedule.getTuesdayStart().toString() : null;
+            this.tuesdayEnd = schedule.getTuesdayEnd() != null ? schedule.getTuesdayEnd().toString() : null;
+            this.wednesdayStart = schedule.getWednesdayStart() != null ? schedule.getWednesdayStart().toString() : null;
+            this.wednesdayEnd = schedule.getWednesdayEnd() != null ? schedule.getWednesdayEnd().toString() : null;
+            this.thursdayStart = schedule.getThursdayStart() != null ? schedule.getThursdayStart().toString() : null;
+            this.thursdayEnd = schedule.getThursdayEnd() != null ? schedule.getThursdayEnd().toString() : null;
+            this.fridayStart = schedule.getFridayStart() != null ? schedule.getFridayStart().toString() : null;
+            this.fridayEnd = schedule.getFridayEnd() != null ? schedule.getFridayEnd().toString() : null;
+            this.saturdayStart = schedule.getSaturdayStart() != null ? schedule.getSaturdayStart().toString() : null;
+            this.saturdayEnd = schedule.getSaturdayEnd() != null ? schedule.getSaturdayEnd().toString() : null;
+            this.sundayStart = schedule.getSundayStart() != null ? schedule.getSundayStart().toString() : null;
+            this.sundayEnd = schedule.getSundayEnd() != null ? schedule.getSundayEnd().toString() : null;
         }
-
     }
+
 
     public String getId() {
         return id;

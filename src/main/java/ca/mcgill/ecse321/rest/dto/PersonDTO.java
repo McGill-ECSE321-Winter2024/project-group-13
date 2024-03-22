@@ -13,6 +13,7 @@ public class PersonDTO {
   
   
     // Constructor accepting a Person entity
+    public PersonDTO(){}
     public PersonDTO(Person person) {
         if (person != null) {
             this.id = person.getId();
