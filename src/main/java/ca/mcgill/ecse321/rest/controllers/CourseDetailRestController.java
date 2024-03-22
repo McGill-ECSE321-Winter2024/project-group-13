@@ -163,7 +163,6 @@ public class CourseDetailRestController {
             // Handle the case where the token is invalid
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        // Additional exception handling can be done here if necessary
     }
 
 
