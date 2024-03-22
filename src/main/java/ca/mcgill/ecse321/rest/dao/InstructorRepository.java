@@ -11,6 +11,8 @@ public interface InstructorRepository extends CrudRepository<Instructor, String>
 
   Instructor findInstructorByPhoneNumber(String phoneNumber);
 
+  Instructor findInstructorByName(String name);
+
   @Transactional
   void deleteInstructorById(String id);
 
