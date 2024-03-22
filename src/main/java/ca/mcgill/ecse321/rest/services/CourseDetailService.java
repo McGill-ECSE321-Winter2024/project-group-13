@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,7 @@ public class CourseDetailService {
         }
         String instructorId = null;
         if (instructorName != null) {
-            Instructor instructor = (Instructor) instructorRepository.findInstructorByName(instructorName); // Implement this method as needed
+            Instructor instructor = instructorRepository.findInstructorByName(instructorName); // Implement this method as needed
             if (instructor != null) {
                 instructorId = instructor.getId(); // Assuming getId() returns the UUID as String
             }

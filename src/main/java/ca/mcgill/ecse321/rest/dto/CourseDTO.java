@@ -109,6 +109,4 @@ public class CourseDTO {
     public String getCourseState() {
         return courseState;
     }
-
-
 }

@@ -670,6 +670,55 @@ public class CourseDetailIntegrationTest {
     }
 
     @Test
+    public void queryApprovedCourses_ReturnsApprovedCoursesOnly() {
+        // Issue token for the owner, assuming the owner has the privilege to query all courses
+        String ownerToken = authenticationService.issueToken(ownerId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + ownerToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Query parameter for filtering by course state
+        String url = "/courses?state=Approved";
+
+        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                CourseDTO[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        assertNotNull(response.getBody(), "Response body should not be null");
+        // Check that all returned courses are in the APPROVED state
+        assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getCourseState().equals("Approved")), "All returned courses should be Approved");
+    }
+
+    @Test
+    public void queryCoursesByInstructor_ReturnsInstructorSpecificCourses() {
+        // Issue token for an owner or an admin role that can query courses based on instructor
+        String ownerToken = authenticationService.issueToken(ownerId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + ownerToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Assuming the instructor's name is part of the URL query parameter
+        Instructor instructor = instructorRepository.findInstructorById(instructorId);
+        String url = "/courses?instructorName=" + instructor.getName();
+
+        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                CourseDTO[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        assertNotNull(response.getBody(), "Response body should not be null");
+        // Check that all returned courses are associated with the specified instructor
+        assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getInstructor().equals(instructor.getId())), "All returned courses should be taught by the specified instructor");
+    }
+
+    @Test
     public void unauthorizedUserRoleDeniedAccess() {
         // Assuming there's a way to issue a token for an unsupported role, or manually create a token
         String unsupportedRoleToken = "someTokenForUnsupportedRole";

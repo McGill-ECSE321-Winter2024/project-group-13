@@ -98,7 +98,7 @@ public class CourseDetailRestController {
 
             Course.CourseState courseState = null;
             if (state != null) {
-                courseState = Course.CourseState.valueOf(state.toUpperCase());
+                courseState = Course.CourseState.valueOf(state);
             }
 
             // Initially apply filters based on query params, which is most useful for owners
