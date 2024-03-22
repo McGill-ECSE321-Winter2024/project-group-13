@@ -64,7 +64,10 @@ public class CourseDetailService {
     public boolean isInstructorOfCourse(String courseId, String instructorId) {
         // Check if the instructor is associated with the course
         Course course = courseRepository.findCourseById(courseId);
-        return course != null && course.getInstructor().getId().equals(instructorId);
+        if(course.getInstructor() == null){
+            return false;
+        }
+        return course.getInstructor().getId().equals(instructorId);
     }
 
 }
