@@ -30,11 +30,13 @@ public class CourseDetailIntegrationTest {
     @Autowired private PersonRepository personRepository;
     @Autowired private OwnerRepository ownerRepository;
     @Autowired private CustomerRepository customerRepository;
+    @Autowired private InstructorRepository instructorRepository;
     @Autowired private SportCenterRepository sportCenterRepository;
     @Autowired private AuthenticationService authenticationService;
 
     private String ownerId;
     private String customerId;
+    private String instructorId;
     private String unapprovedCourseId;
     private String approvedCourseId;
     private Schedule scheduleForUnapprovedCourse;
@@ -52,6 +54,7 @@ public class CourseDetailIntegrationTest {
 
         //Creating a sports center
         SportCenter sportCenter = new SportCenter();
+        sportCenter.setName("Gold's Gym");
         sportCenterRepository.save(sportCenter);
 
         //Create the customer and persist
@@ -64,15 +67,26 @@ public class CourseDetailIntegrationTest {
         customerRepository.save(customer);
         customerId = customer.getId();
 
-        //Creating an owner
+        //Creating an owner and persist
         Owner owner = new Owner();
         owner.setName("Boss");
         owner.setEmail("my-boss@mail.com");
         owner.setPassword("test");
-        owner.setPhoneNumber("8198888888");
+        owner.setPhoneNumber("8198808888");
+        ownerRepository.save(owner);
         owner.setSportCenter(sportCenter);
         ownerRepository.save(owner);
         ownerId = owner.getId();
+
+        //Create the customer and persist
+        Instructor instructor = new Instructor();
+        instructor.setName("Trainer");
+        instructor.setEmail("my-instructor@mail.com");
+        instructor.setPassword("test");
+        instructor.setPhoneNumber("8198888889");
+        instructor.setSportCenter(sportCenter);
+        instructorRepository.save(instructor);
+        instructorId = instructor.getId();
 
         // Create and save the schedule for the unapproved course
         scheduleForUnapprovedCourse = new Schedule();
@@ -80,11 +94,12 @@ public class CourseDetailIntegrationTest {
         scheduleForUnapprovedCourse.setSundayEnd(new Time(new Calendar.Builder().setTimeOfDay(10, 0, 0).build().getTimeInMillis()));
         scheduleRepository.save(scheduleForUnapprovedCourse);
 
-        // Create and save the unapproved course with the first schedule
+        // Create and save the unapproved course with the first schedule. This course is also taught by an instructor
         Course unapprovedCourse = new Course();
         unapprovedCourse.setName("Unapproved Test Course");
         unapprovedCourse.setCourseState(Course.CourseState.Inactive);
         unapprovedCourse.setSchedule(scheduleForUnapprovedCourse);
+        unapprovedCourse.setInstructor(instructor);
         unapprovedCourse = courseRepository.save(unapprovedCourse);
         unapprovedCourseId = unapprovedCourse.getId();
 
@@ -193,20 +208,61 @@ public class CourseDetailIntegrationTest {
     }
 
     @Test
-    public void instructorAccessesOwnedCourseSchedule() {
-        // Setup Instructor and issue token
-        // Setup an unapproved course with the instructor as owner and a schedule
-        // Make a GET request to your endpoint as the instructor
-        // Assert that the instructor can access their own course's schedule
+    public void instructorAccessesOwnedCourseSchedule_ValidRequest() {
+        // Issue token for the instructor
+        String instructorToken = authenticationService.issueToken(instructorId);
+
+        // Set up the Authorization header with the bearer token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + instructorToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Make a GET request to your endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
+                "/courses/{course_id}/schedule",
+                HttpMethod.GET,
+                entity,
+                ScheduleDTO.class,
+                unapprovedCourseId);
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        assertNotNull(response.getBody(), "Response body should not be null");
+
+        //Response body verifications
+        ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForUnapprovedCourse); // Assuming you have a matching constructor or setters
+        assertEquals(expectedSchedule.getSundayStart(), response.getBody().getSundayStart(), "Sunday start times should match");
+        assertEquals(expectedSchedule.getSundayEnd(), response.getBody().getSundayEnd(), "Sunday end times should match");
     }
 
     @Test
-    public void instructorAccessesUnownedApprovedCourseSchedule() {
-        // Setup Instructor and issue token
-        // Setup an approved course with a different instructor and a schedule
-        // Make a GET request to your endpoint as the instructor
-        // Assert that the instructor can access an approved course that they do not own
+    public void instructorAccessesUnownedApprovedCourseSchedule_ValidRequest() {
+        // Issue token for the instructor
+        String instructorToken = authenticationService.issueToken(instructorId);
+
+        // Set up the Authorization header with the bearer token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + instructorToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Make a GET request to your endpoint for the approved course's schedule
+        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
+                "/courses/{course_id}/schedule",
+                HttpMethod.GET,
+                entity,
+                ScheduleDTO.class,
+                approvedCourseId); // `approvedCourseId` is for a course the instructor does not own
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        assertNotNull(response.getBody(), "Response body should not be null");
+
+        //Response body verifications
+        ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
+        assertEquals(expectedSchedule.getSundayStart(), response.getBody().getSundayStart(), "Sunday start times should match");
+        assertEquals(expectedSchedule.getSundayEnd(), response.getBody().getSundayEnd(), "Sunday end times should match");
     }
+
 
     @Test
     public void instructorDeniedAccessToUnownedUnapprovedCourseSchedule() {
