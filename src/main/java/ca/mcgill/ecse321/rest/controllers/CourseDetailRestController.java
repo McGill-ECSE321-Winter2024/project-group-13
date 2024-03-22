@@ -91,7 +91,7 @@ public class CourseDetailRestController {
     public ResponseEntity<List<CourseDTO>> getAllCourses(@RequestHeader("Authorization") String bearerToken,
                                                          @RequestParam(required = false) String state,
                                                          @RequestParam(required = false) String instructorName,
-                                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Timestamp startDate) {
+                                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String startDate) {
         try {
             // Verify the token and get user details
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
@@ -100,9 +100,13 @@ public class CourseDetailRestController {
             if (state != null) {
                 courseState = Course.CourseState.valueOf(state);
             }
+            Timestamp timestamp = null;
+            if(startDate != null){
+                timestamp = Timestamp.valueOf(startDate + " 00:00:00");
+            }
 
             // Initially apply filters based on query params, which is most useful for owners
-            List<Course> courses = courseDetailService.getCoursesWithFilters(courseState, instructorName, startDate);
+            List<Course> courses = courseDetailService.getCoursesWithFilters(courseState, instructorName, timestamp);
 
             // For instructors, further filter the initially fetched courses
             if (personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {

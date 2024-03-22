@@ -18,6 +18,7 @@ import org.springframework.http.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -155,6 +156,8 @@ public class CourseDetailIntegrationTest {
         course.setName(name);
         course.setCourseState(state);
         course.setSchedule(schedule);
+        //This represents a date and time of March 27, 2024, at 22:48:29 UTC.
+        course.setCourseStartDate(new Timestamp(1711579709965L));
         Instructor instructor = instructorRepository.findInstructorById(instructorId);
         if (instructor != null) {
             course.setInstructor(instructor);
@@ -692,6 +695,43 @@ public class CourseDetailIntegrationTest {
         // Check that all returned courses are in the APPROVED state
         assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getCourseState().equals("Approved")), "All returned courses should be Approved");
     }
+
+    @Test
+    public void queryCoursesByStartDate_ReturnsCoursesStartingAfterGivenDate() {
+        // Issue token for a role that has the privilege to query courses, such as the owner
+        String ownerToken = authenticationService.issueToken(ownerId);
+
+        // Prepare the HttpHeaders with the Authorization token
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + ownerToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Define the start date filter
+        // For demonstration, let's assume you want to filter courses starting after March 15, 2023
+        String startDate = "2023-03-15";
+
+        // The endpoint URL with the startDate query parameter
+        String url = "/courses?startDate=" + startDate;
+
+        // Perform the GET request
+        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                CourseDTO[].class);
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        assertNotNull(response.getBody(), "Response body should not be null");
+
+        // Convert the response body to a list for easier handling
+        List<CourseDTO> courses = Arrays.asList(response.getBody());
+
+        // Check that all returned courses start after the specified startDate
+        assertTrue(courses.stream().allMatch(course -> course.getCourseStartDate().after(Timestamp.valueOf(startDate + " 00:00:00"))),
+                "All returned courses should start after " + startDate);
+    }
+
 
     @Test
     public void queryCoursesByInstructor_ReturnsInstructorSpecificCourses() {
