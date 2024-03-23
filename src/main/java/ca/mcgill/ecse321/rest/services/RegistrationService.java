@@ -324,7 +324,7 @@ import java.util.List;
 
 
         @Transactional
-        public List<Invoice> getInvoicess(PersonSession personSession, String registration_id){
+        public List<Invoice> getInvoices(PersonSession personSession, String registration_id){
             if(personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
                 return getInvoicesForRegistration(registration_id);
             }

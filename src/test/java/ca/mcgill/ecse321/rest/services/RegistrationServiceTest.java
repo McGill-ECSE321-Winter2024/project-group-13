@@ -488,7 +488,7 @@ public class RegistrationServiceTest {
         when(registrationRepository.findRegistrationById(registration.getId())).thenReturn(registration);
         when(invoiceRepository.findAll()).thenReturn(invoiceList);
 
-        List<Invoice> invoicesGOT = registrationService.getInvoicess(personSession, registration.getId());
+        List<Invoice> invoicesGOT = registrationService.getInvoices(personSession, registration.getId());
 
         assertEquals(3, invoicesGOT.size());
         assertEquals(invoiceList, invoicesGOT);
@@ -508,13 +508,14 @@ public class RegistrationServiceTest {
         when(registrationRepository.findRegistrationById(registration.getId()+"1")).thenReturn(null);
         when(invoiceRepository.findAll()).thenReturn(invoiceList);
 
-        List<Invoice> invoicesGOT = registrationService.getInvoicess(personSession, registration.getId()+"1");
+        List<Invoice> invoicesGOT = registrationService.getInvoices(personSession, registration.getId()+"1");
 
         assertEquals(0, invoicesGOT.size());
         List<Invoice> expected = new ArrayList<>();
-
+      
         assertNull( registrationService.getInvoicess(personSession, null));
         assertNull( registrationService.getInvoicess(personSession, " "));
+
         assertEquals(expected, invoicesGOT);
     }
 
@@ -529,7 +530,7 @@ public class RegistrationServiceTest {
 
         PersonSession personSession = new PersonSession("personID", PersonSession.PersonType.Instructor, "SportCenter123");
 
-        assertThrows(IllegalArgumentException.class, () -> { List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, registration.getId());});
+        assertThrows(IllegalArgumentException.class, () -> { List<Invoice> invoicesGOT2 = registrationService.getInvoices(personSession, registration.getId());});
 
     }
 
@@ -552,7 +553,7 @@ public class RegistrationServiceTest {
         when(customerRepository.findCustomerById(customer1.getId())).thenReturn(customer1);
         PersonSession personSession = new PersonSession(customer1.getId(), PersonSession.PersonType.Customer, "SportCenter123");
 
-        List<Invoice> invoicesGOT = registrationService.getInvoicess(personSession, registration1.getId());
+        List<Invoice> invoicesGOT = registrationService.getInvoices(personSession, registration1.getId());
 
         assertEquals(2, invoicesGOT.size());
 
@@ -579,11 +580,12 @@ public class RegistrationServiceTest {
 
         PersonSession personSession = new PersonSession(customer1.getId(), PersonSession.PersonType.Customer, "SportCenter123");
 
-        List<Invoice> invoicesGOT = registrationService.getInvoicess(personSession, registration1.getId()+"1");
+        List<Invoice> invoicesGOT = registrationService.getInvoices(personSession, registration1.getId()+"1");
 
         assertEquals(0, invoicesGOT.size());
 
         assertNull(registrationService.getInvoicess(personSession, null));
         assertNull( registrationService.getInvoicess(personSession, " "));
+
 
 }}

@@ -147,6 +147,7 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
 
     }
 
+
     private InvoiceDTO convertToDTO(Invoice invoice){
 
         InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
@@ -158,7 +159,7 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
         List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
 
         for (Invoice i : invoices) {
-            invoiceDTOS.add(convertToDTO(i));
+            invoiceDTOS.add(new InvoiceDTO(i));
         }
         return invoiceDTOS;
 

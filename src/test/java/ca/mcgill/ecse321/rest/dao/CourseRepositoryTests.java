@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.CourseSession;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -303,4 +304,48 @@ public class CourseRepositoryTests {
     course.setInstructor(instructor); // Associate instructor
     courseRepository.save(course);
   }
+
+  @Test
+  public void testFindCoursesByFilters() {
+    // Preparing data: Creating an instructor and a couple of courses associated with this instructor
+    Instructor instructor = new Instructor();
+    instructor.setName("Jane Doe");
+    instructor.setEmail("janedoe@example.com");
+    instructor.setPhoneNumber("987-654-3210");
+    instructor.setPassword("strongpassword");
+    instructor = personRepository.save(instructor); // Save to get generated ID
+
+    LocalDate startDate = LocalDate.of(2024, 1, 1);
+    createAndSaveCourse("Filtered Course 1", instructor, Course.CourseState.Approved, startDate.plusDays(5));
+    createAndSaveCourse("Filtered Course 2", instructor, Course.CourseState.AwaitingApproval, startDate.plusDays(10));
+
+    // Scenario 1: Filtering by state only
+    List<Course> filteredCourses1 = courseRepository.findCoursesByFilters(Course.CourseState.Approved, null, null);
+    assertEquals(1, filteredCourses1.size(), "Expected to find one course with Approved state.");
+
+    // Scenario 2: Filtering by instructor name only
+    List<Course> filteredCourses2 = courseRepository.findCoursesByFilters(null, instructor.getId(), null);
+    assertEquals(2, filteredCourses2.size(), "Expected to find courses taught by Jane Doe.");
+
+    // Scenario 3: Filtering by start date only (also considering HealthPlus...)
+    List<Course> filteredCourses3 = courseRepository.findCoursesByFilters(null, null, Timestamp.valueOf(startDate.plusDays(6).atStartOfDay()));
+    assertEquals(2, filteredCourses3.size(), "Expected to find courses starting after a specific date.");
+
+    // Scenario 4: Combining filters
+    List<Course> filteredCourses4 = courseRepository.findCoursesByFilters(Course.CourseState.AwaitingApproval, instructor.getId(), Timestamp.valueOf(startDate.plusDays(6).atStartOfDay()));
+    assertEquals(1, filteredCourses4.size(), "Expected to find courses that match all filters.");
+  }
+
+  private void createAndSaveCourse(String courseName, Instructor instructor, Course.CourseState state, LocalDate startDate) {
+    Course course = new Course();
+    course.setName(courseName);
+    course.setDescription("A course description for filtering.");
+    course.setLevel(Course.Level.Beginner);
+    course.setCourseStartDate(Timestamp.valueOf(startDate.atStartOfDay()));
+    course.setCourseEndDate(Timestamp.valueOf(startDate.plusDays(1).atStartOfDay())); // +1 day
+    course.setCourseState(state);
+    course.setInstructor(instructor); // Associate instructor
+    courseRepository.save(course);
+  }
+
 }

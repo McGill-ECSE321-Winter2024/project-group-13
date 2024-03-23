@@ -1,22 +1,3 @@
-
-/*package ca.mcgill.ecse321.rest.dto;
-
-import ca.mcgill.ecse321.rest.models.Customer;
-
-public class CustomerDTO extends PersonDTO{
-
-    private String sportCenterId;
-    public CustomerDTO(Customer customer) {
-        super(customer);
-        this.sportCenterId = customer.getSportCenter().getId();
-    }
-    public String getSportCenterId() {
-        return sportCenterId;
-    }
-
-}*/
-
-
 package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Customer;
@@ -55,16 +36,4 @@ public class CustomerDTO extends PersonDTO{
     public String getPhoneNumber(){return this.phoneNumber;}
     public String getPassword(){return this.password;}
 }
-
-
-
-
-//
-//    public String getName(){return this.name;}
-//    public String getID(){return this.id;}
-//    public String getSportCenter(){return this.sportCenter;}
-//    public String getEmail(){return this.email;}
-//    public String getPhoneNumber(){return this.phoneNumber;}
-//    public String getPassword(){return this.password;}
-
 

@@ -379,4 +379,32 @@ public class InstructorRepositoryTests {
     assertEquals(email, instructor.getEmail());
     assertEquals(password, instructor.getPassword());
   }
+
+  /**
+   * Tests the ability to find an instructor by their name in the repository.
+   * This method creates an instructor, saves it to the repository, and then
+   * attempts to find this instructor by using their name. It asserts that
+   * the found instructor is not null and that all attributes match the
+   * originally saved instructor, ensuring the findInstructorByName method
+   * works as expected.
+   *
+   * @author Omar Moussa
+   */
+  @Test
+  public void testFindInstructorByName() {
+    // Create instructor.
+    Instructor instructor = createInstructor();
+    String name = instructor.getName();
+
+    instructorRepository.save(instructor); // Save instructor to database.
+    Instructor foundInstructor = instructorRepository.findInstructorByName(name); // Get instructor from database by name.
+
+    // Assert that found instructor is not null and has the correct attributes
+    assertNotNull(foundInstructor, "Instructor should not be null.");
+    assertEquals(name, foundInstructor.getName(), "Instructor name should match.");
+    assertEquals(instructor.getEmail(), foundInstructor.getEmail(), "Instructor email should match.");
+    assertEquals(instructor.getPhoneNumber(), foundInstructor.getPhoneNumber(), "Instructor phone number should match.");
+    assertEquals(instructor.getPassword(), foundInstructor.getPassword(), "Instructor password should match.");
+  }
+
 }

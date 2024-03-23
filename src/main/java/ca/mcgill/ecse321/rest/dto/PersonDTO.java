@@ -2,14 +2,18 @@ package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Person;
 
+
 public class PersonDTO {
 
     private String id;
     private String email;
     private String phoneNumber;
     private String name;
-
+    private String password;
+  
+  
     // Constructor accepting a Person entity
+    public PersonDTO(){}
     public PersonDTO(Person person) {
         if (person != null) {
             this.id = person.getId();
@@ -19,7 +23,7 @@ public class PersonDTO {
         }
     }
 
-    // Getters and Setters
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -30,4 +34,7 @@ public class PersonDTO {
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
