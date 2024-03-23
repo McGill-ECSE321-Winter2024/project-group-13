@@ -43,9 +43,9 @@ public class InvoiceIntegrationTests {
     private InvoiceRepository invoiceRepository;
 
 
-    private final String ownerEmail="owner@gmail.com";
-    private final String instructorEmail="instructor@gmail.com";
-    private final String customerEmail="customer@gmail.com";
+    private final String ownerEmail="owner34@gmail.com";
+    private final String instructorEmail="instructor54@gmail.com";
+    private final String customerEmail="customer65@gmail.com";
 
     @BeforeAll
     public void set_up(){
