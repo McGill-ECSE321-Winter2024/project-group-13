@@ -24,15 +24,8 @@ import java.sql.Timestamp;
 @ExtendWith(MockitoExtension.class)
 public class SportCenterServiceTest {
     @Mock
-    private CourseRepository courseRepository;
-    @Mock
     private SportCenterRepository sportCenterRepository;
-    @Mock
-    private RoomRepository roomRepository;
-    @Mock
-    private InstructorRepository instructorRepository;
-    @Mock
-    private ScheduleRepository scheduleRepository;
+
     @InjectMocks
     private SportCenterService sportCenterService;
 
@@ -41,60 +34,73 @@ public class SportCenterServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-//    @Test
-//    void createSportCenter_validInput() {
-//        // Arrange
-//        String name = "Sport Center";
-//        String address = "1234 Street";
-//        SportCenter sportCenter = new SportCenter();
-//        sportCenter.setName(name);
-//        sportCenter.setAddress(address);
-//        when(sportCenterRepository.save(any(SportCenter.class))).thenReturn(sportCenter);
-//
-//        // Act
-//        SportCenter result = sportCenterService.createSportCenter(name, address);
-//    }
+
+
+    @Test
+    void getSportCenterTestDTO() {
+        String sportsCenterID = "1";
+        SportCenter sportCenter = new SportCenter(sportsCenterID);
+        sportCenter.setName("Sport Center");
+        sportCenter.setAddress("1234 Street");
+        Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
+        sportCenter.setSchedule(schedule);
+        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
+        SportCenterDTO result = sportCenterService.getSportCenterDTO(personSession);
+
+        assertNotNull(result);
+        assertEquals(sportCenter.getId(), result.getId());
+        assertEquals(sportCenter.getName(), result.getName());
+        assertEquals(sportCenter.getAddress(), result.getAddress());
+        assertEquals(sportCenter.getSchedule().getMondayStart(), Time.valueOf(result.getSchedule().getMondayStart()));
+        assertEquals(sportCenter.getSchedule().getMondayEnd(), Time.valueOf(result.getSchedule().getMondayEnd()));
+        assertEquals(sportCenter.getSchedule().getTuesdayStart(), Time.valueOf(result.getSchedule().getTuesdayStart()));
+        assertEquals(sportCenter.getSchedule().getTuesdayEnd(), Time.valueOf(result.getSchedule().getTuesdayEnd()));
+        assertEquals(sportCenter.getSchedule().getWednesdayStart(), Time.valueOf(result.getSchedule().getWednesdayStart()));
+        assertEquals(sportCenter.getSchedule().getWednesdayEnd(), Time.valueOf(result.getSchedule().getWednesdayEnd()));
+        assertEquals(sportCenter.getSchedule().getThursdayStart(), Time.valueOf(result.getSchedule().getThursdayStart()));
+        assertEquals(sportCenter.getSchedule().getThursdayEnd(), Time.valueOf(result.getSchedule().getThursdayEnd()));
+        assertEquals(sportCenter.getSchedule().getFridayStart(), Time.valueOf(result.getSchedule().getFridayStart()));
+        assertEquals(sportCenter.getSchedule().getFridayEnd(), Time.valueOf(result.getSchedule().getFridayEnd()));
+        assertEquals(sportCenter.getSchedule().getSaturdayStart(), Time.valueOf(result.getSchedule().getSaturdayStart()));
+        assertEquals(sportCenter.getSchedule().getSaturdayEnd(), Time.valueOf(result.getSchedule().getSaturdayEnd()));
+        assertEquals(sportCenter.getSchedule().getSundayStart(), Time.valueOf(result.getSchedule().getSundayStart()));
+        assertEquals(sportCenter.getSchedule().getSundayEnd(), Time.valueOf(result.getSchedule().getSundayEnd()));
+
+    }
+
     @Test
     void updateNameTestOwner() {
-        // Arrange
         String newName = "New Name";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateName(newName, personSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(newName, sportCenter.getName());
     }
 
     @Test
     void updateNameTestInstructor() {
-        // Arrange
         String oldName = "Old Name";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateName(oldName, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(oldName, sportCenter.getName());
 
-        // Arrange
         String newName = "New Name";
         PersonSession instructorSession = new PersonSession("1",PersonSession.PersonType.Instructor,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateName(newName, instructorSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newName, sportCenter.getName());
         assertEquals(oldName, sportCenter.getName());
@@ -102,28 +108,22 @@ public class SportCenterServiceTest {
 
     @Test
     void updateNameTestCustomer() {
-        // Arrange
         String oldName = "Old Name";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateName(oldName, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(oldName, sportCenter.getName());
 
-        // Arrange
         String newName = "New Name";
         PersonSession customerSession = new PersonSession("1",PersonSession.PersonType.Customer,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateName(newName, customerSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newName, sportCenter.getName());
         assertEquals(oldName, sportCenter.getName());
@@ -132,45 +132,36 @@ public class SportCenterServiceTest {
 
     @Test
     void updateAddressTestOwner() {
-        // Arrange
         String newAddress = "New Address";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateAddress(newAddress, personSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(newAddress, sportCenter.getAddress());
     }
 
     @Test
     void updateAddressTestInstructor() {
-        // Arrange
         String oldAddress = "Old Address";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateAddress(oldAddress, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(oldAddress, sportCenter.getAddress());
 
-        // Arrange
         String newAddress = "New Address";
         PersonSession instructorSession = new PersonSession("1",PersonSession.PersonType.Instructor,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateAddress(newAddress, instructorSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newAddress, sportCenter.getAddress());
         assertEquals(oldAddress, sportCenter.getAddress());
@@ -178,28 +169,22 @@ public class SportCenterServiceTest {
 
     @Test
     void updateAddressTestCustomer() {
-        // Arrange
         String oldAddress = "Old Address";
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
 
-        // Act
         boolean result = sportCenterService.updateAddress(oldAddress, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(oldAddress, sportCenter.getAddress());
 
-        // Arrange
         String newAddress = "New Address";
         PersonSession customerSession = new PersonSession("1",PersonSession.PersonType.Customer,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateAddress(newAddress, customerSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newAddress, sportCenter.getAddress());
         assertEquals(oldAddress, sportCenter.getAddress());
@@ -207,7 +192,6 @@ public class SportCenterServiceTest {
 
     @Test
     void updateScheduleTestOwner() {
-        // Arrange
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
@@ -215,10 +199,8 @@ public class SportCenterServiceTest {
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 
-        // Act
         boolean result = sportCenterService.updateSchedule(scheduleDTO, personSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(schedule.getMondayStart(), sportCenter.getSchedule().getMondayStart());
         assertEquals(schedule.getMondayEnd(), sportCenter.getSchedule().getMondayEnd());
@@ -238,7 +220,6 @@ public class SportCenterServiceTest {
 
     @Test
     void updateScheduleTestInstructor() {
-        // Arrange
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
@@ -246,10 +227,8 @@ public class SportCenterServiceTest {
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 
-        // Act
         boolean result = sportCenterService.updateSchedule(scheduleDTO, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(schedule.getMondayStart(), sportCenter.getSchedule().getMondayStart());
         assertEquals(schedule.getMondayEnd(), sportCenter.getSchedule().getMondayEnd());
@@ -266,15 +245,12 @@ public class SportCenterServiceTest {
         assertEquals(schedule.getSundayStart(), sportCenter.getSchedule().getSundayStart());
         assertEquals(schedule.getSundayEnd(), sportCenter.getSchedule().getSundayEnd());
 
-        // Arrange
         Schedule newSchedule = new Schedule(new Time(9,0,0),new Time(21,0,0));
         ScheduleDTO newScheduleDTO = new ScheduleDTO(newSchedule);
         PersonSession instructorSession = new PersonSession("1",PersonSession.PersonType.Instructor,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateSchedule(newScheduleDTO, instructorSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newSchedule.getMondayStart(), sportCenter.getSchedule().getMondayStart());
         assertNotEquals(newSchedule.getMondayEnd(), sportCenter.getSchedule().getMondayEnd());
@@ -294,7 +270,6 @@ public class SportCenterServiceTest {
 
     @Test
     void updateScheduleTestCustomer() {
-        // Arrange
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
@@ -302,10 +277,8 @@ public class SportCenterServiceTest {
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 
-        // Act
         boolean result = sportCenterService.updateSchedule(scheduleDTO, ownerSession);
 
-        // Assert
         assertTrue(result);
         assertEquals(schedule.getMondayStart(), sportCenter.getSchedule().getMondayStart());
         assertEquals(schedule.getMondayEnd(), sportCenter.getSchedule().getMondayEnd());
@@ -322,15 +295,12 @@ public class SportCenterServiceTest {
         assertEquals(schedule.getSundayStart(), sportCenter.getSchedule().getSundayStart());
         assertEquals(schedule.getSundayEnd(), sportCenter.getSchedule().getSundayEnd());
 
-        // Arrange
         Schedule newSchedule = new Schedule(new Time(9,0,0),new Time(21,0,0));
         ScheduleDTO newScheduleDTO = new ScheduleDTO(newSchedule);
         PersonSession customerSession = new PersonSession("1",PersonSession.PersonType.Customer,sportsCenterID);
 
-        // Act
         boolean result2 = sportCenterService.updateSchedule(newScheduleDTO, customerSession);
 
-        // Assert
         assertFalse(result2);
         assertNotEquals(newSchedule.getMondayStart(), sportCenter.getSchedule().getMondayStart());
         assertNotEquals(newSchedule.getMondayEnd(), sportCenter.getSchedule().getMondayEnd());
@@ -347,7 +317,5 @@ public class SportCenterServiceTest {
         assertNotEquals(newSchedule.getSundayStart(), sportCenter.getSchedule().getSundayStart());
         assertNotEquals(newSchedule.getSundayEnd(), sportCenter.getSchedule().getSundayEnd());
     }
-
-
 
 }

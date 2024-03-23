@@ -21,8 +21,9 @@ public class SportCenterController {
     private AuthenticationService authenticationService;
     // Get sport center DTO
     @GetMapping(value = {"/sportcenter", "/sportcenter/"})
-    public ResponseEntity<SportCenterDTO> getSportCenter() {
-        SportCenterDTO sportCenterDTO = sportCenterService.getSportCenterDTO();
+    public ResponseEntity<SportCenterDTO> getSportCenter(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+        PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
+        SportCenterDTO sportCenterDTO = sportCenterService.getSportCenterDTO(person);
         return ResponseEntity.ok(sportCenterDTO);
     }
 

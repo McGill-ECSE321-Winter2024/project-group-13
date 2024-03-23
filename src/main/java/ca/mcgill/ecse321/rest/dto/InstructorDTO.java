@@ -21,6 +21,16 @@ public class InstructorDTO extends PersonDTO{
         this.sportCenterId = sportCenterId;
     }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof InstructorDTO)) {
+            return false;
+        }
+        InstructorDTO instructorDTO = (InstructorDTO) obj;
+        return super.equals(obj) && sportCenterId.equals(instructorDTO.getSportCenterId());
+    }
 }
 

@@ -17,9 +17,13 @@ public class SportCenterService {
     @Autowired
     private SportCenterRepository sportCenterRepository;
 
-    public SportCenterDTO getSportCenterDTO() {
-        SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
-        return convertToDto(sportCenter);
+    public SportCenterDTO getSportCenterDTO(PersonSession personSession) {
+        if (personSession!=null){
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
+            return convertToDto(sportCenter);
+        }else {
+            return null;
+        }
     }
 
     public boolean updateName(String newName, PersonSession personSession) {

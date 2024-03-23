@@ -15,4 +15,16 @@ public class CustomerDTO extends PersonDTO{
         return sportCenterId;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        CustomerDTO customerDTO = (CustomerDTO) obj;
+        return super.equals(obj) &&
+                sportCenterId.equals(customerDTO.sportCenterId) ;
+    }
 }
