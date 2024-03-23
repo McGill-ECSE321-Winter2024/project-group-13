@@ -56,19 +56,19 @@ public class CourseService {
     }
 
     @Transactional
-    public String createCourse(CourseDTO courseDTO, PersonSession personSession){
+    public String createCourse(String name, PersonSession personSession){
         if (personSession.getPersonType()== PersonSession.PersonType.Customer ){
             return "Must be an owner or instructor";
         }
-        if (!courseDTO.getSportCenter().equals(personSession.getSportCenterId())){
-            return "Invalid sport's center id";
-        }
-        if (courseDTO.getName().isEmpty()){
+        if (name== null || name.isEmpty()){
             return "Course requires name to be created";
         }
         Course course = new Course();
-        course.setName(courseDTO.getName());
-        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getSportCenter()));
+        course.setName(name);
+        course.setSportCenter(sportCenterRepository.findSportCenterById(personSession.getSportCenterId()));
+        if (course.getSportCenter()==null){
+            return "Invalid sport's center id";
+        }
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
         return "";

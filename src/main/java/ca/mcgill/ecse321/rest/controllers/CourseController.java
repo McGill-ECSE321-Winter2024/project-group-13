@@ -27,9 +27,12 @@ public class CourseController {
         return badRequest("Invalid input type");
     }
     @PostMapping(value = { "/courses", "/courses/" })
-    public ResponseEntity<HTTPDTO> createCourse(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<HTTPDTO> createCourse(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody(required = false)  String name) {
+        if (name==null || name.isEmpty()){
+            return badRequest("Course requires name to be created");
+        }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage= courseService.createCourse(courseDTO,person);
+        String errorMessage= courseService.createCourse(name,person);
         return getResponse(errorMessage,"Course Created successfully");
     }
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
@@ -40,7 +43,7 @@ public class CourseController {
     }
     @PutMapping(value = { "/courses/{course_id}/name", "/courses/{course_id}/name/" })
     public ResponseEntity<HTTPDTO> updateCourseName(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
-    , @RequestBody String name) {
+    , @RequestBody(required = false)  String name) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.updateCourseName(person, course_id, name);
         return getResponse(errorMessage,"Course name changed");
@@ -50,7 +53,7 @@ public class CourseController {
     public ResponseEntity<HTTPDTO> updateCourseDescription(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
             , @RequestBody(required = false)  String description) {
         if (description==null || description.isEmpty()){
-            return badRequest("Invalid input");
+            return badRequest("Invalid input type");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.updateCourseDescription(person, course_id, description);

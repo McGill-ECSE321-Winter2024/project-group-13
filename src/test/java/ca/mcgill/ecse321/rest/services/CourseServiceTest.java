@@ -56,9 +56,9 @@ class CourseServiceTest {
         when(sportCenterRepository.findSportCenterById(courseDTO.getSportCenter())).thenReturn(sportCenter);
         when(courseRepository.save(any(Course.class))).thenReturn(course);
 
-        String errorMessageOwner= courseService.createCourse(courseDTO,personSessionOwner);
-        String errorMessageInstructor= courseService.createCourse(courseDTO,personSessionInstructor);
-        String errorMessageCustomer= courseService.createCourse(courseDTO,personSessionCustomer);
+        String errorMessageOwner= courseService.createCourse(courseName,personSessionOwner);
+        String errorMessageInstructor= courseService.createCourse(courseName,personSessionInstructor);
+        String errorMessageCustomer= courseService.createCourse(courseName,personSessionCustomer);
 
         assertEquals("",errorMessageOwner);
         assertEquals("",errorMessageInstructor);
@@ -75,12 +75,12 @@ class CourseServiceTest {
         SportCenter sportCenter= new SportCenter(sportsCenterID);
         course.setName(courseName);
         course.setSportCenter(sportCenter);
-        CourseDTO courseDTO= new CourseDTO("",sportsCenterID);
-        CourseDTO courseDTO1= new CourseDTO(courseName,"123");
         PersonSession personSession= new PersonSession(personID,PersonSession.PersonType.Owner,sportsCenterID);
+        PersonSession personSession1= new PersonSession(personID,PersonSession.PersonType.Owner,"123");
 
-        String errorMessageName= courseService.createCourse(courseDTO,personSession);
-        String errorMessageID= courseService.createCourse(courseDTO1,personSession);
+
+        String errorMessageName= courseService.createCourse("",personSession);
+        String errorMessageID= courseService.createCourse(courseName,personSession1);
 
         assertEquals("Course requires name to be created",errorMessageName);
         assertEquals("Invalid sport's center id",errorMessageID);

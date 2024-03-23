@@ -87,11 +87,11 @@ public class CourseIntegrationTests {
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(instructorAuthentication);
-        HttpEntity<CourseDTO> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> request = new HttpEntity<>("", headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
 
-        HttpEntity<CourseDTO> request1 = new HttpEntity<>(requestBody1, headers);
-        ResponseEntity<HTTPDTO> response1 = client.postForEntity("/courses", request1,HTTPDTO.class);
+//        HttpEntity<String> request1 = new HttpEntity<>(requestBody1, headers);
+//        ResponseEntity<HTTPDTO> response1 = client.postForEntity("/courses", request1,HTTPDTO.class);
 
         headers.setBearerAuth(customerAuthentication);
         HttpEntity<CourseDTO> request2 = new HttpEntity<>(requestBody2, headers);
@@ -99,12 +99,12 @@ public class CourseIntegrationTests {
 
         // Assert
         assertNotNull(response);
-        assertNotNull(response1);
+//        assertNotNull(response1);
         assertNotNull(response2);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Course requires name to be created", response.getBody().getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
-        assertEquals("Invalid sport's center id", response1.getBody().getMessage());
+//        assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
+//        assertEquals("Invalid sport's center id", response1.getBody().getMessage());
         assertEquals(HttpStatus.FORBIDDEN, response2.getStatusCode());
         assertEquals("Must be an owner or instructor", response2.getBody().getMessage());
     }
@@ -115,12 +115,10 @@ public class CourseIntegrationTests {
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         String name = "Yoga";
         SportCenter sportCenter=sportCenterRepository.findSportCenterByName(sportCenterName);
-        CourseDTO requestBody = new CourseDTO(name,sportCenter.getId());
-
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
-        HttpEntity<CourseDTO> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> request = new HttpEntity<>(name, headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
 
         // Assert
