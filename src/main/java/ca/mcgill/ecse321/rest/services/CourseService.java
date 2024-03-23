@@ -115,7 +115,7 @@ public class CourseService {
                 courseRepository.save(course);
             }
             else {
-                return "Invalid level";
+                return "Requires valid level";
             }
         }
         return courseMessagePair.getMessage();

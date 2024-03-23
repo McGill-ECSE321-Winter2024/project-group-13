@@ -35,15 +35,15 @@ public class CourseIntegrationTests {
     @Autowired
     private AuthenticationService authenticationService;
 
-    private final String sportCenterName="HealthPlus";
-    private final String ownerEmail="owner@gmail.com";
-    private final String instructorEmail="instructor@gmail.com";
-    private final String customerEmail="customer@gmail.com";
+    private final String sportCenterName="HealthPlus1";
+    private final String ownerEmail="owner123456@gmail.com";
+    private final String instructorEmail="instructor123456@gmail.com";
+    private final String customerEmail="customer123456@gmail.com";
 
     @BeforeAll
     public void set_up(){
-        String personPassword = "password";
-        String personName = "Dave";
+        String personPassword = "password1";
+        String personName = "Jake";
         SportCenter sportCenter=new SportCenter();
         Owner owner= new Owner();
         Instructor instructor = new Instructor();
@@ -52,9 +52,9 @@ public class CourseIntegrationTests {
         owner.setSportCenter(sportCenter);
         instructor.setSportCenter(sportCenter);
         customer.setSportCenter(sportCenter);
-        createPerson(owner,ownerEmail,"123-456-7890",personName,personPassword);
-        createPerson(instructor,instructorEmail,"456-123-7890",personName,personPassword);
-        createPerson(customer,customerEmail,"789-456-0123",personName,personPassword);
+        createPerson(owner,ownerEmail,"223-456-7890",personName,personPassword);
+        createPerson(instructor,instructorEmail,"446-123-7890",personName,personPassword);
+        createPerson(customer,customerEmail,"779-456-0123",personName,personPassword);
 
         personRepository.save(owner);
         personRepository.save(customer);
@@ -79,32 +79,21 @@ public class CourseIntegrationTests {
         String instructorAuthentication= authenticationService.issueTokenWithEmail(instructorEmail);
         String customerAuthentication= authenticationService.issueTokenWithEmail(customerEmail);
         String name = "Yoga";
-        SportCenter sportCenter=sportCenterRepository.findSportCenterByName(sportCenterName);
-        CourseDTO requestBody = new CourseDTO("",sportCenter.getId());
-        CourseDTO requestBody1 = new CourseDTO(name,"");
-        CourseDTO requestBody2 = new CourseDTO(name,sportCenter.getId());
-
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(instructorAuthentication);
         HttpEntity<String> request = new HttpEntity<>("", headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
 
-//        HttpEntity<String> request1 = new HttpEntity<>(requestBody1, headers);
-//        ResponseEntity<HTTPDTO> response1 = client.postForEntity("/courses", request1,HTTPDTO.class);
-
         headers.setBearerAuth(customerAuthentication);
-        HttpEntity<CourseDTO> request2 = new HttpEntity<>(requestBody2, headers);
+        HttpEntity<String> request2 = new HttpEntity<>(name, headers);
         ResponseEntity<HTTPDTO> response2 = client.postForEntity("/courses", request2, HTTPDTO.class);
 
         // Assert
         assertNotNull(response);
-//        assertNotNull(response1);
         assertNotNull(response2);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Course requires name to be created", response.getBody().getMessage());
-//        assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
-//        assertEquals("Invalid sport's center id", response1.getBody().getMessage());
         assertEquals(HttpStatus.FORBIDDEN, response2.getStatusCode());
         assertEquals("Must be an owner or instructor", response2.getBody().getMessage());
     }
@@ -114,7 +103,7 @@ public class CourseIntegrationTests {
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         String name = "Yoga";
-        SportCenter sportCenter=sportCenterRepository.findSportCenterByName(sportCenterName);
+
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
@@ -168,12 +157,18 @@ public class CourseIntegrationTests {
     assertNotNull(course);
     String url = "/courses/" + course.getId() + "/name";
     String newName= "Spin";
+    String invalidName="";
 
     // Act
     HttpEntity<String> request = new HttpEntity<>(newName,headers);
     ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+    HttpEntity<String> requestInvalid = new HttpEntity<>(invalidName,headers);
+    ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
 
     assertNotNull(response);
+    assertNotNull(responseInvalid);
+    assertNull(courseRepository.findCourseByName(invalidName));
+    assertEquals("Requires valid name", responseInvalid.getBody().getMessage());
     CourseDTO updatedCourse = new CourseDTO(courseRepository.findCourseByName("Yoga"));
     assertNotNull(updatedCourse);
     assertNull(updatedCourse.getName());
@@ -195,12 +190,18 @@ public class CourseIntegrationTests {
         assertNotNull(course);
         String url = "/courses/" + course.getId() + "/description";
         String description= "Intense spin class";
+        String invalidDescription="";
+
 
         // Act
         HttpEntity<String> request = new HttpEntity<>(description,headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<String> requestInvalid = new HttpEntity<>(invalidDescription,headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
 
         assertNotNull(response);
+        assertNotNull(responseInvalid);
+        assertEquals("Requires valid description", responseInvalid.getBody().getMessage());
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);
         assertEquals("Spin", updatedCourse.getName());
@@ -219,11 +220,21 @@ public class CourseIntegrationTests {
         assertNotNull(course);
         String url = "/courses/" + course.getId() + "/level";
         String level= "Advanced";
+        String emptyLevel="";
+        String invalidLevel="Hello";
 
         // Act
         HttpEntity<String> request = new HttpEntity<>(level,headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<String> requestEmptyLevel = new HttpEntity<>(emptyLevel,headers);
+        ResponseEntity<HTTPDTO> responseEmptyLevel = client.exchange(url, HttpMethod.PUT, requestEmptyLevel,HTTPDTO.class);
+        HttpEntity<String> requestInvalidLevel = new HttpEntity<>(invalidLevel,headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalidLevel,HTTPDTO.class);
 
+        assertNotNull(responseInvalid);
+        assertEquals("Requires valid level", responseInvalid.getBody().getMessage());
+        assertNotNull(responseEmptyLevel);
+        assertEquals("Requires valid level", responseEmptyLevel.getBody().getMessage());
         assertNotNull(response);
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);
@@ -243,12 +254,22 @@ public class CourseIntegrationTests {
         assertNotNull(course);
         String url = "/courses/" + course.getId() + "/rate";
         Double hourlyRateAmount= 12.45;
+        Double emptyhourlyRateAmount=null;
+        Double invalidhourlyRateAmount=-1000.00;
 
         // Act
         HttpEntity<Double> request = new HttpEntity<>(hourlyRateAmount,headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<Double> requestInvalid = new HttpEntity<>(emptyhourlyRateAmount,headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
+        HttpEntity<Double> requestInvalidhourlyRateAmount = new HttpEntity<>(invalidhourlyRateAmount,headers);
+        ResponseEntity<HTTPDTO> responseInvalidhourlyRateAmount = client.exchange(url, HttpMethod.PUT, requestInvalidhourlyRateAmount,HTTPDTO.class);
 
         assertNotNull(response);
+        assertNotNull(responseInvalid);
+        assertNotNull(requestInvalidhourlyRateAmount);
+        assertEquals("Requires valid hourly rate amount", responseInvalid.getBody().getMessage());
+        assertEquals("Course rate must be a positive number", responseInvalidhourlyRateAmount.getBody().getMessage());
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);
         assertEquals("Spin", updatedCourse.getName());
@@ -321,10 +342,15 @@ public class CourseIntegrationTests {
         room.setRoomName("Spin room");
         roomRepository.save(room);
         assertNotNull(roomRepository.findRoomById(room.getId()));
+
         // Act
         HttpEntity<String> request = new HttpEntity<>(room.getId(),headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<String> requestInvalid = new HttpEntity<>("123456",headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
 
+        assertNotNull(responseInvalid);
+        assertEquals("Room not found", responseInvalid.getBody().getMessage());
         assertNotNull(response);
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);
@@ -348,7 +374,11 @@ public class CourseIntegrationTests {
         // Act
         HttpEntity<String> request = new HttpEntity<>(instructor.getId(),headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<String> requestInvalid = new HttpEntity<>("123456",headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
 
+        assertNotNull(responseInvalid);
+        assertEquals("Instructor not found", responseInvalid.getBody().getMessage());
         assertNotNull(response);
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);
@@ -374,7 +404,11 @@ public class CourseIntegrationTests {
         // Act
         HttpEntity<String> request = new HttpEntity<>(schedule.getId(),headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
+        HttpEntity<String> requestInvalid = new HttpEntity<>("123456",headers);
+        ResponseEntity<HTTPDTO> responseInvalid = client.exchange(url, HttpMethod.PUT, requestInvalid,HTTPDTO.class);
 
+        assertNotNull(responseInvalid);
+        assertEquals("Schedule not found", responseInvalid.getBody().getMessage());
         assertNotNull(response);
         CourseDTO updatedCourse =new CourseDTO(courseRepository.findCourseByName("Spin"));
         assertNotNull(updatedCourse);

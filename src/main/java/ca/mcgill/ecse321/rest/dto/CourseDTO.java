@@ -22,7 +22,8 @@ public class CourseDTO {
     private Double hourlyRateAmount;
     private String courseState;
 
-
+    public CourseDTO(){
+    }
     public CourseDTO(Course course){
         if (course != null){
             if (course.getId() != null){
