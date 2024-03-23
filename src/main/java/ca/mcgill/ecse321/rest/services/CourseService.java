@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
-import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,19 +55,19 @@ public class CourseService {
     }
 
     @Transactional
-    public String createCourse(CourseDTO courseDTO, PersonSession personSession){
+    public String createCourse(String name, PersonSession personSession){
         if (personSession.getPersonType()== PersonSession.PersonType.Customer ){
             return "Must be an owner or instructor";
         }
-        if (!courseDTO.getSportCenter().equals(personSession.getSportCenterId())){
-            return "Invalid sport's center id";
-        }
-        if (courseDTO.getName().isEmpty()){
+        if (name== null || name.isEmpty()){
             return "Course requires name to be created";
         }
         Course course = new Course();
-        course.setName(courseDTO.getName());
-        course.setSportCenter(sportCenterRepository.findSportCenterById(courseDTO.getSportCenter()));
+        course.setName(name);
+        course.setSportCenter(sportCenterRepository.findSportCenterById(personSession.getSportCenterId()));
+        if (course.getSportCenter()==null){
+            return "Invalid sport's center id";
+        }
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
         return "";
@@ -115,7 +114,7 @@ public class CourseService {
                 courseRepository.save(course);
             }
             else {
-                return "Invalid level";
+                return "Requires valid level";
             }
         }
         return courseMessagePair.getMessage();
