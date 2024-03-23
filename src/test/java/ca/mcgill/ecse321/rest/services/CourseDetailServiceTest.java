@@ -118,7 +118,7 @@ class CourseDetailServiceTest {
         when(reg2.getCustomer()).thenReturn(new Customer());
 
         // Act
-        List<Customer> result = courseDetailService.getCustomers(courseId);
+        List<Customer> result = courseDetailService.getCustomers(courseId, null, null);
 
         // Assert
         assertNotNull(result);
