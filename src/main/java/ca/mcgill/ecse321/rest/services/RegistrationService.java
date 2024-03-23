@@ -217,6 +217,10 @@ public class RegistrationService {
         if (registrationID == null || registrationID.trim().isEmpty()) {
             return false;
         }
+        Registration registration =registrationRepository.findRegistrationById(registrationID);
+        if (registration == null){
+            return false;
+        }
 
         for (Registration r : registrationRepository.findAll()) {
             if (r.getId().equals(registrationID)){
@@ -247,6 +251,7 @@ public class RegistrationService {
 
     @Transactional
     public boolean cancelSpecificRegistration(PersonSession personSession, String registration_id){
+
         if(personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
             return cancelRegistration(registration_id);
         }
