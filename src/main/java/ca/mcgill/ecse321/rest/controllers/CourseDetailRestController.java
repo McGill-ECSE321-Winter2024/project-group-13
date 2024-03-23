@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -184,33 +182,31 @@ public class CourseDetailRestController {
 
 
     @GetMapping("/courses/{course_id}/customers")
-    public ResponseEntity<List<CustomerDTO>> getCustomers(@PathVariable("course_id") String courseId, @RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<List<CustomerDTO>> getCustomers(@PathVariable("course_id") String courseId,
+                                                          @RequestHeader("Authorization") String bearerToken,
+                                                          @RequestParam(required = false) String email,
+                                                          @RequestParam(required = false) String name) {
         try {
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
             Course course = courseDetailService.getSpecificCourse(courseId);
-            // Check for null if the course is not found
             if (course == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            // Only accessible to owner and instructor of the class
             boolean isOwner = personSession.getPersonType().equals(PersonSession.PersonType.Owner);
             boolean isInstructorOfCourse = courseDetailService.isInstructorOfCourse(courseId, personSession.getPersonId());
 
             if(isOwner || isInstructorOfCourse) {
-                List<Customer> customers = courseDetailService.getCustomers(courseId);
-                List<CustomerDTO> customerDTOS = new ArrayList<>();
-                for(Customer customer: customers){
-                    customerDTOS.add(new CustomerDTO(customer));
-                }
-                return ResponseEntity.ok(customerDTOS); // Return the list of customers with a 200 OK status
+                List<Customer> customers = courseDetailService.getCustomers(courseId, email, name); // Updated to pass email and name
+                List<CustomerDTO> customerDTOS = customers.stream().map(CustomerDTO::new).collect(Collectors.toList());
+                return ResponseEntity.ok(customerDTOS);
             } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Return a 403 Forbidden status if not authorized
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (IllegalArgumentException e) {
-            // Handle the case where token verification fails or any other IllegalArgumentException is thrown
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Return a 401 Unauthorized status
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
 
 }
