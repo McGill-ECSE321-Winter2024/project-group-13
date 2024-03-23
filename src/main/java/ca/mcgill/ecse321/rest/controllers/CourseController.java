@@ -48,21 +48,28 @@ public class CourseController {
 
     @PutMapping(value = { "/courses/{course_id}/description", "/courses/{course_id}/description/" })
     public ResponseEntity<HTTPDTO> updateCourseDescription(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
-            , @RequestBody String description) {
+            , @RequestBody(required = false)  String description) {
+        if (description==null || description.isEmpty()){
+            return badRequest("Invalid input");
+        }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.updateCourseDescription(person, course_id, description);
         return getResponse(errorMessage,"Course description changed");
     }
     @PutMapping(value = { "/courses/{course_id}/level", "/courses/{course_id}/level/" })
     public ResponseEntity<HTTPDTO> updateCourseLevel(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
-            , @RequestBody String level) {
+            , @RequestBody(required = false) String level) {
+        if (level==null || level.isEmpty()){
+            return badRequest("Invalid input");
+        }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.updateCourseLevel(person, course_id, level);
         return getResponse(errorMessage,"Course level changed");
     }
     @PutMapping(value = { "/courses/{course_id}/rate", "/courses/{course_id}/rate/" })
     public ResponseEntity<HTTPDTO> updateCourseRate(@PathVariable String course_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
-            , @RequestBody Double hourlyRateAmount) {
+            , @RequestBody(required = false) Double hourlyRateAmount) {
+
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseService.updateCourseRate(person, course_id, hourlyRateAmount);
         return getResponse(errorMessage,"Course rate changed");
