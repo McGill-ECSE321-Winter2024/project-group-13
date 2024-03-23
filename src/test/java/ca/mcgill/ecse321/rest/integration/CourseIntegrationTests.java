@@ -145,7 +145,7 @@ public class CourseIntegrationTests {
         String url = "/courses/" + course.getId() + "/approve";
 
         // Act
-        HttpEntity<CourseDTO> request = new HttpEntity<>(headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
 
         // Assert

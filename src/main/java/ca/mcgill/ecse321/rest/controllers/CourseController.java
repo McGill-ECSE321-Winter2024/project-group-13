@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.rest.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -20,6 +21,11 @@ public class CourseController {
     private CourseService courseService;
     @Autowired
     private AuthenticationService authenticationService;
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
+        // Create an error response with appropriate message
+        return badRequest("Invalid input type");
+    }
     @PostMapping(value = { "/courses", "/courses/" })
     public ResponseEntity<HTTPDTO> createCourse(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody CourseDTO courseDTO) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
