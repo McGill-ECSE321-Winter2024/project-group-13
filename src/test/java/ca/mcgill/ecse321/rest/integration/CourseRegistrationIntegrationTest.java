@@ -48,9 +48,9 @@ public class CourseRegistrationIntegrationTest {
         SportCenter sportCenter = createAndSaveSportCenter();
         createCourses();
 
-        String customerId = createAndSavePerson(Customer.class, "Customer", "my-customer@mail.com", "8198884888", sportCenter);
-        String ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss@mail.com", "8198808888", sportCenter);
-        String instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor@mail.com", "8198888889", sportCenter);
+        String customerId = createAndSavePerson(Customer.class, "Customer", "my-customer1@mail.com", "8198884888", sportCenter);
+        String ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss1@mail.com", "8198808888", sportCenter);
+        String instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor1@mail.com", "8198888889", sportCenter);
 
         // Issue a valid token
         customerToken = authenticationService.issueToken(customerId);
