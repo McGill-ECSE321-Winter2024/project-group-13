@@ -26,7 +26,7 @@ public class SportCenterService {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
             SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
             sportCenter.setName(newName);
-            sportCenter = sportCenterRepository.save(sportCenter);
+            sportCenterRepository.save(sportCenter);
             return true;
         }
         return false;
@@ -36,7 +36,7 @@ public class SportCenterService {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
               SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
               sportCenter.setAddress(newAddress);
-              sportCenter = sportCenterRepository.save(sportCenter);
+              sportCenterRepository.save(sportCenter);
               return true;
         }
         return false;
@@ -47,7 +47,7 @@ public class SportCenterService {
               SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
               Schedule newSchedule = convertToEntity(newScheduleDTO);
               sportCenter.setSchedule(newSchedule);
-              sportCenter = sportCenterRepository.save(sportCenter);
+              sportCenterRepository.save(sportCenter);
               return true;
         }
         return false;
