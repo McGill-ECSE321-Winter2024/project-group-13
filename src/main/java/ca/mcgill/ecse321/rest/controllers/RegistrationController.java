@@ -4,12 +4,18 @@ import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.CustomerDTO;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;
 import ca.mcgill.ecse321.rest.dto.RegistrationDTO;
+import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -21,40 +27,111 @@ public class RegistrationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @GetMapping("/registrations")
-    List<RegistrationDTO> getRegistrations(@RequestHeader("Authorization") String bearerToken){
+    @GetMapping(value = { "/registrations", "/registrations/"})
+    ResponseEntity<?> getRegistrations(@RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken){
+
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
-        return convertRegistrationListToDTO(registrationService.getRegistrations(personSession));
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            List<Registration> registrations = registrationService.getAllRegistrations();
+            return new ResponseEntity<>(convertRegistrationListToDTO(registrations), HttpStatus.OK) ;}
+
+        else if (personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
+            List<Registration> registrations = registrationService.getRegistrationsForInstructor(personSession.getPersonId());
+            if (registrations==null){return DefaultHTTPResponse.badRequest("InstructorID cannot be empty!");}
+            return new ResponseEntity<>(convertRegistrationListToDTO(registrations), HttpStatus.OK) ;}
+
+        else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+            List<Registration> registrations = registrationService.getRegistrationsForCustomer(personSession.getPersonId());
+            if (registrations==null){return DefaultHTTPResponse.badRequest("CustomerID cannot be empty!");}
+            return new ResponseEntity<>(convertRegistrationListToDTO(registrations), HttpStatus.OK) ;}
+
+        else {
+           return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+        }
+
+
+@GetMapping(value = {"/registrations/{registration_id}", "/registrations/{registration_id}/"})
+public ResponseEntity<?> getSpecificRegistration(@PathVariable String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
+
+        PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
+
+    if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+        Registration registrations = registrationService.getSpecificRegistrationByID(registration_id);
+        if (registrations==null){return DefaultHTTPResponse.badRequest("Please check RegistrationID");}
+        return new ResponseEntity<>(convertToDTO(registrations), HttpStatus.OK) ;}
+
+    else if (personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
+        Registration registrations = registrationService.getSpecificRegistrationByIDForInstructor(personSession.getPersonId(), registration_id);
+        if (registrations==null){return DefaultHTTPResponse.badRequest("Please check InstructorID or RegistrationID");}
+        return new ResponseEntity<>(convertToDTO(registrations), HttpStatus.OK) ;}
+
+    else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+        Registration registrations = registrationService.getSpecificRegistrationByIDForCustomer(personSession.getPersonId(), registration_id);
+        if (registrations==null){return DefaultHTTPResponse.badRequest("Please check CustomerID or RegistrationID");}
+        return new ResponseEntity<>(convertToDTO(registrations), HttpStatus.OK) ;}
+
+    else {
+        return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+
+}
+
+    @RequestMapping(value = {"/registrations/{registration_id}/cancel","/registrations/{registration_id}/cancel/"} , method = RequestMethod.POST)
+    Boolean cancelSpecificRegistration(@PathVariable("registration_id") String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
+        PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
+
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            Boolean registrations = registrationService.cancelRegistration(registration_id);
+            //if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check RegistrationID");}
+           // return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+        return registrations;}
+
+        else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+            Boolean registrations = registrationService.cancelRegistrationByCustomer(personSession.getPersonId(), registration_id);
+           // if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID or RegistrationID");}
+            //return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+            return registrations;}
+
+        else {
+          //  return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+            return false;}
+
     }
 
-    @GetMapping("/registrations/{registration_id}")
-    RegistrationDTO getSpecificRegistration(@RequestHeader("Authorization") String bearerToken, @PathVariable("registration_id") String registration_id) {
+    @RequestMapping(value = {"/registrations/{registration_id}/{rating}","/registrations/{registration_id}/{rating}/" }, method = RequestMethod.POST)
+    Boolean updateRegistrationRating(@PathVariable("registration_id") String registration_id ,@PathVariable("rating") Integer rating, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
-        return convertToDTO(registrationService.getSpecificRegistration(personSession, registration_id));
-    }
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+            Boolean registrations = registrationService.updateRegistrationRating(personSession,registration_id, rating);
+            //if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID, RegistrationID or Rating");}
+            return registrations;}
 
-    @RequestMapping(value = "/registrations/{registration_id}/cancel", method = RequestMethod.POST)
-    boolean cancelSpecificRegistration(@RequestHeader("Authorization") String bearerToken, @PathVariable("registration_id") String registration_id) {
-        PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
-
-        return registrationService.cancelSpecificRegistration(personSession, registration_id);
-    }
-
-    @RequestMapping(value = "/registrations/{registration_id}/{rating}", method = RequestMethod.POST)
-    boolean updateRegistrationRating(@RequestHeader("Authorization") String bearerToken, @PathVariable("registration_id") String registration_id ,@PathVariable("rating") Integer rating) {
-        PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
-
-        return registrationService.updateRegistrationRating(personSession, registration_id, rating);
+        else {
+            return false;}
 
     }
 
-    @GetMapping("/registrations/{registration_id}/invoices")
-    List<InvoiceDTO> getInvoicesForRegistration(@RequestHeader("Authorization") String bearerToken, @PathVariable("registration_id") String registration_id) {
+    @GetMapping(value = {"/registrations/{registration_id}/invoices", "/registrations/{registration_id}/invoices"})
+    ResponseEntity<?>  getInvoicesForRegistration(@PathVariable("registration_id") String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
+
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
-        return convertInvoiceListToDTO(registrationService.getInvoices(personSession, registration_id));
+
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            List<Invoice> registrations = registrationService.getInvoicesForRegistration(registration_id);
+            if (registrations ==null ){return DefaultHTTPResponse.badRequest("Please check RegistrationID");}
+            return new ResponseEntity<>(convertInvoiceListToDTO(registrations), HttpStatus.OK) ;}
+
+        else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+            List<Invoice> registrations = registrationService.getInvoicesForCustomerRegistration(personSession.getPersonId(), registration_id);
+            if (registrations==null){return DefaultHTTPResponse.badRequest("Please check CustomerID or RegistrationID");}
+            return new ResponseEntity<>(convertInvoiceListToDTO(registrations), HttpStatus.OK) ;}
+
+        else {
+            List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
+            return new ResponseEntity<>(invoiceDTOS, HttpStatus.BAD_REQUEST) ;}
+
     }
 
     private RegistrationDTO convertToDTO(Registration registration){
@@ -62,7 +139,7 @@ public class RegistrationController {
         CustomerDTO customerDTO = new CustomerDTO(registration.getCustomer());
         CourseDTO courseDTO = new CourseDTO(registration.getCourse());
 
-        return new RegistrationDTO(customerDTO, courseDTO, registration.getRating());
+        return new RegistrationDTO(registration);
     }
 
     private List<RegistrationDTO> convertRegistrationListToDTO(List<Registration> registrations){
@@ -74,11 +151,19 @@ public class RegistrationController {
         return registrationDTOS;
 
     }
+
+    private InvoiceDTO convertToDTO(Invoice invoice){
+
+        InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
+        invoiceDTO.setRegistrationDTO(convertToDTO(invoice.getRegistration()));
+        return invoiceDTO;
+    }
+
     private List<InvoiceDTO> convertInvoiceListToDTO(List<Invoice> invoices){
         List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
 
         for (Invoice i : invoices) {
-            invoiceDTOS.add(new InvoiceDTO(i));
+            invoiceDTOS.add(convertToDTO(i));
         }
         return invoiceDTOS;
 

@@ -34,7 +34,6 @@ public class CourseDetailIntegrationTest {
     @Autowired private CourseRepository courseRepository;
     @Autowired private ScheduleRepository scheduleRepository;
     @Autowired private PersonRepository personRepository;
-    @Autowired private OwnerRepository ownerRepository;
     @Autowired private CustomerRepository customerRepository;
     @Autowired private InstructorRepository instructorRepository;
     @Autowired private SportCenterRepository sportCenterRepository;
@@ -57,12 +56,12 @@ public class CourseDetailIntegrationTest {
     @BeforeAll
     public void setup() {
         clearRepositories();
-        SportCenter sportCenter = createAndSaveSportCenter("Gold's Gym");
+        SportCenter sportCenter = createAndSaveSportCenter();
 
-        firstCustomerId = createAndSavePerson(Customer.class, "Hamid", "my-customer@mail.com", "test", "8198888888", sportCenter);
-        secondCustomerId = createAndSavePerson(Customer.class, "Elias", "my-customer2@mail.com", "test", "8198884888", sportCenter);
-        ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss@mail.com", "test", "8198808888", sportCenter);
-        instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor@mail.com", "test", "8198888889", sportCenter);
+        firstCustomerId = createAndSavePerson(Customer.class, "Hamid", "my-customer@mail.com", "8198888888", sportCenter);
+        secondCustomerId = createAndSavePerson(Customer.class, "Elias", "my-customer2@mail.com", "8198884888", sportCenter);
+        ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss@mail.com", "8198808888", sportCenter);
+        instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor@mail.com", "8198888889", sportCenter);
 
         createCourses();
         createRegistrations();
@@ -108,20 +107,20 @@ public class CourseDetailIntegrationTest {
         registrationRepository.save(secondRegistration);
     }
 
-    private SportCenter createAndSaveSportCenter(String name) {
+    private SportCenter createAndSaveSportCenter() {
         SportCenter sportCenter = new SportCenter();
-        sportCenter.setName(name);
+        sportCenter.setName("Gold's Gym");
         return sportCenterRepository.save(sportCenter);
     }
 
-    private <T extends Person> String createAndSavePerson(Class<T> type, String name, String email, String password, String phoneNumber, SportCenter sportCenter) {
+    private <T extends Person> String createAndSavePerson(Class<T> type, String name, String email, String phoneNumber, SportCenter sportCenter) {
         T person;
         try {
             person = type.getDeclaredConstructor().newInstance();
 
             person.setName(name);
             person.setEmail(email);
-            person.setPassword(password);
+            person.setPassword("test");
             person.setPhoneNumber(phoneNumber);
 
             //After debuging it seems that the owner needs to be saved before associating with the sports center
@@ -166,28 +165,41 @@ public class CourseDetailIntegrationTest {
         return course.getId();
     }
 
+    private void assertOKResponse(ResponseEntity<?> response, String message) {
+        assertEquals(HttpStatus.OK, response.getStatusCode(), message);
+        assertNotNull(response.getBody(), "Response body should not be null");
+    }
+
+    private <T> ResponseEntity<T> performGetRequest(String token, String url, Class<T> responseType) {
+        HttpEntity<String> entity = createHttpEntity(token);
+        return restTemplate.exchange(url, HttpMethod.GET, entity, responseType);
+    }
+
+    private HttpEntity<String> createHttpEntity(String token) {
+        return new HttpEntity<>(createHeaders(token));
+    }
+    private HttpHeaders createHeaders(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return headers;
+    }
+
+
+
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------- Testing getSchedule() controller method ---------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------
 
     @Test
     public void customerTriesToAccessTheScheduleOfAnApprovedCourse_ValidRequest() {
-        //Issue token for customer
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to your endpoint
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                approvedCourseId);
+        // Issue token for customer and Make a GET request to your endpoint
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/"+approvedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -198,21 +210,11 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void customerTriesToAccessScheduleOfUnapprovedCourse_ForbiddenRequest() {
-        // Issue a token for the customer
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the endpoint for the unapproved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                unapprovedCourseOwnedId);
+        // Issue a token for the customer and Make a GET request to the endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/"+unapprovedCourseOwnedId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response status should be FORBIDDEN");
@@ -221,24 +223,14 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void ownerAccessesApprovedCourseSchedule_ValidRequest() {
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the endpoint for the unapproved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                approvedCourseId);
+        // Issue a token for the owner and Make a GET request to the endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/"+approvedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -248,24 +240,14 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void ownerAccessesUnapprovedCourseSchedule_ValidRequest() {
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the endpoint for the unapproved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                unapprovedCourseId);
+        // Issue a token for the owner and Make a GET request to the endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/"+unapprovedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForUnapprovedCourse); // Assuming you have a matching constructor or setters
@@ -275,25 +257,14 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void instructorAccessesOwnedCourseSchedule_ValidRequest() {
-        // Issue token for the instructor
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to your endpoint for the unapproved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                unapprovedCourseOwnedId);
+        // Issue token for the instructor and Make a GET request to your endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+unapprovedCourseOwnedId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForUnapprovedCourseOwned); // Assuming you have a matching constructor or setters
@@ -303,25 +274,15 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void instructorAccessesUnownedApprovedCourseSchedule_ValidRequest() {
-        // Issue token for the instructor
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to your endpoint for the approved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                approvedCourseId); // `approvedCourseId` is for a course the instructor does not own
+        // Issue token for the instructor and Make a GET request to your endpoint for the approved course's schedule
+        // `approvedCourseId` is for a course the instructor does not own
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+approvedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -332,21 +293,11 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void instructorDeniedAccessToUnownedUnapprovedCourseSchedule_ForbiddenRequest() {
-        // Issue a token for the instructor
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the endpoint for the unapproved course's schedule
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                unapprovedCourseId);
+        // Issue a token for the instructor and Make a GET request to the endpoint for the unapproved course's schedule
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+unapprovedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assertions
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response status should be FORBIDDEN");
@@ -356,20 +307,11 @@ public class CourseDetailIntegrationTest {
     @Test
     public void tokenVerificationFailed() {
         // Issue an invalid token. Here, we just create a random string that doesn't correspond to any valid token.
-        String invalidToken = "invalidToken12345";
-
-        // Set up the Authorization header with the invalid token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + invalidToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to your endpoint with the invalid token. The choice of course doesn't matter here since the request should fail due to the invalid token, but we'll use the approvedCourseId for consistency.
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                approvedCourseId);
+        // Make a GET request to your endpoint with the invalid token.
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                "invalidToken12345",
+                "/courses/"+approvedCourseId+"/schedule",
+                ScheduleDTO.class);
 
         // Assert that the response status is UNAUTHORIZED
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), "Response status should be UNAUTHORIZED");
@@ -380,71 +322,45 @@ public class CourseDetailIntegrationTest {
     @Test
     public void courseNotFound() {
         // Issue token for an existing user, for simplicity we'll use the customer already setup
-        String userToken = authenticationService.issueToken(firstCustomerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + userToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
         // Use a non-existent courseId in the GET request to your endpoint
-        String nonExistentCourseId = "non-existent-course-id";
-        ResponseEntity<ScheduleDTO> response = restTemplate.exchange(
-                "/courses/{course_id}/schedule",
-                HttpMethod.GET,
-                entity,
-                ScheduleDTO.class,
-                nonExistentCourseId);
+        ResponseEntity<ScheduleDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/non-existent-course-id/schedule",
+                ScheduleDTO.class);
 
         // Assert that the response status is NOT_FOUND
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Response status should be NOT_FOUND");
         assertNull(response.getBody(), "Response body should be null because the course does not exist");
     }
 
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------- Testing getAllCourses() controller method -------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------
+
     @Test
     public void ownerRetrievesAllCourses_ValidRequest() {
-        // Issue token for the owner
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the `/courses` endpoint
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        // Issue token for the owner and Make a GET request to the `/courses` endpoint
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
                 "/courses",
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
         assertEquals(4, receivedCourses.size(), "Should return all courses");
     }
 
     @Test
     public void instructorAccessesActiveAndOwnedCourses_ValidRequest() {
-        // Issue token for the instructor
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the `/courses` endpoint
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        // Issue token for the instructor and Make a GET request to the `/courses` endpoint
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
                 "/courses",
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
 
         // Verify that received courses include both the active course and the owned inactive course
@@ -461,24 +377,14 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void customerAccessesActiveCoursesOnly_ValidRequest() {
-        // Issue token for the customer
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        // Set up the Authorization header with the bearer token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Make a GET request to the `/courses` endpoint
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        // Issue token for the customer Make a GET request to the `/courses` endpoint
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
                 "/courses",
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
 
         // Verify that received courses include the active course and do not include any inactive courses
@@ -492,16 +398,10 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void unauthorizedAccessReturnsUnauthorized() {
-        String fakeToken = "fake1234";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + fakeToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        // Make a GET request to the `/courses` endpoint using a fake token
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                "fake1234",
                 "/courses",
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), "Response status should be FORBIDDEN");
@@ -514,20 +414,13 @@ public class CourseDetailIntegrationTest {
         courseRepository.deleteAll();
 
         // Issue token for a valid user, for simplicity, let's use the owner
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        // Make a GET request to the `/courses` endpoint
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
                 "/courses",
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         assertEquals(0, response.getBody().length, "Response body should be an empty list");
 
         //Restore courses
@@ -536,193 +429,30 @@ public class CourseDetailIntegrationTest {
     }
 
     @Test
-    public void ownerAccessesAnyCourse_ValidRequest() {
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Try to access an unowned inactive course
-        ResponseEntity<CourseDTO> responseInactive = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                unapprovedCourseId);
-
-        assertEquals(HttpStatus.OK, responseInactive.getStatusCode());
-        assertNotNull(responseInactive.getBody());
-        assertEquals("Unapproved Test Course Not Owned by Anyone", responseInactive.getBody().getName());
-
-        // Try to access an owned active course
-        ResponseEntity<CourseDTO> responseActive = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                approvedCourseId);
-
-        assertEquals(HttpStatus.OK, responseActive.getStatusCode());
-        assertNotNull(responseActive.getBody());
-        assertEquals("Approved Test Course", responseActive.getBody().getName());
-    }
-
-    @Test
-    public void instructorAccessesOwnedCourse_ValidRequest() {
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Accessing a course instructed by the same instructor
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                unapprovedCourseOwnedId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Unapproved Test Course Owned by Instructor", response.getBody().getName());
-    }
-
-    @Test
-    public void instructorAccessesUnownedActiveCourse_ValidRequest() {
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Accessing an active course not instructed by the same instructor
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                approvedCourseId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Approved Test Course", response.getBody().getName());
-    }
-
-
-    @Test
-    public void instructorDeniedAccessToUnownedInactiveCourse() {
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Attempt to access an unowned and inactive course
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                unapprovedCourseId); // Ensure this is an ID of an inactive course not owned by the instructor
-
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    public void customerAccessesActiveCourse() {
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Accessing an active course
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                approvedCourseId); // Ensure this is an ID of an active course
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Approved Test Course", response.getBody().getName());
-    }
-
-    @Test
-    public void customerDeniedAccessToInactiveCourse() {
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Attempt to access an inactive course
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                unapprovedCourseId); // Ensure this is an ID of an inactive course
-
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-
-    @Test
     public void queryApprovedCourses_ReturnsApprovedCoursesOnly() {
-        // Issue token for the owner, assuming the owner has the privilege to query all courses
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Query parameter for filtering by course state
-        String url = "/courses?state=Approved";
-
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
+        // Issue token for the owner and Query parameter for filtering by course state
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses?state=Approved",
                 CourseDTO[].class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
-        // Check that all returned courses are in the APPROVED state
+        assertOKResponse(response, "Response status should be OK");
+        // Check that all returned courses are in the Approved state
         assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getCourseState().equals("Approved")), "All returned courses should be Approved");
     }
 
     @Test
     public void queryCoursesByStartDate_ReturnsCoursesStartingAfterGivenDate() {
         // Issue token for a role that has the privilege to query courses, such as the owner
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        // Prepare the HttpHeaders with the Authorization token
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        // Define the start date filter
-        // For demonstration, let's assume you want to filter courses starting after March 15, 2023
+        // Define the start date filter and perform the GET request
         String startDate = "2023-03-15";
-
-        // The endpoint URL with the startDate query parameter
-        String url = "/courses?startDate=" + startDate;
-
-        // Perform the GET request
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses?startDate="+startDate,
                 CourseDTO[].class);
 
         // Assertions
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
 
         // Convert the response body to a list for easier handling
         List<CourseDTO> courses = Arrays.asList(response.getBody());
@@ -735,62 +465,125 @@ public class CourseDetailIntegrationTest {
 
     @Test
     public void queryCoursesByInstructor_ReturnsInstructorSpecificCourses() {
-        // Issue token for an owner or an admin role that can query courses based on instructor
-        String ownerToken = authenticationService.issueToken(ownerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
         // Assuming the instructor's name is part of the URL query parameter
         Instructor instructor = instructorRepository.findInstructorById(instructorId);
         String url = "/courses?instructorName=" + instructor.getName();
 
-        ResponseEntity<CourseDTO[]> response = restTemplate.exchange(
+        ResponseEntity<CourseDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
                 url,
-                HttpMethod.GET,
-                entity,
                 CourseDTO[].class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         // Check that all returned courses are associated with the specified instructor
         assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getInstructor().equals(instructor.getId())), "All returned courses should be taught by the specified instructor");
     }
 
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------- Testing getCourse() controller method -----------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void ownerAccessesAnyCourse_ValidRequest() {
+        String ownerToken = authenticationService.issueToken(ownerId);
+
+        // Try to access an unowned inactive course
+        ResponseEntity<CourseDTO> responseInactive = performGetRequest(
+                ownerToken,
+                "/courses/"+unapprovedCourseId,
+                CourseDTO.class);
+
+        assertEquals(HttpStatus.OK, responseInactive.getStatusCode());
+        assertNotNull(responseInactive.getBody());
+        assertEquals("Unapproved Test Course Not Owned by Anyone", responseInactive.getBody().getName());
+
+        // Try to access an owned active course
+        ResponseEntity<CourseDTO> responseActive = performGetRequest(
+                ownerToken,
+                "/courses/"+approvedCourseId,
+                CourseDTO.class);
+
+        assertOKResponse(responseActive, "Response status should be OK");
+        assertEquals("Approved Test Course", responseActive.getBody().getName());
+    }
+
+    @Test
+    public void instructorAccessesOwnedCourse_ValidRequest() {
+        // Accessing a course instructed by the same instructor
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+unapprovedCourseOwnedId,
+                CourseDTO.class);
+
+        assertOKResponse(response, "Response status should be OK");
+        assertEquals("Unapproved Test Course Owned by Instructor", response.getBody().getName());
+    }
+
+    @Test
+    public void instructorAccessesUnownedActiveCourse_ValidRequest() {
+        // Accessing an active course not instructed by the same instructor
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+approvedCourseId,
+                CourseDTO.class);
+
+        assertOKResponse(response, "Response status should be OK");
+        assertEquals("Approved Test Course", response.getBody().getName());
+    }
+
+
+    @Test
+    public void instructorDeniedAccessToUnownedInactiveCourse() {
+        // Attempt to access an unowned and inactive course
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+unapprovedCourseId,
+                CourseDTO.class);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void customerAccessesActiveCourse() {
+        // Accessing an active course
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/"+approvedCourseId,
+                CourseDTO.class);
+
+        assertOKResponse(response, "Response status should be OK");
+        assertEquals("Approved Test Course", response.getBody().getName());
+    }
+
+    @Test
+    public void customerDeniedAccessToInactiveCourse() {
+        // Attempt to access an inactive course
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/"+unapprovedCourseId,
+                CourseDTO.class);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
     @Test
     public void unauthorizedUserRoleDeniedAccess() {
-        // Assuming there's a way to issue a token for an unsupported role, or manually create a token
-        String unsupportedRoleToken = "someTokenForUnsupportedRole";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + unsupportedRoleToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                approvedCourseId); // Use an existing course ID
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                "someTokenForUnsupportedRole",
+                "/courses/"+approvedCourseId,
+                CourseDTO.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
     public void invalidTokenResultsInUnauthorized() {
-        String invalidToken = "invalidToken123";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + invalidToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                approvedCourseId); // Use an existing course ID
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                "invalidToken123",
+                "/courses/"+approvedCourseId,
+                CourseDTO.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -798,175 +591,115 @@ public class CourseDetailIntegrationTest {
     @Test
     public void nonexistentCourseReturnsNotFound() {
         // Use a valid token for this test to ensure the response is specifically about the course not existing
-        String validToken = authenticationService.issueToken(firstCustomerId); // Or any valid user
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + validToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        String nonexistentCourseId = "nonexistentCourseId";
-        ResponseEntity<CourseDTO> response = restTemplate.exchange(
-                "/courses/{course_id}",
-                HttpMethod.GET,
-                entity,
-                CourseDTO.class,
-                nonexistentCourseId);
+        ResponseEntity<CourseDTO> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/nonexistentCourseId",
+                CourseDTO.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------- Testing getCustomers() controller method --------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------
     @Test
-    public void ownerAccessesCourseCustomers_ValidRequest() {
-        String ownerToken = authenticationService.issueToken(ownerId);
+    public void ownerAccessesCourseWithCustomers_ValidRequest() {
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/"+courseWithCustomersId+"/customers",
+                CustomerDTO[].class);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + ownerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                courseWithCustomersId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         assertTrue(response.getBody().length > 0, "Response body should contain at least one customer");
     }
 
     @Test
     public void instructorAccessesOwnCourseCustomers_ValidRequest() {
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
         // Assuming `courseWithCustomersId` is the ID of a course instructed by the current instructor
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                courseWithCustomersId);
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+courseWithCustomersId+"/customers",
+                CustomerDTO[].class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         assertTrue(response.getBody().length > 0, "Response body should contain at least one customer");
     }
 
 
     @Test
     public void instructorDeniedAccessToOtherCourseCustomers_ForbiddenRequest() {
-        String instructorToken = authenticationService.issueToken(instructorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + instructorToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
         // Use a course ID that the instructor does not own
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                unapprovedCourseId);
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(instructorId),
+                "/courses/"+unapprovedCourseId+"/customers",
+                CustomerDTO[].class);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response status should be FORBIDDEN");
     }
 
     @Test
     public void customerDeniedAccess_ForbiddenRequest() {
-        String customerToken = authenticationService.issueToken(firstCustomerId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                courseWithCustomersId);
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(firstCustomerId),
+                "/courses/"+courseWithCustomersId+"/customers",
+                CustomerDTO[].class);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Response status should be FORBIDDEN");
     }
 
     @Test
     public void unauthorizedUserRoleDeniedAccessToCustomers() {
-        String fakeToken = "fake1234"; // Assuming a mechanism to generate or use an invalid token
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + fakeToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                courseWithCustomersId);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), "Response status should be UNAUTHORIZED");
-    }
-
-    @Test
-    public void invalidTokenResultsInUnauthorizedAccessToCustomers() {
-        String invalidToken = "invalidToken"; // Simulate an invalid token
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + invalidToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                courseWithCustomersId);
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                "fake1234",
+                "/courses/"+courseWithCustomersId+"/customers",
+                CustomerDTO[].class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), "Response status should be UNAUTHORIZED");
     }
 
     @Test
     public void nonexistentCourseReturnsNotFoundAccessToCustomers() {
-        String validToken = authenticationService.issueToken(ownerId); // Use a valid owner or instructor token
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + validToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        String nonexistentCourseId = "nonexistentCourseId";
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                nonexistentCourseId);
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/nonexistentCourseId/customers",
+                CustomerDTO[].class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Response status should be NOT_FOUND");
     }
 
     @Test
     public void ownerOrInstructorWithValidTokenButNoCustomers() {
-        String validToken = authenticationService.issueToken(ownerId); // Use a valid owner or instructor token
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/"+approvedCourseId+"/customers",
+                CustomerDTO[].class);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + validToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<CustomerDTO[]> response = restTemplate.exchange(
-                "/courses/{course_id}/customers",
-                HttpMethod.GET,
-                entity,
-                CustomerDTO[].class,
-                approvedCourseId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
-        assertNotNull(response.getBody(), "Response body should not be null");
+        assertOKResponse(response, "Response status should be OK");
         assertEquals(0, response.getBody().length, "Response body should be an empty list");
+    }
+
+    @Test
+    public void ownerAccessesCourseCustomersFilteredByEmail_ValidRequest() {
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/" + courseWithCustomersId + "/customers?email=my-customer@mail.com",
+                CustomerDTO[].class);
+
+        assertOKResponse(response, "Response status should be OK");
+        assertEquals(1, response.getBody().length, "Response body should contain one customer with the specified email");
+        assertEquals("my-customer@mail.com", response.getBody()[0].getEmail(), "The email of the returned customer should match the query parameter");
+    }
+
+    @Test
+    public void ownerAccessesCourseCustomersFilteredByName_ValidRequest() {
+        ResponseEntity<CustomerDTO[]> response = performGetRequest(
+                authenticationService.issueToken(ownerId),
+                "/courses/" + courseWithCustomersId + "/customers?name=Hamid",
+                CustomerDTO[].class);
+
+        assertOKResponse(response, "Response status should be OK");
+        assertTrue(response.getBody().length > 0, "Response body should contain at least one customer with the specified name");
+        assertTrue(Arrays.stream(response.getBody()).anyMatch(customer -> customer.getName().equals("Hamid")), "The name of at least one returned customer should match the query parameter");
     }
 
 

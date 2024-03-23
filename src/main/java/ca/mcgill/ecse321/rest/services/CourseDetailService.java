@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CourseDetailService {
@@ -43,14 +45,20 @@ public class CourseDetailService {
         return courseRepository.findCourseById(courseId);
     }
 
-    public List<Customer> getCustomers(String courseId){
+    public List<Customer> getCustomers(String courseId, String email, String name){
         List<Registration> registrations = registrationRepository.findRegistrationByCourseId(courseId);
-        List<Customer> customers = new ArrayList<>();
-        for(Registration registration: registrations){
-            customers.add(registration.getCustomer());
+        Stream<Customer> customerStream = registrations.stream().map(Registration::getCustomer);
+
+        if (email != null && !email.isEmpty()) {
+            customerStream = customerStream.filter(customer -> customer.getEmail().equals(email));
         }
-        return customers;
+        if (name != null && !name.isEmpty()) {
+            customerStream = customerStream.filter(customer -> customer.getName().equalsIgnoreCase(name));
+        }
+
+        return customerStream.collect(Collectors.toList());
     }
+
 
     public List<Course> getActiveCourses() {
         // This will retrieve only the courses with the state 'Approved'

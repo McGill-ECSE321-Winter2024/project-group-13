@@ -1,27 +1,41 @@
 package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Registration;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class RegistrationDTO {
 
+    @JsonIgnore
     private CustomerDTO customer;
     private CourseDTO course;
     private Integer rating;
 
-    public RegistrationDTO(){}
+    private String id;
 
-    public RegistrationDTO(CustomerDTO customer, CourseDTO course, Integer rating){
-        this.customer = customer;
-        this.course = course;
-        this.rating = rating;
-
+    public RegistrationDTO(){
     }
 
-    public RegistrationDTO(Registration registration){
-        this.customer = new CustomerDTO(registration.getCustomer());
-        this.course = new CourseDTO(registration.getCourse());
-        this.rating = registration.getRating();
 
+
+    public RegistrationDTO(Registration registration){
+
+        if (registration!=null) {
+            if (registration.getCustomer()!=null){
+            this.customer = new CustomerDTO(registration.getCustomer());}
+
+            if (registration.getCourse()!=null){
+
+            this.course = new CourseDTO(registration.getCourse());
+
+                }
+
+
+            if ((registration.getRating()>= 1) && (registration.getRating()<=5)){
+            this.rating = registration.getRating();}
+
+            if ((registration.getId()!=null)){
+                this.id = registration.getId();}
+        }
     }
 
 
@@ -39,6 +53,22 @@ public class RegistrationDTO {
 
     public void setCourse(CourseDTO course) {
         this.course = course;
+    }
+
+    public String getID() {
+        return id;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setID(String id) {
+        this.id = id;
     }
 
 }
