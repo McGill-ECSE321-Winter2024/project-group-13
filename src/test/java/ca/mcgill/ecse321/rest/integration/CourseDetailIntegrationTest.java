@@ -51,7 +51,6 @@ public class CourseDetailIntegrationTest {
     private Schedule scheduleForUnapprovedCourseOwned;
     private Schedule scheduleForUnapprovedCourse;
     private Schedule scheduleForApprovedCourse;
-//    private Schedule scheduleForCourseWithCustomers;
 
     @BeforeAll
     public void setup() {

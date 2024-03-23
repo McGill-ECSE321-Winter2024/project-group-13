@@ -112,7 +112,7 @@ public class CourseRegistrationIntegrationTest {
     }
 
     private void createCourses(){
-        unapprovedCourseId = createAndSaveCourse("Unapproved Test Course Not Owned by Anyone", Course.CourseState.Inactive, null);
+        unapprovedCourseId = createAndSaveCourse("Unapproved Test Course Not Owned by Anyone", Course.CourseState.Inactive, Timestamp.valueOf("2025-02-24 20:00:00"));
         RegistrationValidCourseId = createAndSaveCourse("Approved Test Course", Course.CourseState.Approved, Timestamp.valueOf("2025-02-24 20:00:00"));
         RegistrationInvalidCourseId = createAndSaveCourse("Approved Test Course but Ended", Course.CourseState.Approved, Timestamp.valueOf("2012-02-24 20:00:00"));
     }
