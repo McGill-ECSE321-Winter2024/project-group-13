@@ -17,6 +17,9 @@ public class SportCenterDTO {
         this.schedule= new ScheduleDTO(sportCenter.getSchedule());
     }
 
+    public SportCenterDTO(){
+    }
+
     public String getId() {
         return id;
     }
