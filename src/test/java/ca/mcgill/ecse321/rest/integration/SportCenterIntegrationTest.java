@@ -81,7 +81,7 @@ public class SportCenterIntegrationTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(customerAuthentication);
-        HttpEntity<SportCenterDTO> request = new HttpEntity<>(headers);
+        HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<SportCenterDTO> response = client.exchange("/sportcenter", HttpMethod.GET, request, SportCenterDTO.class);
 
         assertNotNull(response);
