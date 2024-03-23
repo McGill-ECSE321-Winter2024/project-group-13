@@ -56,12 +56,12 @@ public class CourseDetailIntegrationTest {
     @BeforeAll
     public void setup() {
         clearRepositories();
-        SportCenter sportCenter = createAndSaveSportCenter("Gold's Gym");
+        SportCenter sportCenter = createAndSaveSportCenter();
 
-        firstCustomerId = createAndSavePerson(Customer.class, "Hamid", "my-customer@mail.com", "test", "8198888888", sportCenter);
-        secondCustomerId = createAndSavePerson(Customer.class, "Elias", "my-customer2@mail.com", "test", "8198884888", sportCenter);
-        ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss@mail.com", "test", "8198808888", sportCenter);
-        instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor@mail.com", "test", "8198888889", sportCenter);
+        firstCustomerId = createAndSavePerson(Customer.class, "Hamid", "my-customer@mail.com", "8198888888", sportCenter);
+        secondCustomerId = createAndSavePerson(Customer.class, "Elias", "my-customer2@mail.com", "8198884888", sportCenter);
+        ownerId = createAndSavePerson(Owner.class, "Boss", "my-boss@mail.com", "8198808888", sportCenter);
+        instructorId = createAndSavePerson(Instructor.class, "Trainer", "my-instructor@mail.com", "8198888889", sportCenter);
 
         createCourses();
         createRegistrations();
@@ -107,20 +107,20 @@ public class CourseDetailIntegrationTest {
         registrationRepository.save(secondRegistration);
     }
 
-    private SportCenter createAndSaveSportCenter(String name) {
+    private SportCenter createAndSaveSportCenter() {
         SportCenter sportCenter = new SportCenter();
-        sportCenter.setName(name);
+        sportCenter.setName("Gold's Gym");
         return sportCenterRepository.save(sportCenter);
     }
 
-    private <T extends Person> String createAndSavePerson(Class<T> type, String name, String email, String password, String phoneNumber, SportCenter sportCenter) {
+    private <T extends Person> String createAndSavePerson(Class<T> type, String name, String email, String phoneNumber, SportCenter sportCenter) {
         T person;
         try {
             person = type.getDeclaredConstructor().newInstance();
 
             person.setName(name);
             person.setEmail(email);
-            person.setPassword(password);
+            person.setPassword("test");
             person.setPhoneNumber(phoneNumber);
 
             //After debuging it seems that the owner needs to be saved before associating with the sports center
