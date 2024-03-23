@@ -94,7 +94,7 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
 
     }
 
-    @RequestMapping(value = {"/registrations/{registration_id}/{rating}","/registrations/{registration_id}/{rating}"/ }, method = RequestMethod.POST)
+    @RequestMapping(value = {"/registrations/{registration_id}/{rating}","/registrations/{registration_id}/{rating}/" }, method = RequestMethod.POST)
     ResponseEntity<?> updateRegistrationRating(@PathVariable("registration_id") String registration_id ,@PathVariable("rating") Integer rating, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
@@ -108,7 +108,7 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
 
     }
 
-    @GetMapping(value = {"/registrations/{registration_id}/invoices", "/registrations/{registration_id}/invoices"})
+    @GetMapping(value = {"/registrations/{registration_id}/invoices", "/registrations/{registration_id}/invoices/"})
     ResponseEntity<?>  getInvoicesForRegistration(@PathVariable("registration_id") String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
 
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
