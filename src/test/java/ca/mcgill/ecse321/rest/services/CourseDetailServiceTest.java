@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
+import ca.mcgill.ecse321.rest.dao.InstructorRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.models.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +20,9 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 class CourseDetailServiceTest {
 
-    @Mock
-    private CourseRepository courseRepository;
-
-    @Mock
-    private RegistrationRepository registrationRepository;
+    @Mock private CourseRepository courseRepository;
+    @Mock private InstructorRepository instructorRepository;
+    @Mock private RegistrationRepository registrationRepository;
 
     @InjectMocks
     private CourseDetailService courseDetailService;
@@ -58,13 +57,40 @@ class CourseDetailServiceTest {
         when(courseRepository.findAll()).thenReturn(Arrays.asList(new Course(), new Course()));
 
         // Act
-        List<Course> result = courseDetailService.getAllCourses();
+        List<Course> result = courseDetailService.getCoursesWithFilters(null, null, null);
 
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(courseRepository).findAll();
     }
+
+    @Test
+    void getCoursesWithFilters_ByStateAndInstructor_ReturnsFilteredCourses() {
+        // Arrange
+        Course.CourseState state = Course.CourseState.Approved;
+        String instructorName = "John Doe";
+        List<Course> expectedCourses = Arrays.asList(new Course(), new Course());
+
+        Instructor mockInstructor = new Instructor();
+        mockInstructor.setName(instructorName);
+        mockInstructor.setId("instructorId");
+
+        // Mock the instructor finding process
+        when(instructorRepository.findInstructorByName(instructorName)).thenReturn(mockInstructor);
+        // Assume the findCoursesByFilters to be correctly implemented to handle instructorId and state
+        when(courseRepository.findCoursesByFilters(eq(state), eq(mockInstructor.getId()), any())).thenReturn(expectedCourses);
+
+        // Act
+        List<Course> result = courseDetailService.getCoursesWithFilters(state, instructorName, null);
+
+        // Assert
+        assertNotNull(result, "The returned list should not be null.");
+        assertEquals(expectedCourses.size(), result.size(), "The returned list size should match the expected size.");
+        assertTrue(result.containsAll(expectedCourses), "The returned list should contain all the expected courses.");
+        verify(courseRepository).findCoursesByFilters(eq(state), eq(mockInstructor.getId()), any());
+    }
+
 
     @Test
     void getSpecificCourse_CourseExists_ReturnsCourse() {
