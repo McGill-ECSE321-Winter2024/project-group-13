@@ -64,10 +64,6 @@ public class AuthenticationService {
         }
     }
 
-    private String validatePhoneNumber(String phoneNumber){
-        if (phoneNumber.length() != 10 || !phoneNumber.matches("[0-9]+")) return "Invalid phone number";
-        return null;
-    }
 
     public PersonSession verifyTokenAndGetUser(String rawToken){
         String token = rawToken.split(" ")[1];
@@ -96,13 +92,17 @@ public class AuthenticationService {
         if (personRepository.findPersonByEmail(email) != null){
             throw new IllegalArgumentException("Email already exists");
         }
-        Customer customer = new Customer();
-        customer.setEmail(email);
-        customer.setPassword(password);
-        customer.setName(name);
-        customer.setPhoneNumber(phoneNumber);
-        personRepository.save(customer);
-        return this.issueToken(email);
+        try {
+            Customer customer = new Customer();
+            customer.setEmail(email);
+            customer.setPassword(password);
+            customer.setName(name);
+            customer.setPhoneNumber(phoneNumber);
+            personRepository.save(customer);
+            return this.issueToken(email);
+        } catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
 
     }
 
@@ -115,6 +115,8 @@ public class AuthenticationService {
     }
 
     public String changeEmail(String personId, String email){
+        // validate email with regex
+        if (!email.matches("^(.+)@(.+)$")) return "Invalid email";
         if(personRepository.findPersonByEmail(email) != null) return "Email already in use";
         Person person = personRepository.findPersonById(personId);
         person.setEmail(email);
@@ -123,7 +125,6 @@ public class AuthenticationService {
     }
 
     public String changePhoneNumber(String personId, String phoneNumber){
-        String error = validatePhoneNumber(phoneNumber);
         if (personRepository.findPersonByPhoneNumber(phoneNumber) != null) return "Phone number already in use";
         Person person = personRepository.findPersonById(personId);
         person.setPhoneNumber(phoneNumber);

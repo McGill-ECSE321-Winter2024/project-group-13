@@ -4,7 +4,6 @@ import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dto.LoginDTO;
 import ca.mcgill.ecse321.rest.dto.auth.RegisterDTO;
 import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
-import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +45,19 @@ public class AuthenticationController {
     @ResponseBody
     public ResponseEntity<?> registerCustomer(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RegisterDTO body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if(person.getPersonType() != PersonSession.PersonType.Owner) return DefaultHTTPResponse.unauthorized();
-        String session = authenticationService.registerCustomer(
-            body.getEmail(),
-            body.getPassword(),
-            body.getName(),
-            body.getPhoneNumber()
-        );
+        if(person.getPersonType() != PersonSession.PersonType.Owner) return DefaultHTTPResponse.forbidden("Only owners can register customers");
+        try {
+            authenticationService.registerCustomer(
+                    body.getEmail(),
+                    body.getPassword(),
+                    body.getName(),
+                    body.getPhoneNumber()
+            );
+            return new ResponseEntity<>(DefaultHTTPResponse.success("Customer registered"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return DefaultHTTPResponse.badRequest(e.getMessage());
+        }
 
-        return new ResponseEntity<>(new SessionDTO(session), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/auth/password", method = RequestMethod.PUT)
