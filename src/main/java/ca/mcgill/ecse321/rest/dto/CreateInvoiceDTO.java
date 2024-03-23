@@ -20,5 +20,13 @@ public class CreateInvoiceDTO {
         return registrationId;
     }
 
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
+    }
+
 
 }
