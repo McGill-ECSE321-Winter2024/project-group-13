@@ -15,17 +15,17 @@ public class CustomerDTO extends PersonDTO{
     public CustomerDTO(Customer customer) {
         super(customer);
         if (customer.getId() != null){
-        this.id = customer.getId();}
-            if (customer.getSportCenter().getId()!= null){
-        this.sportCenter = customer.getSportCenter().getId();}
-                if (customer.getName() != null){
-        this.name = customer.getName();}
-                    if (customer.getPassword()!= null){
-        this. password = customer.getPassword();}
-                        if (customer.getEmail() != null){
-        this.email = customer.getEmail();}
-                            if (customer.getPhoneNumber() != null){
-        this.phoneNumber = customer.getPhoneNumber();}
+            this.id = customer.getId();}
+        if (customer.getSportCenter().getId()!= null){
+            this.sportCenter = customer.getSportCenter().getId();}
+        if (customer.getName() != null){
+            this.name = customer.getName();}
+        if (customer.getPassword()!= null){
+            this. password = customer.getPassword();}
+        if (customer.getEmail() != null){
+            this.email = customer.getEmail();}
+        if (customer.getPhoneNumber() != null){
+            this.phoneNumber = customer.getPhoneNumber();}
 
     }
 
@@ -35,5 +35,6 @@ public class CustomerDTO extends PersonDTO{
     public String getEmail(){return this.email;}
     public String getPhoneNumber(){return this.phoneNumber;}
     public String getPassword(){return this.password;}
+    public String getSportCenterId(){return this.sportCenter;}
 }
 
