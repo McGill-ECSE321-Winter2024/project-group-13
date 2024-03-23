@@ -201,7 +201,7 @@ class CourseServiceTest {
         assertEquals("",errorMessageBeginner);
         assertEquals("",errorMessageIntermediate);
         assertEquals("",errorMessageAdvanced);
-        assertEquals("Invalid level",errorMessageNull);
+        assertEquals("Requires valid level",errorMessageNull);
 
         verify(courseRepository,times(4)).findCourseById(courseID);
     }
