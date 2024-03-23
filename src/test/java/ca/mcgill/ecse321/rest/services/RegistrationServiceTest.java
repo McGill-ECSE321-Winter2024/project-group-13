@@ -588,6 +588,5 @@ public class RegistrationServiceTest {
 
         assertNull(registrationService.getInvoicess(personSession, null));
         assertNull( registrationService.getInvoicess(personSession, " "));
-
-
     }}
+
