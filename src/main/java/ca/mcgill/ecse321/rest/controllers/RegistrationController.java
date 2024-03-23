@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -76,35 +77,38 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
 }
 
     @RequestMapping(value = {"/registrations/{registration_id}/cancel","/registrations/{registration_id}/cancel/"} , method = RequestMethod.POST)
-    ResponseEntity<?>  cancelSpecificRegistration(@PathVariable("registration_id") String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
+    Boolean cancelSpecificRegistration(@PathVariable("registration_id") String registration_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
             Boolean registrations = registrationService.cancelRegistration(registration_id);
-            if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check RegistrationID");}
-            return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+            //if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check RegistrationID");}
+           // return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+        return registrations;}
 
         else if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
             Boolean registrations = registrationService.cancelRegistrationByCustomer(personSession.getPersonId(), registration_id);
-            if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID or RegistrationID");}
-            return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+           // if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID or RegistrationID");}
+            //return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+            return registrations;}
 
         else {
-            return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+          //  return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+            return false;}
 
     }
 
-    @RequestMapping(value = {"/registrations/{registration_id}/{rating}","/registrations/{registration_id}/{rating}"/ }, method = RequestMethod.POST)
-    ResponseEntity<?> updateRegistrationRating(@PathVariable("registration_id") String registration_id ,@PathVariable("rating") Integer rating, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
+    @RequestMapping(value = {"/registrations/{registration_id}/{rating}","/registrations/{registration_id}/{rating}/" }, method = RequestMethod.POST)
+    Boolean updateRegistrationRating(@PathVariable("registration_id") String registration_id ,@PathVariable("rating") Integer rating, @RequestHeader (HttpHeaders.AUTHORIZATION) String bearerToken) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(bearerToken);
 
         if (personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
             Boolean registrations = registrationService.updateRegistrationRating(personSession,registration_id, rating);
-            if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID, RegistrationID or Rating");}
-            return new ResponseEntity<>(registrations, HttpStatus.OK) ;}
+            //if (registrations.equals(false)){return DefaultHTTPResponse.badRequest("Please check CustomerID, RegistrationID or Rating");}
+            return registrations;}
 
         else {
-            return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+            return false;}
 
     }
 
@@ -125,7 +129,8 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
             return new ResponseEntity<>(convertInvoiceListToDTO(registrations), HttpStatus.OK) ;}
 
         else {
-            return DefaultHTTPResponse.badRequest("Invalid Credentials!");}
+            List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
+            return new ResponseEntity<>(invoiceDTOS, HttpStatus.BAD_REQUEST) ;}
 
     }
 
@@ -147,7 +152,6 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
 
     }
 
-
     private InvoiceDTO convertToDTO(Invoice invoice){
 
         InvoiceDTO invoiceDTO = new InvoiceDTO(invoice);
@@ -159,7 +163,7 @@ public ResponseEntity<?> getSpecificRegistration(@PathVariable String registrati
         List<InvoiceDTO> invoiceDTOS = new ArrayList<>();
 
         for (Invoice i : invoices) {
-            invoiceDTOS.add(new InvoiceDTO(i));
+            invoiceDTOS.add(convertToDTO(i));
         }
         return invoiceDTOS;
 
