@@ -28,7 +28,7 @@ import java.util.List;
 
         /** Create a registration between a customer and a course and save it.
          **/
-
+@Transactional
         public Registration register(Customer customer, Course course) {
 
             if (customer == null || course == null) {
@@ -50,7 +50,7 @@ import java.util.List;
 
         //Owner, can see all registrations
         //Get all registrations
-
+        @Transactional
         public List<Registration> getAllRegistrations(){
             List<Registration> registrations = toList(registrationRepository.findAll());
 
@@ -62,10 +62,10 @@ import java.util.List;
         //Instructor can see registrations for their courses
         //Get registrations for a certain course, for one instructor
 
-
+        @Transactional
         public List<Registration> getRegistrationsForInstructor(String instructorID){
             if (instructorID == null || instructorID.trim().isEmpty()) {
-                throw new IllegalArgumentException("InstructorID cannot be empty!");
+                return new ArrayList<>();
             }
 
             Instructor instructor = instructorRepository.findInstructorById(instructorID);
@@ -90,11 +90,11 @@ import java.util.List;
 
         //Customer can see their own registrations
         //get registration for one customer
-
+        @Transactional
         public List<Registration> getRegistrationsForCustomer(String customerID) {
 
             if (customerID == null || customerID.trim().isEmpty()) {
-                throw new IllegalArgumentException("CustomerID cannot be empty!");
+                return null;
             }
 
             Customer customer = customerRepository.findCustomerById(customerID);
@@ -134,10 +134,10 @@ import java.util.List;
 
         //Get a specific registration GET /registrations/{registration_id}
         //Same conditions as 5.a
-
+        @Transactional
         public Registration getSpecificRegistrationByID(String registrationID) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return null;
             }
 
             List<Registration> allRegistrations = getAllRegistrations();
@@ -149,13 +149,14 @@ import java.util.List;
             return null;
         }
 
-
+        @Transactional
         public Registration getSpecificRegistrationByIDForInstructor(String instructorID, String registrationID) {
+
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return null;
             }
             if (instructorID == null || instructorID.trim().isEmpty()) {
-                throw new IllegalArgumentException("InstructorID cannot be empty!");
+                return null;
             }
 
             List<Registration> instructorRegistrations = getRegistrationsForInstructor(instructorID);
@@ -167,13 +168,13 @@ import java.util.List;
             return null;
         }
 
-
+        @Transactional
         public Registration getSpecificRegistrationByIDForCustomer(String customerID, String registrationID) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return null;
             }
             if (customerID == null || customerID.trim().isEmpty()) {
-                throw new IllegalArgumentException("Customer cannot be empty!");
+                return null;
             }
 
             List<Registration> customerRegistrations = getRegistrationsForCustomer(customerID);
@@ -211,32 +212,33 @@ import java.util.List;
         //Cancel a specific registration POST /registrations/{registration_id}/cancel
         //Owner can cancel any registration
         //Customer can cancel their registrations
-
+        @Transactional
         public boolean cancelRegistration(String registrationID) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return false;
             }
+
             for (Registration r : registrationRepository.findAll()) {
                 if (r.getId().equals(registrationID)){
-                    r.delete();
+                    registrationRepository.deleteById(registrationID);
                     return true;
                 }
             }
             return false;
         }
 
-
+        @Transactional
         public boolean cancelRegistrationByCustomer(String customerID, String  registrationID) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return false;
             }
             if (customerID == null || customerID.trim().isEmpty()) {
-                throw new IllegalArgumentException("Customer cannot be empty!");
+                return false;
             }
             List<Registration> customerRegistrations = getRegistrationsForCustomer(customerID);
             for (Registration r : customerRegistrations) {
                 if (r.getId().equals(registrationID)){
-                    r.delete();
+                    registrationRepository.deleteById(registrationID);
                     return true;
                 }
             }
@@ -263,10 +265,10 @@ import java.util.List;
         @Transactional
         public boolean updateRegistrationRating(PersonSession personSession, String registrationID, Integer rating) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return false;
             }
             if (rating <1 || rating > 5) {
-                throw new IllegalArgumentException("Invalid rating");
+                return false;
             }
 
             if(personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
@@ -281,11 +283,11 @@ import java.util.List;
 
         //View invoices for a specific registration GET /registrations/{registration_id}/invoices
         //ID + amount
-
+        @Transactional
         public List<Invoice> getInvoicesForRegistration(String registrationID) {
 
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+               return null;
             }
 
             List<Invoice> allInvoices = toList(invoiceRepository.findAll());
@@ -300,13 +302,13 @@ import java.util.List;
             return invoiceForRegistration;
         }
 
-
+        @Transactional
         public List<Invoice> getInvoicesForCustomerRegistration(String customerID, String registrationID) {
             if (registrationID == null || registrationID.trim().isEmpty()) {
-                throw new IllegalArgumentException("RegistrationID cannot be empty!");
+                return null;
             }
             if (customerID == null || customerID.trim().isEmpty()) {
-                throw new IllegalArgumentException("Customer cannot be empty!");
+                return null;
             }
             Customer customer = customerRepository.findCustomerById(customerID);
             List<Invoice> invoicesForRegistrationID = getInvoicesForRegistration(registrationID);
@@ -317,7 +319,6 @@ import java.util.List;
                     invoiceForRegistration.add(i);
                 }
             }
-            System.out.println(invoiceForRegistration);
             return invoiceForRegistration;
         }
 
@@ -329,6 +330,7 @@ import java.util.List;
             }
 
             if(personSession.getPersonType().equals(PersonSession.PersonType.Customer)){
+                System.out.println(getInvoicesForCustomerRegistration(personSession.getPersonId(), registration_id));
                 return getInvoicesForCustomerRegistration(personSession.getPersonId(), registration_id);
             }
             else {
