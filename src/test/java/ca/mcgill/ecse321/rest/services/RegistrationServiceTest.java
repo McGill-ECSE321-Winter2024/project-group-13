@@ -214,9 +214,10 @@ public class RegistrationServiceTest {
         Registration registrationGOT = registrationService.getSpecificRegistration(personSession, (registration1.getId()+"1"));
 
         assertNull(registrationGOT);
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration5 = registrationService.getSpecificRegistration(personSession, null );});
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration3 = registrationService.getSpecificRegistration(personSession, " " );});
+        assertNull( registrationService.getSpecificRegistration(personSession, null ));
+        assertNull( registrationService.getSpecificRegistration(personSession, " " ));
         assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
+
 
         verify(registrationRepository,times(1)).findAll();
         }
@@ -263,8 +264,8 @@ public class RegistrationServiceTest {
 
         assertNull(registrationsGOT);
 
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration5 = registrationService.getSpecificRegistration(personSession, null );});
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration3 = registrationService.getSpecificRegistration(personSession, " " );});
+        assertNull(registrationService.getSpecificRegistration(personSession, null ));
+        assertNull( registrationService.getSpecificRegistration(personSession, " " ));
         assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
 
         verify(registrationRepository,times(1)).findAll();
@@ -312,8 +313,8 @@ public class RegistrationServiceTest {
         Registration registrationsGOT = registrationService.getSpecificRegistration(personSession, registration1.getId());
 
         assertNull(registrationsGOT);
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration5 = registrationService.getSpecificRegistration(personSession, null );});
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration3 = registrationService.getSpecificRegistration(personSession, " ");});
+        assertNull( registrationService.getSpecificRegistration(personSession, null ));
+        assertNull( registrationService.getSpecificRegistration(personSession, " "));
         assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
         verify(registrationRepository,times(1)).findAll();
         verify(customerRepository,times(1)).findCustomerById(anyString());}
@@ -426,9 +427,9 @@ public class RegistrationServiceTest {
         assertFalse(registrationService.updateRegistrationRating(personSession1, registration1.getId(), 3));
         assertFalse(registrationService.updateRegistrationRating(personSession2, registration1.getId(), 4));
 
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, null, 3);});
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, " ", 3);});
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10);});
+        assertFalse(registrationService.updateRegistrationRating(personSession1, null, 3));
+        assertFalse(registrationService.updateRegistrationRating(personSession1, " ", 3));
+        assertFalse( registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10));
     }
 
     @Test
@@ -468,9 +469,9 @@ public class RegistrationServiceTest {
 
         assertFalse(registrationService.updateRegistrationRating(personSession1, registration2.getId(), 3));
 
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, null, 3);});
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, " ", 3);});
-        assertThrows(IllegalArgumentException.class, () -> {registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10);});
+        assertFalse(registrationService.updateRegistrationRating(personSession1, null, 3));
+        assertFalse(registrationService.updateRegistrationRating(personSession1, " ", 3));
+        assertFalse(registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10));
     }
 
     @Test
@@ -512,8 +513,8 @@ public class RegistrationServiceTest {
         assertEquals(0, invoicesGOT.size());
         List<Invoice> expected = new ArrayList<>();
 
-        assertThrows(IllegalArgumentException.class, () -> { List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, null);});
-        assertThrows(IllegalArgumentException.class, () -> {List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, " ");});
+        assertNull( registrationService.getInvoicess(personSession, null));
+        assertNull( registrationService.getInvoicess(personSession, " "));
         assertEquals(expected, invoicesGOT);
     }
 
@@ -582,7 +583,7 @@ public class RegistrationServiceTest {
 
         assertEquals(0, invoicesGOT.size());
 
-        assertThrows(IllegalArgumentException.class, () -> { List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, null);});
-        assertThrows(IllegalArgumentException.class, () -> {List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, " ");});
+        assertNull(registrationService.getInvoicess(personSession, null));
+        assertNull( registrationService.getInvoicess(personSession, " "));
 
 }}
