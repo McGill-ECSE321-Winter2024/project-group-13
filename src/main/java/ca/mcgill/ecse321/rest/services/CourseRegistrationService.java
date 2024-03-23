@@ -14,14 +14,10 @@ import java.util.Optional;
 
 @Service
 public class CourseRegistrationService {
-    @Autowired
-    private CourseRepository courseRepository;
+    @Autowired private CourseRepository courseRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository; // Assumes existence of CustomerRepository
-
-    @Autowired
-    private RegistrationRepository registrationRepository;
+    @Autowired private CustomerRepository customerRepository;
+    @Autowired private RegistrationRepository registrationRepository;
 
     @Transactional
     public String registerForCourse(String courseId, PersonSession personSession) {
