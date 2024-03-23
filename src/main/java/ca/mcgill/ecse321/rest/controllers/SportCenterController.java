@@ -24,7 +24,9 @@ public class SportCenterController {
     public ResponseEntity<SportCenterDTO> getSportCenter(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         SportCenterDTO sportCenterDTO = sportCenterService.getSportCenterDTO(person);
-        return ResponseEntity.ok(sportCenterDTO);
+
+        if(sportCenterDTO!=null) return ResponseEntity.ok(sportCenterDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // Change name (Owner only)

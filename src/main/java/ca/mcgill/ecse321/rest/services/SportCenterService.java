@@ -19,7 +19,7 @@ public class SportCenterService {
 
     public SportCenterDTO getSportCenterDTO(PersonSession personSession) {
         if (personSession!=null){
-            SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
             return convertToDto(sportCenter);
         }else {
             return null;

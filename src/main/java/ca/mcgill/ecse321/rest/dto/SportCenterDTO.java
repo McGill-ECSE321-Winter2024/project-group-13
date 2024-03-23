@@ -37,4 +37,19 @@ public class SportCenterDTO {
 
     public ScheduleDTO getSchedule(){return schedule;}
     public void setSchedule(ScheduleDTO schedule){this.schedule=schedule;}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        SportCenterDTO sportCenterDTO = (SportCenterDTO) obj;
+        return (id==sportCenterDTO.getId()||id.equals(sportCenterDTO.getId())) &&
+                (address==sportCenterDTO.getAddress()||address.equals(sportCenterDTO.getAddress())) &&
+                (name==sportCenterDTO.getName()||name.equals(sportCenterDTO.getName())) &&
+                (schedule==sportCenterDTO.getSchedule()||schedule.equals(sportCenterDTO.getSchedule()));
+    }
 }

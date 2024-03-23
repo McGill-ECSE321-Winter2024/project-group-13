@@ -10,11 +10,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-
+import org.springframework.http.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.sql.Time;
+
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -41,7 +44,7 @@ public class SportCenterIntegrationTest {
     private final String instructorEmail="instructor@gmail.com";
     private final String customerEmail="customer@gmail.com";
 
-    @BeforeAll
+    @BeforeEach
     public void set_up(){
         clearRepositories();
         String personPassword = "password";
@@ -73,21 +76,22 @@ public class SportCenterIntegrationTest {
     public void testGetSportCenter(){
         String customerAuthentication= authenticationService.issueTokenWithEmail(customerEmail);
         SportCenter sportCenter=sportCenterRepository.findSportCenterByName(sportCenterName);
+        assertNotNull(sportCenter);
+        SportCenterDTO sportCenterDTO = new SportCenterDTO(sportCenter);
 
-        // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(customerAuthentication);
         HttpEntity<SportCenterDTO> request = new HttpEntity<>(headers);
-        //ResponseEntity<HTTPDTO> response = client.getForEntity("/courses", request,HTTPDTO.class);
+        ResponseEntity<SportCenterDTO> response = client.exchange("/sportcenter", HttpMethod.GET, request, SportCenterDTO.class);
 
-        //Get sport center
-//        String response = client.getForObject("/sportcenter", String.class);
-//        Assertions.assertTrue(response.contains("Sport Center"));
+        assertNotNull(response);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(sportCenterDTO,response.getBody());
     }
 
+
+
     private void clearRepositories() {
-        courseRepository.deleteAll();
-        scheduleRepository.deleteAll();
         personRepository.deleteAll();
         sportCenterRepository.deleteAll();
     }
