@@ -47,9 +47,9 @@ public class AuthenticationIntegrationTests {
 
 
     private final String ownerEmail="owner@gmail.com";
-    private final String instructorEmail="instructor@gmail.com";
-    private final String customerEmail="customer2@gmail.com";
-    private final String customerEmail2="customer9@gmail.com";
+    private final String instructorEmail="instructor2221@gmail.com";
+    private final String customerEmail="customer20891823@gmail.com";
+    private final String customerEmail2="customer993u1023@gmail.com";
 
     @BeforeAll
     public void set_up(){

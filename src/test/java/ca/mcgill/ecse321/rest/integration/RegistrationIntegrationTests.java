@@ -40,7 +40,7 @@ public class RegistrationIntegrationTests {
 
     //Global variables
     private final String sportCenterName = "SportCenterNameHere";
-    private final String ownerEmail = "owner@gmail.com";
+    private final String ownerEmail = "owner12332@gmail.com";
     private final String instructorEmail = "instructor@gmail.com";
     private final String instructor1Email = "1instructor@gmail.com";
     private final String customerEmail = "customer@gmail.com";
