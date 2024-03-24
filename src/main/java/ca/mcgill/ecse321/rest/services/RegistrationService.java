@@ -6,7 +6,6 @@ import ca.mcgill.ecse321.rest.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -25,43 +24,22 @@ public class RegistrationService {
     @Autowired
     CustomerRepository customerRepository;
 
-
-    /** Create a registration between a customer and a course and save it.
-     **/
-    @Transactional
-    public Registration register(Customer customer, Course course) {
-
-        if (customer == null || course == null) {
-            throw new IllegalArgumentException("Customer or Course cannot be empty!");
-        }
-
-        Registration registration = new Registration();
-        registration.setCustomer(customer);
-        registration.setCourse(course);
-
-        registrationRepository.save(registration);
-
-        return registration;
-
-    }
-
-
-    //Get all registrations GET /registrations
-
-    //Owner, can see all registrations
-    //Get all registrations
+    /**
+     *  This method gets all registrations present in database
+     *  should be used for an owner.
+     * @Author Teddy El-Husseini 
+     */
     @Transactional
     public List<Registration> getAllRegistrations(){
-        List<Registration> registrations = toList(registrationRepository.findAll());
-
-
-        return registrations;
+        return toList(registrationRepository.findAll());
     }
 
 
-    //Instructor can see registrations for their courses
-    //Get registrations for a certain course, for one instructor
-
+    /**
+     *  This method gets all registrations associated with an instructor present in database
+     *  should be used for an instructor.
+     * @Author Teddy El-Husseini 
+     */
     @Transactional
     public List<Registration> getRegistrationsForInstructor(String instructorID){
         if (instructorID == null || instructorID.trim().isEmpty()) {
@@ -73,23 +51,20 @@ public class RegistrationService {
         List<Registration> allRegistrations = getAllRegistrations();
         List<Registration> registrationsByInstructor = new ArrayList<>();
 
-
-
         for (Registration r : allRegistrations) {
-
             if (r.getCourse().getInstructor().equals(instructor)){
                 registrationsByInstructor.add(r);
             }
         }
-
-
-
         return registrationsByInstructor;
     }
 
 
-    //Customer can see their own registrations
-    //get registration for one customer
+    /**
+     *  This method gets all registrations associated with a customer present in database
+     *  should be used for a customer.
+     * @Author Teddy El-Husseini 
+     */
     @Transactional
     public List<Registration> getRegistrationsForCustomer(String customerID) {
 
@@ -100,20 +75,19 @@ public class RegistrationService {
         Customer customer = customerRepository.findCustomerById(customerID);
         List<Registration> allRegistrations = getAllRegistrations();
         List<Registration> registrationsForCustomer = new ArrayList<>();
-
-
-
         for (Registration r : allRegistrations) {
             if (r.getCustomer().equals(customer)) {
                 registrationsForCustomer.add(r);
             }
         }
-
-
         return registrationsForCustomer;
 
     }
 
+    /**
+     *  This method combines the three precedent methods to make it easier to test them in "RegistrationServiceTest"
+     * @Author Teddy El-Husseini 
+     */
     @Transactional
     public List<Registration> getRegistrations(PersonSession personSession) {
 
@@ -132,8 +106,11 @@ public class RegistrationService {
         }
     }
 
-    //Get a specific registration GET /registrations/{registration_id}
-    //Same conditions as 5.a
+    /**
+     *  This method gets a specific registration in the database
+     *  Should be used for an owner.
+     * @Author Teddy El-Husseini 
+     */
     @Transactional
     public Registration getSpecificRegistrationByID(String registrationID) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -149,6 +126,11 @@ public class RegistrationService {
         return null;
     }
 
+    /**
+     *  This method gets a specific registration associated with an instructor in the database
+     *  Should be used for an instructor.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public Registration getSpecificRegistrationByIDForInstructor(String instructorID, String registrationID) {
 
@@ -168,6 +150,11 @@ public class RegistrationService {
         return null;
     }
 
+    /**
+     *  This method gets a specific registration associated with a customer in the database
+     *  Should be used for a customer.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public Registration getSpecificRegistrationByIDForCustomer(String customerID, String registrationID) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -186,6 +173,10 @@ public class RegistrationService {
         return null;
     }
 
+    /**
+     *  This method combines the three precedent methods to make it easier to test them in "RegistrationServiceTest"
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public Registration getSpecificRegistration(PersonSession personSession, String registration_id){
         if (personSession == null ) {
@@ -209,9 +200,11 @@ public class RegistrationService {
 
     }
 
-    //Cancel a specific registration POST /registrations/{registration_id}/cancel
-    //Owner can cancel any registration
-    //Customer can cancel their registrations
+    /**
+     *  This method cancels a specific registration in the database
+     *  Should be used for an owner.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public boolean cancelRegistration(String registrationID) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -231,6 +224,11 @@ public class RegistrationService {
         return false;
     }
 
+    /**
+     *  This method cancels a specific registration associated with a customer in the database
+     *  Should be used for a customer.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public boolean cancelRegistrationByCustomer(String customerID, String  registrationID) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -249,6 +247,10 @@ public class RegistrationService {
         return false;
     }
 
+    /**
+     *  This method combines the two precedent methods to make it easier to test them in "RegistrationServiceTest"
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public boolean cancelSpecificRegistration(PersonSession personSession, String registration_id){
 
@@ -265,8 +267,11 @@ public class RegistrationService {
 
     }
 
-    //Update registration (for course rating) POST /registrations/{registration_id}/rating
-    //Only customers can do it and once its done it cannot be changed
+    /**
+     *  This method updates the rating for a specific registration associated with a customer in the database
+     *  Should be used for a customer.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public boolean updateRegistrationRating(PersonSession personSession, String registrationID, Integer rating) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -281,13 +286,16 @@ public class RegistrationService {
                 if (r.getId().equals(registrationID) && r.getCustomer().getId().equals(personSession.getPersonId())){
                     r.setRating(rating);
                     return true;
-                };
+                }
             }}
         return false;
     }
 
-    //View invoices for a specific registration GET /registrations/{registration_id}/invoices
-    //ID + amount
+    /**
+     *  This method gets all invoices associated with a registration present in database
+     *  should be used for an owner.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public List<Invoice> getInvoicesForRegistration(String registrationID) {
 
@@ -307,6 +315,11 @@ public class RegistrationService {
         return invoiceForRegistration;
     }
 
+    /**
+     *  This method gets all invoices associated with a registration that is also associated with a customer present in database
+     *  should be used for a customer.
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public List<Invoice> getInvoicesForCustomerRegistration(String customerID, String registrationID) {
         if (registrationID == null || registrationID.trim().isEmpty()) {
@@ -327,7 +340,10 @@ public class RegistrationService {
         return invoiceForRegistration;
     }
 
-
+    /**
+     *  This method combines the two precedent methods to make it easier to test them in "RegistrationServiceTest"
+     * @Author Teddy El-Husseini
+     */
     @Transactional
     public List<Invoice> getInvoicess(PersonSession personSession, String registration_id){
         if(personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
