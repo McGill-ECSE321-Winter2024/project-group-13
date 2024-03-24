@@ -48,7 +48,8 @@ public class AuthenticationIntegrationTests {
 
     private final String ownerEmail="owner@gmail.com";
     private final String instructorEmail="instructor@gmail.com";
-    private final String customerEmail="customer@gmail.com";
+    private final String customerEmail="customer2@gmail.com";
+    private final String customerEmail2="customer9@gmail.com";
 
     @BeforeAll
     public void set_up(){
@@ -58,18 +59,23 @@ public class AuthenticationIntegrationTests {
         Owner owner= new Owner();
         Instructor instructor = new Instructor();
         Customer customer= new Customer();
+        Customer customer2 = new Customer();
         String sportCenterName = "HealthPlus";
         sportCenter.setName(sportCenterName);
         owner.setSportCenter(sportCenter);
         instructor.setSportCenter(sportCenter);
         customer.setSportCenter(sportCenter);
+        customer2.setSportCenter(sportCenter);
+
         createPerson(owner,ownerEmail,"123-456-7890",personName,personPassword);
         createPerson(instructor,instructorEmail,"456-123-7890",personName,personPassword);
         createPerson(customer,customerEmail,"789-456-0123",personName,personPassword);
+        createPerson(customer2, customerEmail2, "123-456-7878", personName, personPassword);
 
         personRepository.save(owner);
         personRepository.save(customer);
         personRepository.save(instructor);
+        personRepository.save(customer2);
         sportCenterRepository.save(sportCenter);
 
     }
@@ -274,10 +280,10 @@ public class AuthenticationIntegrationTests {
     @Test
     @Order(8)
     public void testChangeEmail() {
-        String session = authenticationService.issueTokenWithEmail(customerEmail);
+        String session = authenticationService.issueTokenWithEmail(customerEmail2);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(session);
-        String email = "customer2@gmail.com";
+        String email = "customer6@gmail.com";
         Map<String, String> emailMap = Map.of("email", email);
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(emailMap, headers);
@@ -306,6 +312,7 @@ public class AuthenticationIntegrationTests {
     @Test
     @Order(10)
     public void testChangePhoneNumber() {
+        System.out.println(personRepository.findAll());
         String session = authenticationService.issueTokenWithEmail(customerEmail);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(session);
