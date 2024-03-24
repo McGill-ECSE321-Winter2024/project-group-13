@@ -12,6 +12,7 @@ import ca.mcgill.ecse321.rest.models.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.openmbean.InvalidKeyException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -23,8 +24,6 @@ public class CourseSessionService {
   private CourseRepository courseRepository;
   @Autowired
   private CourseSessionRepository courseSessionRepository;
-  @Autowired
-  private ScheduleRepository scheduleRepository;
 
   private Timestamp combineDateWithTime(Timestamp currentDate, Time time) {
       Calendar calendar = Calendar.getInstance();
@@ -36,6 +35,7 @@ public class CourseSessionService {
 
       return new Timestamp(calendar.getTimeInMillis());
   }
+
 
   public String createSessionsPerCourse(String courseID) {
     Course course = courseRepository.findCourseById(courseID);
@@ -112,7 +112,11 @@ public class CourseSessionService {
     }
 
   public CourseSession getCourseSession(String courseSessionID) {
-        return courseSessionRepository.findCourseSessionById(courseSessionID);
+      CourseSession courseSession= courseSessionRepository.findCourseSessionById(courseSessionID);
+      if (courseSession==null){
+          throw new InvalidKeyException("Course session not found");
+      }
+      return courseSessionRepository.findCourseSessionById(courseSessionID);
   }
 
   public String deleteSessionsPerCourse(String courseID) {
