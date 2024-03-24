@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Time;
-import java.sql.Timestamp;
 
 @Nested
 @ExtendWith(MockitoExtension.class)

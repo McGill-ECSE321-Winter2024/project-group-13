@@ -1,29 +1,17 @@
 package ca.mcgill.ecse321.rest.integration;
 
-import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.*;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,7 +45,7 @@ public class UserIntegrationTest {
     private final String customerEmail2="iamcustomer2@gmail.com";
     private final String customerEmail3="iamcustomer3@gmail.com";
 
-    private InstructorDTO instructor4DTO = new InstructorDTO();
+    private final InstructorDTO instructor4DTO = new InstructorDTO();
 
 
     @BeforeAll
