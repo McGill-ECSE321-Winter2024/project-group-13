@@ -9,6 +9,7 @@ public class CustomerDTO extends PersonDTO{
     public CustomerDTO(){}
     public CustomerDTO(Customer customer) {
         super(customer);
+
         this.sportCenterId = customer.getSportCenter().getId();
     }
     public String getSportCenterId() {
@@ -28,3 +29,4 @@ public class CustomerDTO extends PersonDTO{
                 sportCenterId.equals(customerDTO.sportCenterId) ;
     }
 }
+

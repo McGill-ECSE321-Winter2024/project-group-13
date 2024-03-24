@@ -1,8 +1,13 @@
+
+
+
 package ca.mcgill.ecse321.rest.dto;
 
 import ca.mcgill.ecse321.rest.models.Invoice;
 
 public class InvoiceDTO {
+
+    private RegistrationDTO registrationDTO;
 
     private String id;
     private String registrationId;
@@ -12,6 +17,7 @@ public class InvoiceDTO {
     private String status;
 
     private Number amount;
+    private double amount2;
 
     public InvoiceDTO(){};
 
@@ -21,7 +27,12 @@ public class InvoiceDTO {
         this.customerId = invoice.getRegistration().getCustomer().getId();
         this.status = invoice.getStatus().toString();
         this.amount = invoice.getAmount();
-    }
+        this.amount2 = invoice.getAmount();
+
+
+}
+    public RegistrationDTO getRegistrationDTO(){return registrationDTO;}
+    public void setRegistrationDTO(RegistrationDTO registrationDTO){this.registrationDTO = registrationDTO;}
 
     public String getId() {
         return this.id;
@@ -51,6 +62,8 @@ public class InvoiceDTO {
         this.registrationId = registrationId;
     }
 
+
+
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
@@ -62,6 +75,7 @@ public class InvoiceDTO {
     public void setAmount(Number amount) {
         this.amount = amount;
     }
-
+    public void setAmount2(double amount){this.amount2= amount;}
+    public double getAmount2(){return this.amount2;}
 
 }
