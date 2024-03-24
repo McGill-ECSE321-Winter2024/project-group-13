@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 
 import ca.mcgill.ecse321.rest.PersonSession;
-import ca.mcgill.ecse321.rest.dao.InvoiceRepository;
 import ca.mcgill.ecse321.rest.dto.CreateInvoiceDTO;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;
 import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
@@ -12,8 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class InvoiceController {

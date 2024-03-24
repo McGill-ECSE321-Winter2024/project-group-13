@@ -19,7 +19,7 @@ public class InvoiceDTO {
     private Number amount;
     private double amount2;
 
-    public InvoiceDTO(){};
+    public InvoiceDTO(){}
 
     public InvoiceDTO(Invoice invoice){
         this.setId(invoice.getId());

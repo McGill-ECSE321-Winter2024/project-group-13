@@ -129,7 +129,7 @@ class CourseDetailServiceTest {
     @Test
     void getActiveCourses_ReturnsOnlyApprovedCourses() {
         // Arrange
-        when(courseRepository.findCoursesByCourseState(Course.CourseState.Approved)).thenReturn(Arrays.asList(new Course()));
+        when(courseRepository.findCoursesByCourseState(Course.CourseState.Approved)).thenReturn(List.of(new Course()));
 
         // Act
         List<Course> result = courseDetailService.getActiveCourses();
@@ -146,8 +146,8 @@ class CourseDetailServiceTest {
         String instructorId = "1";
         Course activeCourse = new Course();
         Course instructorSpecificCourse = new Course();
-        when(courseDetailService.getActiveCourses()).thenReturn(Arrays.asList(activeCourse));
-        when(courseRepository.findCoursesByInstructorId(instructorId)).thenReturn(Arrays.asList(instructorSpecificCourse));
+        when(courseDetailService.getActiveCourses()).thenReturn(List.of(activeCourse));
+        when(courseRepository.findCoursesByInstructorId(instructorId)).thenReturn(List.of(instructorSpecificCourse));
 
         // Act
         List<Course> result = courseDetailService.getAllActiveAndInstructorSpecificCourses(instructorId);
