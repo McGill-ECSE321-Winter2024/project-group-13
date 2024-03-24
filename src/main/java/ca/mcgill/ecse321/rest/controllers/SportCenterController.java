@@ -21,14 +21,16 @@ public class SportCenterController {
     private AuthenticationService authenticationService;
     // Get sport center DTO
     @GetMapping(value = {"/sportcenter", "/sportcenter/"})
-    public ResponseEntity<SportCenterDTO> getSportCenter() {
-        SportCenterDTO sportCenterDTO = sportCenterService.getSportCenterDTO();
-        return ResponseEntity.ok(sportCenterDTO);
+    public ResponseEntity<SportCenterDTO> getSportCenter(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+        PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
+        SportCenterDTO sportCenterDTO = sportCenterService.getSportCenterDTO(person);
+        if(sportCenterDTO!=null) return ResponseEntity.ok(sportCenterDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // Change name (Owner only)
     @PutMapping(value = {"/sportcenter/name", "/sportcenter/name/"})
-    public ResponseEntity<SportCenterDTO> changeSportCenterName(@RequestParam String newName,@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<SportCenterDTO> changeSportCenterName(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization,@RequestBody String newName) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         if(sportCenterService.updateName(newName,person)) return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -36,15 +38,17 @@ public class SportCenterController {
 
     // Update Address (Owner only)
     @PutMapping(value = {"/sportcenter/address", "/sportcenter/address/"})
-    public ResponseEntity<SportCenterDTO> updateSportCenterAddress(@RequestParam String newAddress,@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<SportCenterDTO> updateSportCenterAddress(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization,@RequestBody String newAddress) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        if(sportCenterService.updateAddress(newAddress,person)) return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        if(sportCenterService.updateAddress(newAddress,person)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // Change operating hours (Owner only)
     @PutMapping(value = {"/sportcenter/opening-hours", "/sportcenter/opening-hours/"})
-    public ResponseEntity<SportCenterDTO> updateSchedule(@RequestBody ScheduleDTO newSchedule,@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<SportCenterDTO> updateSchedule(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody ScheduleDTO newSchedule) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         if(sportCenterService.updateSchedule(newSchedule,person)) return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

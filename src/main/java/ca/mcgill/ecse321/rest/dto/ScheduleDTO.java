@@ -43,6 +43,7 @@ public class ScheduleDTO {
     }
 
 
+
     public String getId() {
         return id;
     }
@@ -184,4 +185,29 @@ public class ScheduleDTO {
                   '}';
       }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ScheduleDTO scheduleDTO = (ScheduleDTO) obj;
+        return (id == scheduleDTO.getId() || id.equals(scheduleDTO.getId())) &&
+                (mondayStart == scheduleDTO.getMondayStart() || mondayStart.equals(scheduleDTO.getMondayStart())) &&
+                (mondayEnd == scheduleDTO.getMondayEnd() || mondayEnd.equals(scheduleDTO.getMondayEnd())) &&
+                (tuesdayStart == scheduleDTO.getTuesdayStart() || tuesdayStart.equals(scheduleDTO.getTuesdayStart())) &&
+                (tuesdayEnd == scheduleDTO.getTuesdayEnd() || tuesdayEnd.equals(scheduleDTO.getTuesdayEnd())) &&
+                (wednesdayStart == scheduleDTO.getWednesdayStart() || wednesdayStart.equals(scheduleDTO.getWednesdayStart())) &&
+                (wednesdayEnd == scheduleDTO.getWednesdayEnd() || wednesdayEnd.equals(scheduleDTO.getWednesdayEnd())) &&
+                (thursdayStart == scheduleDTO.getThursdayStart() || thursdayStart.equals(scheduleDTO.getThursdayStart())) &&
+                (thursdayEnd == scheduleDTO.getThursdayEnd() || thursdayEnd.equals(scheduleDTO.getThursdayEnd())) &&
+                (fridayStart == scheduleDTO.getFridayStart() || fridayStart.equals(scheduleDTO.getFridayStart())) &&
+                (fridayEnd == scheduleDTO.getFridayEnd() || fridayEnd.equals(scheduleDTO.getFridayEnd())) &&
+                (saturdayStart == scheduleDTO.getSaturdayStart() || saturdayStart.equals(scheduleDTO.getSaturdayStart())) &&
+                (saturdayEnd == scheduleDTO.getSaturdayEnd() || saturdayEnd.equals(scheduleDTO.getSaturdayEnd())) &&
+                (sundayStart == scheduleDTO.getSundayStart() || sundayStart.equals(scheduleDTO.getSundayStart())) &&
+                (sundayEnd == scheduleDTO.getSundayEnd() || sundayEnd.equals(scheduleDTO.getSundayEnd()));
+    }
 }

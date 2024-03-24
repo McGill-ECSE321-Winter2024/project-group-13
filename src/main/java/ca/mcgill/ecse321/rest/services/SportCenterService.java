@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.dao.ScheduleRepository;
 import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.dto.SportCenterDTO;
@@ -17,16 +18,23 @@ public class SportCenterService {
     @Autowired
     private SportCenterRepository sportCenterRepository;
 
-    public SportCenterDTO getSportCenterDTO() {
-        SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
-        return convertToDto(sportCenter);
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    public SportCenterDTO getSportCenterDTO(PersonSession personSession) {
+        if (personSession!=null){
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+            return convertToDto(sportCenter);
+        }else {
+            return null;
+        }
     }
 
     public boolean updateName(String newName, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)){
-            SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
             sportCenter.setName(newName);
-            sportCenter = sportCenterRepository.save(sportCenter);
+            sportCenterRepository.save(sportCenter);
             return true;
         }
         return false;
@@ -34,9 +42,9 @@ public class SportCenterService {
 
     public boolean updateAddress(String newAddress, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
-              SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
+              SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
               sportCenter.setAddress(newAddress);
-              sportCenter = sportCenterRepository.save(sportCenter);
+              sportCenterRepository.save(sportCenter);
               return true;
         }
         return false;
@@ -44,10 +52,11 @@ public class SportCenterService {
 
     public boolean updateSchedule(ScheduleDTO newScheduleDTO, PersonSession personSession) {
         if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
-              SportCenter sportCenter = sportCenterRepository.findSportCenterByScheduleNotNull();
+              SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
               Schedule newSchedule = convertToEntity(newScheduleDTO);
+              scheduleRepository.save(newSchedule);
               sportCenter.setSchedule(newSchedule);
-              sportCenter = sportCenterRepository.save(sportCenter);
+              sportCenterRepository.save(sportCenter);
               return true;
         }
         return false;
@@ -55,6 +64,7 @@ public class SportCenterService {
 
     private Schedule convertToEntity(ScheduleDTO scheduleDTO) {
         Schedule schedule = new Schedule();
+        schedule.setId(scheduleDTO.getId());
         schedule.setMondayStart(Time.valueOf(scheduleDTO.getMondayStart()));
         schedule.setMondayEnd(Time.valueOf(scheduleDTO.getMondayEnd()));
         schedule.setTuesdayStart(Time.valueOf(scheduleDTO.getTuesdayStart()));

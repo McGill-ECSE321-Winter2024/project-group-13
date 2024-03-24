@@ -1,4 +1,5 @@
 package ca.mcgill.ecse321.rest.services;
+import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.CustomerDTO;
 import ca.mcgill.ecse321.rest.dto.InstructorDTO;
@@ -20,18 +21,27 @@ public class InstructorService {
     private SportCenterRepository sportCenterRepository;
 
 
-    public List<InstructorDTO> findAll() {
-        List<InstructorDTO> instructorDTOS = new ArrayList<>() ;
-        for (Instructor instructor : instructorRepository.findAll()) {
-            instructorDTOS.add(new InstructorDTO(instructor));
+    public List<InstructorDTO> findAll(PersonSession personSession) {
+        if (personSession!=null) {
+            List<InstructorDTO> instructorDTOS = new ArrayList<>() ;
+            for (Instructor instructor : instructorRepository.findAll()) {
+                instructorDTOS.add(new InstructorDTO(instructor));
+            }
+            return instructorDTOS;
+        } else {
+            return null;
         }
-        return instructorDTOS;
+
     }
 
-    public InstructorDTO save(InstructorDTO instructorDTO) {
-        Instructor instructor = convertToEntity(instructorDTO);
-        Instructor savedInstructor = instructorRepository.save(instructor);
-        return convertToDto(savedInstructor);
+    public InstructorDTO save(InstructorDTO instructorDTO, PersonSession personSession) {
+        if (personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            Instructor instructor = convertToEntity(instructorDTO);
+            Instructor savedInstructor = instructorRepository.save(instructor);
+            return convertToDto(savedInstructor);
+        }else {
+            return null;
+        }
     }
 
     private InstructorDTO convertToDto(Instructor instructor) {
@@ -43,6 +53,7 @@ public class InstructorService {
         instructor.setName(instructorDTO.getName());
         instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
         instructor.setEmail(instructorDTO.getEmail());
+        instructor.setPassword(instructorDTO.getPassword());
         instructor.setSportCenter(sportCenterRepository.findSportCenterById(instructorDTO.getSportCenterId()));
         return instructor;
     }
