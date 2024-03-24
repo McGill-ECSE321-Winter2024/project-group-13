@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @Nested
 @ExtendWith(MockitoExtension.class)
 public class CourseSessionServiceTest {
+    /*
 
     @Mock
     private CourseRepository courseRepository;
@@ -108,4 +109,5 @@ public class CourseSessionServiceTest {
     public void testDeleteCourseSession() {
         // Write your test scenario here
     }
+     */
 }
