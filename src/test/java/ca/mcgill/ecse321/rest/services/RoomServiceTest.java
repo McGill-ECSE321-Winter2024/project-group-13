@@ -89,4 +89,36 @@ class RoomServiceTest {
         assertEquals("Invalid Sport Center id", errorMessageID);
     }
 
+    @Test
+    void deleteRoom() {
+        String roomName= "HealthPlus";
+        String sportsCenterID="ID1234";
+        String personID="ID56789";
+        String roomID= "roomID";
+        Room room = new Room();
+        SportCenter sportCenter= new SportCenter(sportsCenterID);
+        room.setRoomName(roomName);
+        room.setSportCenter(sportCenter);
+        PersonSession personSessionOwner= new PersonSession(personID,PersonSession.PersonType.Owner,sportsCenterID);
+        PersonSession personSessionInstructor= new PersonSession(personID,PersonSession.PersonType.Instructor,sportsCenterID);
+        PersonSession personSessionCustomer= new PersonSession(personID,PersonSession.PersonType.Customer,sportsCenterID);
+        when(roomRepository.findRoomById(roomID)).thenReturn(room);
+        when(roomRepository.findRoomById("")).thenReturn(null);
+
+
+        String errorMessageOwner= roomService.deleteRoom(roomID, personSessionOwner);
+        String errorMessageInstructor= roomService.deleteRoom(roomID, personSessionInstructor);
+        String errorMessageCustomer= roomService.deleteRoom(roomID, personSessionCustomer);
+        String errorMessageInvalid= roomService.deleteRoom("", personSessionOwner);
+
+        assertEquals("",errorMessageOwner);
+        assertEquals("Must be the Owner of the Sport Center",errorMessageInstructor);
+        assertEquals("Must be the Owner of the Sport Center",errorMessageCustomer);
+        assertEquals("Room does not exist",errorMessageInvalid);
+
+        verify(roomRepository,times(3)).findRoomById(roomID);
+        verify(roomRepository).findRoomById("");
+        verify(roomRepository).deleteRoomById(roomID);
+    }
+
 }
