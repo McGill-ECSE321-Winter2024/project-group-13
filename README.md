@@ -45,7 +45,7 @@ Thank you for your interest in our project. We are excited to embark on this jou
 All our documentation for this project, except for this README file, can be found in [the wiki of this repository](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki). This project consisted of three sprints, with a project deliverable associated to each sprint. Individual sprint reports for each deliverable can be navigated to using the following links:
 
 - [Project Deliverable 1 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-1-Report)
-- Project Deliverable 2 Report
+- [Project Deliverable 2 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-2-Report)
 - Project Deliverable 3 Report
 
 ---
