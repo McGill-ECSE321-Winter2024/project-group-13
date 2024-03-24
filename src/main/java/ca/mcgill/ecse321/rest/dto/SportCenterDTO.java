@@ -19,6 +19,9 @@ public class SportCenterDTO {
     public SportCenterDTO(){
     }
 
+    public SportCenterDTO(){
+    }
+
     public String getId() {
         return id;
     }

@@ -61,10 +61,12 @@ public class InvoiceService {
 
     public InvoiceDTO createInvoice(PersonSession personSession, String registrationId, double amount){
         if(PersonSession.PersonType.Instructor.equals(personSession.getPersonType()) || PersonSession.PersonType.Customer.equals(personSession.getPersonType())) {
-            return null;
+            throw new IllegalArgumentException("Only owners can create invoices");
         }
         Registration registration = registrationRepository.findRegistrationById(registrationId);
-        if(registration == null) return null;
+        if(registration == null) {
+            throw new IllegalArgumentException("Registration not found");
+        }
         Invoice invoice = new Invoice();
         invoice.setRegistration(registration);
         invoice.setAmount(amount);

@@ -28,7 +28,7 @@ public class InvoiceController {
     public ResponseEntity<?> verify(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
         if(personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
-            return DefaultHTTPResponse.unauthorized("Instructors do not have access to invoices");
+            return DefaultHTTPResponse.forbidden("Instructors do not have access to invoices");
         }
         return new ResponseEntity<>(invoiceService.getAllInvoices(personSession), HttpStatus.OK);
     }
@@ -54,22 +54,25 @@ public class InvoiceController {
     @ResponseBody
     public ResponseEntity<?> generateCheckoutSession(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
-            @PathVariable("invoice_id") String invoiceId,
             @RequestBody CreateInvoiceDTO createInvoiceDTO
     ) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
         if(personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
             return DefaultHTTPResponse.unauthorized("Instructors do not have access to invoices");
         }
-        InvoiceDTO invoiceDTO = invoiceService.createInvoice(
-                personSession,
-                createInvoiceDTO.getRegistrationId(),
-                createInvoiceDTO.getAmount()
-        );
-        if(invoiceDTO == null) {
-            return DefaultHTTPResponse.badRequest("Invalid request");
+        try {
+            InvoiceDTO invoiceDTO = invoiceService.createInvoice(
+                    personSession,
+                    createInvoiceDTO.getRegistrationId(),
+                    createInvoiceDTO.getAmount()
+            );
+            if(invoiceDTO == null) {
+                return DefaultHTTPResponse.badRequest("Invalid request");
+            }
+            return new ResponseEntity<>(invoiceDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            return DefaultHTTPResponse.badRequest(e.getMessage());
         }
-        return new ResponseEntity<>(invoiceDTO, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/invoices/{invoice_id}/status", method = RequestMethod.PUT)
@@ -80,8 +83,8 @@ public class InvoiceController {
             @RequestParam("status") String status
     ) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
-        if(personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
-            return DefaultHTTPResponse.unauthorized("Instructors do not have access to invoices");
+        if(!personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            return DefaultHTTPResponse.unauthorized("Only owners can update invoice status");
         }
         if(invoiceService.updateInvoiceStatus(personSession, invoiceId, status)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -97,8 +100,8 @@ public class InvoiceController {
             @RequestParam("amount") double amount
     ) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
-        if(personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
-            return DefaultHTTPResponse.unauthorized("Instructors do not have access to invoices");
+        if(!personSession.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            return DefaultHTTPResponse.unauthorized("Only owners can update invoice amount");
         }
         if(invoiceService.updateInvoiceAmount(personSession, invoiceId, amount)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();

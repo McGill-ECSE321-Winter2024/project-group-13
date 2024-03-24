@@ -196,11 +196,15 @@ public class InvoiceServiceTest {
                 sportCenter.getId()
         );
         when(registrationRepository.findRegistrationById(anyString())).thenReturn(null);
-        InvoiceDTO invoiceDTO = invoiceService.createInvoice(personSession, "registration_id", 100.0);
 
-        assertNull(invoiceDTO);
+        assertThrows(IllegalArgumentException.class, () -> {
+            invoiceService.createInvoice(personSession, "registration_id", 100.0);
+        });
+
         verify(registrationRepository, times(1)).findRegistrationById(anyString());
         verify(invoiceRepository, times(0)).save(any(Invoice.class));
+
+        //expect error to be thrown
     }
 
     @Test
