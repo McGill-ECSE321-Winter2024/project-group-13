@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.openmbean.InvalidKeyException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -24,8 +25,6 @@ public class CourseSessionService {
   private CourseRepository courseRepository;
   @Autowired
   private CourseSessionRepository courseSessionRepository;
-  @Autowired
-  private ScheduleRepository scheduleRepository;
 
   private Timestamp combineDateWithTime(Timestamp currentDate, Time time) {
       Calendar calendar = Calendar.getInstance();
@@ -38,8 +37,8 @@ public class CourseSessionService {
       return new Timestamp(calendar.getTimeInMillis());
   }
   @Transactional
-  public String createSessionsPerCourse(String courseID) {
-    Course course = courseRepository.findCourseById(courseID);
+  public String createSessionsPerCourse(String name) {
+    Course course = courseRepository.findCourseByName(name);
     if (course == null) {
       return "Invalid course id";
     }
@@ -112,7 +111,11 @@ public class CourseSessionService {
     }
   @Transactional
   public CourseSession getCourseSession(String courseSessionID) {
-        return courseSessionRepository.findCourseSessionById(courseSessionID);
+      CourseSession courseSession= courseSessionRepository.findCourseSessionById(courseSessionID);
+      if (courseSession==null){
+          throw new InvalidKeyException("Course session not found");
+      }
+      return courseSessionRepository.findCourseSessionById(courseSessionID);
   }
   @Transactional
   public String deleteSessionsPerCourse(String courseID) {
