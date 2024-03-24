@@ -135,7 +135,7 @@ public class CourseSessionController {
         String errorMessage=courseSessionService.updateCourseSessionEnd(session_id,endTime,person);
         return getResponse(errorMessage,"Course session start time changed");
     }
-    @DeleteMapping(value = { "/sessions/{id}}", "/sessions/{id}/" })
+    @DeleteMapping(value = { "/sessions/{id}", "/sessions/{id}/" })
     public ResponseEntity<HTTPDTO> deleteCourse(@PathVariable String session_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseSessionService.deleteCourseSession(session_id, person);
