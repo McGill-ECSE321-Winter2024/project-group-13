@@ -19,6 +19,8 @@ public interface CourseRepository extends CrudRepository<Course, String> {
   List<Course> findCoursesByCourseState(Course.CourseState courseState);
 
   List<Course> findCoursesByInstructorId(String instructorId);
+  List<Course> findCoursesByRoomId(String roomId);
+
 
   @Query("SELECT c FROM Course c WHERE " +
           "(:state IS NULL OR c.courseState = :state) " +
