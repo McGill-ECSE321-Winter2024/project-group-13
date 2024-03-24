@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
-import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.dto.SportCenterDTO;
 import ca.mcgill.ecse321.rest.models.*;

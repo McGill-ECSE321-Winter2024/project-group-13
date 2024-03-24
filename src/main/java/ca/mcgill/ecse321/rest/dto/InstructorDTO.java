@@ -30,7 +30,7 @@ public class InstructorDTO extends PersonDTO{
             return false;
         }
         InstructorDTO instructorDTO = (InstructorDTO) obj;
-        return super.equals(obj) && sportCenterId.equals(instructorDTO.getSportCenterId());
+        return super.equals(obj) && (sportCenterId.equals(instructorDTO.getSportCenterId())||sportCenterId==instructorDTO.getSportCenterId());
     }
 }
 

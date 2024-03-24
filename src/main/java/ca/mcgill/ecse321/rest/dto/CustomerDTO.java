@@ -9,7 +9,6 @@ public class CustomerDTO extends PersonDTO{
     public CustomerDTO(){}
     public CustomerDTO(Customer customer) {
         super(customer);
-
         this.sportCenterId = customer.getSportCenter().getId();
     }
     public String getSportCenterId() {
@@ -25,8 +24,7 @@ public class CustomerDTO extends PersonDTO{
             return false;
         }
         CustomerDTO customerDTO = (CustomerDTO) obj;
-        return super.equals(obj) &&
-                sportCenterId.equals(customerDTO.sportCenterId) ;
+        return super.equals(obj) &&(sportCenterId.equals(customerDTO.sportCenterId)||sportCenterId==customerDTO.sportCenterId);
     }
 }
 

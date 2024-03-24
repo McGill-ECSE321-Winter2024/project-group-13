@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.rest.services.CustomerService;
 import ca.mcgill.ecse321.rest.services.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -29,23 +30,33 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<List<InstructorDTO>> getAllInstructors(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        List<InstructorDTO> instructors = instructorService.findAll(person);
-        return ResponseEntity.ok(instructors);
+        if (person!=null) {
+            List<InstructorDTO> instructors = instructorService.findAll(person);
+            return ResponseEntity.ok(instructors);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // View all customers
     @GetMapping(value = { "/customers", "/customers/" })
     public ResponseEntity<List<CustomerDTO>> getAllCustomers(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        List<CustomerDTO> customers = customerService.findAll(person);
-        return ResponseEntity.ok(customers);
+        if (person.getPersonType().equals(PersonSession.PersonType.Owner) ||
+                person.getPersonType().equals(PersonSession.PersonType.Instructor)) {
+            List<CustomerDTO> customers = customerService.findAll(person);
+            return ResponseEntity.ok(customers);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // Create instructor
     @PostMapping(value = {"/instructors", "/instructors/"})
-    public ResponseEntity<InstructorDTO> createInstructor(@RequestBody InstructorDTO instructorDTO,@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<InstructorDTO> createInstructor(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization,@RequestBody InstructorDTO instructorDTO) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        InstructorDTO savedInstructor = instructorService.save(instructorDTO,person);
-        return ResponseEntity.ok(savedInstructor);
+        if (person.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            InstructorDTO savedInstructor = instructorService.save(instructorDTO,person);
+            return ResponseEntity.ok(savedInstructor);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

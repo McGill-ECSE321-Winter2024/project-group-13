@@ -53,6 +53,7 @@ public class InstructorService {
         instructor.setName(instructorDTO.getName());
         instructor.setPhoneNumber(instructorDTO.getPhoneNumber());
         instructor.setEmail(instructorDTO.getEmail());
+        instructor.setPassword(instructorDTO.getPassword());
         instructor.setSportCenter(sportCenterRepository.findSportCenterById(instructorDTO.getSportCenterId()));
         return instructor;
     }
