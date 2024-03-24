@@ -54,9 +54,9 @@ All our documentation for this project, except for this README file, can be foun
 
 |  | Team Role | Deliverable 1 Individual Hours | Deliverable 2 Individual Hours | Deliverable 3 Individual Hours |
 | --- | --- | --- | --- | --- |
-| Mohamed Abdelrahmanibrahim| Full Stack Engineer | 8.5 |  |  |
-| Philippe Aprahamian| Backend Engineer | 10 |  |  |
-| Teddy El-Husseini| Frontend Engineer | 12.5 |  |  |
-| Achraf Ghellach| Full Stack Engineer | 15 |  |  |
-| Omar Moussa| Testing Engineer | 15 |  |  |
-| Rafael Reis| Project Manager | 18 |  |  |
+| Mohamed Abdelrahmanibrahim| Full Stack Engineer | 8.5 | 24 |  |
+| Philippe Aprahamian| Backend Engineer | 10 | 20 |  |
+| Teddy El-Husseini| Frontend Engineer | 12.5 | 22 |  |
+| Achraf Ghellach| Full Stack Engineer | 15 | 20 |  |
+| Omar Moussa| Testing Engineer | 15 | 25 |  |
+| Rafael Reis| Project Manager | 18 | 15 |  |
