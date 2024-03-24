@@ -11,7 +11,6 @@ import ca.mcgill.ecse321.rest.models.CourseSession;
 import ca.mcgill.ecse321.rest.models.Schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -37,7 +36,7 @@ public class CourseSessionService {
 
       return new Timestamp(calendar.getTimeInMillis());
   }
-  @Transactional
+
   public String createSessionsPerCourse(String courseID) {
     Course course = courseRepository.findCourseById(courseID);
     if (course == null) {
@@ -61,36 +60,37 @@ public class CourseSessionService {
 
     while (currentDay.getTime().before(endDate) || currentDay.getTime().equals(endDate)) {
       // Retrieve start and end times for the current day of the week
-      switch (currentDay.get(Calendar.DAY_OF_WEEK)) {
-        case Calendar.MONDAY:
-          startTime = schedule.getMondayStart();
-          endTime = schedule.getMondayEnd();
-          break;
-        case Calendar.TUESDAY:
-          startTime = schedule.getTuesdayStart();
-          endTime = schedule.getTuesdayEnd();
-          break;
-        case Calendar.WEDNESDAY:
-          startTime = schedule.getWednesdayStart();
-          endTime = schedule.getWednesdayEnd();
-          break;
-        case Calendar.THURSDAY:
-          startTime = schedule.getThursdayStart();
-          endTime = schedule.getThursdayEnd();
-          break;
-        case Calendar.FRIDAY:
-          startTime = schedule.getFridayStart();
-          endTime = schedule.getFridayEnd();
-          break;
-        case Calendar.SATURDAY:
-          startTime = schedule.getSaturdayStart();
-          endTime = schedule.getSaturdayEnd();
-          break;
-        case Calendar.SUNDAY:
-          startTime = schedule.getSundayStart();
-          endTime = schedule.getSundayEnd();
-          break;
-      }
+        endTime = switch (currentDay.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.MONDAY -> {
+                startTime = schedule.getMondayStart();
+                yield schedule.getMondayEnd();
+            }
+            case Calendar.TUESDAY -> {
+                startTime = schedule.getTuesdayStart();
+                yield schedule.getTuesdayEnd();
+            }
+            case Calendar.WEDNESDAY -> {
+                startTime = schedule.getWednesdayStart();
+                yield schedule.getWednesdayEnd();
+            }
+            case Calendar.THURSDAY -> {
+                startTime = schedule.getThursdayStart();
+                yield schedule.getThursdayEnd();
+            }
+            case Calendar.FRIDAY -> {
+                startTime = schedule.getFridayStart();
+                yield schedule.getFridayEnd();
+            }
+            case Calendar.SATURDAY -> {
+                startTime = schedule.getSaturdayStart();
+                yield schedule.getSaturdayEnd();
+            }
+            case Calendar.SUNDAY -> {
+                startTime = schedule.getSundayStart();
+                yield schedule.getSundayEnd();
+            }
+            default -> endTime;
+        };
 
       // Combine date with start and end times to create session start and end times
       Timestamp currentDate = new Timestamp(currentDay.getTimeInMillis());
@@ -110,11 +110,11 @@ public class CourseSessionService {
 
     return "";
     }
-  @Transactional
+
   public CourseSession getCourseSession(String courseSessionID) {
         return courseSessionRepository.findCourseSessionById(courseSessionID);
   }
-  @Transactional
+
   public String deleteSessionsPerCourse(String courseID) {
       Course course= courseRepository.findCourseById(courseID);
       if (course==null){
@@ -123,7 +123,7 @@ public class CourseSessionService {
       courseSessionRepository.deleteAllByCourseId(courseID);
       return "";
   }
-  @Transactional
+
   public List<CourseSession> getSessionsPerCourse(String courseID, PersonSession personSession) {
       Course course= courseRepository.findCourseById(courseID);
       if (course==null){
@@ -131,7 +131,7 @@ public class CourseSessionService {
       }
       return courseSessionRepository.findCourseSessionsByCourse(course);
     }
-  @Transactional
+
   public String createCourseSession(String courseID, PersonSession personSession) {
       CourseSession courseSession=new CourseSession();
       courseSession.setCourse(courseRepository.findCourseById(courseID));
@@ -147,57 +147,57 @@ public class CourseSessionService {
       courseSessionRepository.save(courseSession);
       return "";
   }
-  @Transactional
+
   public String updateCourseSessionStart(String courseSessionID, Timestamp startTime, PersonSession personSession) {
       CourseSession courseSession=courseSessionRepository.findCourseSessionById(courseSessionID);
       if (courseSession==null){
           return "Course session not found";
       }
+      Course course = courseRepository.findCourseById(courseSession.getCourse().getId());
       CourseDTO courseDTO =new CourseDTO(courseRepository.findCourseById(courseSession.getCourse().getId()));
       if (personSession.getPersonType()!= PersonSession.PersonType.Owner ){
           return "Must be an owner";
       }
 
-      if (!personSession.getSportCenterId().equals(courseDTO.getSportCenter())){
+      if (!personSession.getSportCenterId().equals(course.getSportCenter().getId())){
           return "Session must belong to the same sports center";
       }
-      if (courseSession.getEndTime()!= null && startTime!= null && startTime.before(courseSession.getEndTime()) && courseSession.setStartTime(startTime)){
+      if (courseSession.getEndTime()!= null && startTime!= null && startTime.before(courseSession.getEndTime()) && courseSession.getStartTime()!= startTime){
           courseSessionRepository.save(courseSession);
           return "";
       }
       return "Invalid Start time";
   }
-  @Transactional
+
   public String updateCourseSessionEnd(String courseSessionID,Timestamp endTime, PersonSession personSession) {
       CourseSession courseSession=courseSessionRepository.findCourseSessionById(courseSessionID);
       if (courseSession==null){
           return "Course session not found";
       }
-      CourseDTO courseDTO =new CourseDTO(courseRepository.findCourseById(courseSession.getCourse().getId()));
-      if (personSession.getPersonType()!= PersonSession.PersonType.Owner ){
+      Course course = courseRepository.findCourseById(courseSession.getCourse().getId());
+      if (personSession.getPersonType()!= PersonSession.PersonType.Owner){
           return "Must be an owner";
       }
-
-      if (!personSession.getSportCenterId().equals(courseDTO.getSportCenter())){
+      if (!personSession.getSportCenterId().equals(course.getSportCenter().getId())){
           return "Session must belong to the same sports center";
       }
-      if (courseSession.getStartTime()!= null && endTime!= null && endTime.after(courseSession.getEndTime()) && courseSession.setEndTime(endTime)){
+      if (courseSession.getStartTime()!= null && endTime!= null && endTime.after(courseSession.getStartTime()) && courseSession.getEndTime()!=endTime){
           courseSessionRepository.save(courseSession);
           return "";
       }
       return "Invalid Start time";
   }
-  @Transactional
+
   public String deleteCourseSession(String courseSessionID, PersonSession personSession) {
-      CourseSessionDTO courseSessionDTO=new CourseSessionDTO(courseSessionRepository.findCourseSessionById(courseSessionID));
-      CourseDTO courseDTO =new CourseDTO(courseRepository.findCourseById(courseSessionDTO.getCourse()));
-      if (personSession.getPersonType()!= PersonSession.PersonType.Owner ){
+      CourseSession courseSession = courseSessionRepository.findCourseSessionById(courseSessionID);
+      Course course = courseRepository.findCourseById(courseSession.getCourse().getId());
+      if (personSession.getPersonType()!= PersonSession.PersonType.Owner){
           return "Must be an owner";
       }
-      if (courseSessionDTO.getId()==null){
+      if (courseSession.getId()==null){
           return "Course session not found";
       }
-      if (!personSession.getSportCenterId().equals(courseDTO.getSportCenter())){
+      if (!personSession.getSportCenterId().equals(course.getSportCenter().getId())){
           return "Session must belong to the same sports center";
       }
       courseSessionRepository.deleteById(courseSessionID);

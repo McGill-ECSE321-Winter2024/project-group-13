@@ -32,9 +32,7 @@ public class CourseRegistrationIntegrationTest {
     @Autowired private CourseRepository courseRepository;
     @Autowired private PersonRepository personRepository;
     @Autowired private RegistrationRepository registrationRepository;
-
-    @Autowired
-    private AuthenticationService authenticationService;
+    @Autowired private AuthenticationService authenticationService;
 
     private String customerToken;
     private String ownerToken;
