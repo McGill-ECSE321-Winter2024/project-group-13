@@ -36,4 +36,7 @@ public class CourseSessionDTO {
         return course;
     }
 
+    public void setId(String sessionID) {
+        this.id = sessionID;
+    }
 }
