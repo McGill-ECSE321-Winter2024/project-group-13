@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.4.0'
 	implementation "com.stripe:stripe-java:24.20.0"
+	testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 }
 
 tasks.named('test') {

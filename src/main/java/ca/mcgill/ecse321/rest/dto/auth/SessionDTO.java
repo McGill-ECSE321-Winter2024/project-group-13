@@ -10,6 +10,9 @@ public class SessionDTO extends DefaultHTTPResponse {
         this.session = session;
     }
 
+    public SessionDTO() {
+    }
+
     public String getSession() {
         return session;
     }

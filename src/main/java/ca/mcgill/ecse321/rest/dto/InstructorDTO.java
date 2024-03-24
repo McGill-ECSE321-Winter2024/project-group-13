@@ -4,6 +4,9 @@ import ca.mcgill.ecse321.rest.models.Instructor;
 
 public class InstructorDTO extends PersonDTO{
     private String sportCenterId;
+    public InstructorDTO() {
+        super();
+    }
 
     public InstructorDTO(Instructor instructor) {
         super(instructor);
@@ -18,6 +21,16 @@ public class InstructorDTO extends PersonDTO{
         this.sportCenterId = sportCenterId;
     }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof InstructorDTO)) {
+            return false;
+        }
+        InstructorDTO instructorDTO = (InstructorDTO) obj;
+        return super.equals(obj) && (sportCenterId.equals(instructorDTO.getSportCenterId())||sportCenterId==instructorDTO.getSportCenterId());
+    }
 }
 

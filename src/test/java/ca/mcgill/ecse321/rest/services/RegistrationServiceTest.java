@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.models.*;
 
@@ -21,6 +20,7 @@ import ca.mcgill.ecse321.rest.models.*;
 @ExtendWith(MockitoExtension.class)
 public class RegistrationServiceTest {
 
+    //Using @Mock on all needed repositories
     @Mock
     private RegistrationRepository registrationRepository;
     @Mock
@@ -32,22 +32,36 @@ public class RegistrationServiceTest {
     @InjectMocks
     private RegistrationService registrationService;
 
+    //Before each test
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Template for all the following tests:
+     *
+     * First create a setup containing most or all of the following: courses, persons, registration, rating and invoices
+     * Then, since we are using mock repositories, use "when()" to return values for methods called in "RegistrationService".
+     * After that methods from "RegistrationService" are called to be tested.
+     * The returned object should pass all written "assert" and "verify"
+     */
+
+
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all registration for an owner and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void getRegistrationsForOwnerTest_Valid() {
 
         Course course1 = new Course(); Course course2 = new Course();
         Customer customer1 = new Customer(); Customer customer2 = new Customer();
         int rating1 = 3; int rating2 = 4;
-
-        Registration registration = new Registration("id1",rating1,  customer1, course1); Registration registration2 = new Registration("id2",rating2,  customer2, course2);
-
+        Registration registration = new Registration("id1",rating1,  customer1, course1);
+        Registration registration2 = new Registration("id2",rating2,  customer2, course2);
         List<Registration> registrationList = new ArrayList<>();
-
         registrationList.add(registration); registrationList.add(registration2);
 
         when(registrationRepository.findAll()).thenReturn(registrationList);
@@ -60,7 +74,11 @@ public class RegistrationServiceTest {
         verify(registrationRepository,times(1)).findAll();
     }
 
-
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all registration for an instructor and succeeds.
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void getRegistrationsForInstructorTest_Valid() {
 
@@ -90,6 +108,12 @@ public class RegistrationServiceTest {
         verify(instructorRepository,times(1)).findInstructorById(anyString());
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all registration an instructor,
+     * but bad parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     public void getRegistrationsForInstructorTest_Invalid() {
 
@@ -117,6 +141,12 @@ public class RegistrationServiceTest {
         verify(registrationRepository,times(1)).findAll();
         verify(instructorRepository,times(1)).findInstructorById(anyString());
     }
+
+    /**
+     * This test follows the template described before test1
+     * This tests tries to get all registration for a customer and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getRegistrationsForCustomerTest_Valid() {
         Course course1 = new Course(); Course course2 = new Course();
@@ -145,6 +175,12 @@ public class RegistrationServiceTest {
         verify(customerRepository,times(1)).findCustomerById(anyString());
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all registration for a customer,
+     * but a bad parameter is passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getRegistrationsForCustomerTest_Invalid() {
         Course course1 = new Course(); Course course2 = new Course();
@@ -173,6 +209,11 @@ public class RegistrationServiceTest {
         verify(customerRepository,times(1)).findCustomerById(anyString());
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for an owner given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForOwnerTest_Valid() {
 
@@ -193,9 +234,14 @@ public class RegistrationServiceTest {
         assertNotNull(registrationGOT);
         assertEquals(registration1, registrationGOT);
         verify(registrationRepository,times(1)).findAll();
-
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for an owner given the registrationID.
+     * but some invalid parameters are passed
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForOwnerTest_Invalid() {
 
@@ -203,7 +249,6 @@ public class RegistrationServiceTest {
         Customer customer1 = new Customer(); Customer customer2 = new Customer();
         int rating1 = 3; int rating2 = 4;
         Registration registration1 = new Registration("id1",rating1,  customer1, course1); Registration registration2 = new Registration("id2",rating2,  customer2, course2);
-
         List<Registration> registrationList = new ArrayList<>();
 
         registrationList.add(registration1); registrationList.add(registration2);
@@ -216,12 +261,16 @@ public class RegistrationServiceTest {
         assertNull(registrationGOT);
         assertNull( registrationService.getSpecificRegistration(personSession, null ));
         assertNull( registrationService.getSpecificRegistration(personSession, " " ));
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
-
+        assertThrows(IllegalArgumentException.class, () -> {registrationService.getSpecificRegistration(null, "TEST" );});
 
         verify(registrationRepository,times(1)).findAll();
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for an instructor given the registrationID,
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForInstructorTest_Valid() {
 
@@ -241,11 +290,14 @@ public class RegistrationServiceTest {
 
         assertNotNull(registrationsGOT);
         assertEquals(registration1,registrationsGOT);
-
-//        verify(registrationRepository,times(1)).findAll();
-//        verify(instructorRepository,times(1)).findInstructorById(anyString());
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for an instructor given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForInstructorTest_Invalid() {
 
@@ -267,11 +319,16 @@ public class RegistrationServiceTest {
 
         assertNull(registrationService.getSpecificRegistration(personSession, null ));
         assertNull( registrationService.getSpecificRegistration(personSession, " " ));
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
+        assertThrows(IllegalArgumentException.class, () -> {registrationService.getSpecificRegistration(null, "TEST" );});
 
         verify(registrationRepository,times(1)).findAll();
         verify(instructorRepository,times(1)).findInstructorById(anyString());}
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for a Customer given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForCustomerTest_Valid() {
         Course course1 = new Course(); Course course2 = new Course();
@@ -295,6 +352,12 @@ public class RegistrationServiceTest {
         verify(registrationRepository,times(1)).findAll();
         verify(customerRepository,times(1)).findCustomerById(anyString());}
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get a specific registration for a Customer given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getSpecificRegistrationsForCustomerTest_Invalid() {
         Course course1 = new Course(); Course course2 = new Course();
@@ -305,7 +368,6 @@ public class RegistrationServiceTest {
         registration1.setCustomer(customer1); registration2.setCustomer(customer1);
         List<Registration> registrationList = new ArrayList<>();
         registrationList.add(registration1); registrationList.add(registration2);
-
         PersonSession personSession = new PersonSession(customer2.getId(), PersonSession.PersonType.Customer, "SportCenter123");
 
         when(registrationRepository.findAll()).thenReturn(registrationList);
@@ -316,18 +378,21 @@ public class RegistrationServiceTest {
         assertNull(registrationsGOT);
         assertNull( registrationService.getSpecificRegistration(personSession, null ));
         assertNull( registrationService.getSpecificRegistration(personSession, " "));
-        assertThrows(IllegalArgumentException.class, () -> {Registration registration4 = registrationService.getSpecificRegistration(null, "TEST" );});
+        assertThrows(IllegalArgumentException.class, () -> {registrationService.getSpecificRegistration(null, "TEST" );});
         verify(registrationRepository,times(1)).findAll();
         verify(customerRepository,times(1)).findCustomerById(anyString());}
 
-
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to cancel a specific registration for an owner given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void cancelRegistrationForOwnerTest_Valid(){
         Course course1 = new Course(); Course course2 = new Course();
         Customer customer1 = new Customer(); Customer customer2 = new Customer();
         int rating1 = 3; int rating2 = 4;
         Registration registration1 = new Registration("id1",rating1,  customer1, course1); Registration registration2 = new Registration("id2",rating2,  customer2, course2);
-
         List<Registration> registrationList = new ArrayList<>();
 
         registrationList.add(registration1); registrationList.add(registration2);
@@ -341,36 +406,46 @@ public class RegistrationServiceTest {
         verify(registrationRepository,times(1)).findAll();
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to cancel a specific registration for an owner given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void cancelRegistrationForOwnerTest_Invalid(){
-        Course course1 = new Course(); Course course2 = new Course();
-        Customer customer1 = new Customer(); Customer customer2 = new Customer();
-        int rating1 = 3; int rating2 = 4;
-        Registration registration1 = new Registration("id1",rating1,  customer1, course1); Registration registration2 = new Registration("id2",rating2,  customer2, course2);
+        Course course1 = new Course();
+        Customer customer1 = new Customer();
+        int rating1 = 3;
+        Registration registration1 = new Registration("id1",rating1,  customer1, course1);
 
-        List<Registration> registrationList = new ArrayList<>();
-
-        registrationList.add(registration1); registrationList.add(registration2);
-
-       // when(registrationRepository.findAll()).thenReturn(registrationList);
         PersonSession personSession = new PersonSession("PersonID", PersonSession.PersonType.Owner, "SportCenter123");
 
         assertFalse(registrationService.cancelSpecificRegistration(personSession, registration1.getId()+"1"));
-
-        //verify(registrationRepository,times(0)).findAll();
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to cancel a specific registration for an instructor given the registrationID,
+     * but instructor cannot cancel a registration.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void cancelRegistrationForInstructorTest_Invalid(){
         Course course1 = new Course();
         Customer customer1 = new Customer();
-        int rating1 = 3; int rating2 = 4;
+        int rating1 = 3;
         Registration registration1 = new Registration("id1",rating1,  customer1, course1);
 
         PersonSession personSession = new PersonSession("PersonID", PersonSession.PersonType.Instructor, "SportCenter123");
         assertThrows(IllegalArgumentException.class, () -> {registrationService.cancelSpecificRegistration(personSession, registration1.getId());});
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to cancel a specific registration for a customer given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void cancelRegistrationForCustomerTest_Valid(){
         Course course1 = new Course(); Course course2 = new Course();
@@ -392,6 +467,12 @@ public class RegistrationServiceTest {
         verify(registrationRepository,times(1)).findAll();
         verify(customerRepository,times(1)).findCustomerById(anyString());}
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to cancel a specific registration for a customer given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void cancelRegistrationForCustomerTest_Invalid(){
         Course course1 = new Course(); Course course2 = new Course();
@@ -414,6 +495,12 @@ public class RegistrationServiceTest {
         verify(customerRepository,times(1)).findCustomerById(anyString());
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to update a specific registration for an owner and an intructors given the registrationID and rating,
+     * but owners and instructors cannot update the rating of a registration.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void updateRegistrationRatingForOwnerAndInstructorTest_Invalid(){
         Course course1 = new Course(); Course course2 = new Course();
@@ -434,6 +521,11 @@ public class RegistrationServiceTest {
         assertFalse( registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10));
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to update a specific registration for a customer given the registrationID and rating and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void updateRegistrationRatingForCustomerTest_Valid(){
         Course course1 = new Course(); Course course2 = new Course();
@@ -453,6 +545,12 @@ public class RegistrationServiceTest {
         assertTrue(registrationService.updateRegistrationRating(personSession1, registration1.getId(), 3));
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to update a specific registration for a customer given the registrationID and rating,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void updateRegistrationRatingForCustomerTest_Invalid(){
 
@@ -476,6 +574,11 @@ public class RegistrationServiceTest {
         assertFalse(registrationService.updateRegistrationRating(personSession1, registration1.getId(), -10));
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all invoices linked to a specific registration for an owner given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getInvoicesForOwner_Valid() {
         Registration registration = new Registration("IDREG",4 ,new Customer(), new Course());
@@ -496,6 +599,12 @@ public class RegistrationServiceTest {
         assertEquals(invoiceList, invoicesGOT);
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all invoices linked to a specific registration for an owner given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getInvoicesForOwner_Invalid() {
         Registration registration = new Registration("IDREG",4 ,new Customer(), new Course());
@@ -521,6 +630,12 @@ public class RegistrationServiceTest {
         assertEquals(expected, invoicesGOT);
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all invoices linked to a specific registration for an instructor given the registrationID,
+     * but instructors can not get invoices.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getInvoicesForInstructor_Invalid() {
         Registration registration = new Registration("IDREG",4 ,new Customer(), new Course());
@@ -528,14 +643,16 @@ public class RegistrationServiceTest {
         Invoice invoice2 = new Invoice(); invoice2.setAmount(30); invoice2.setRegistration(registration);
         Invoice invoice3 = new Invoice(); invoice3.setAmount(20); invoice3.setRegistration(registration);
 
-        List<Invoice> invoiceList = new ArrayList<>(); invoiceList.add(invoice1); invoiceList.add(invoice2); invoiceList.add(invoice3);
-
         PersonSession personSession = new PersonSession("personID", PersonSession.PersonType.Instructor, "SportCenter123");
 
-        assertThrows(IllegalArgumentException.class, () -> { List<Invoice> invoicesGOT2 = registrationService.getInvoicess(personSession, registration.getId());});
-
+        assertThrows(IllegalArgumentException.class, () -> { registrationService.getInvoicess(personSession, registration.getId());});
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all invoices linked to a specific registration for a customer given the registrationID and succeeds
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getInvoicesForCustomer_Valid() {
         Course course1 = new Course(); Course course2 = new Course();
@@ -564,6 +681,12 @@ public class RegistrationServiceTest {
         assertEquals(expected, invoicesGOT);
     }
 
+    /**
+     * This test follows the template described before the first test
+     * This tests tries to get all invoices linked to a specific registration for a customer given the registrationID,
+     * but some invalid parameters are passed.
+     * @Author Teddy El-Husseini
+     */
     @Test
     void getInvoicesForCustomer_Invalid() {
         Course course1 = new Course(); Course course2 = new Course();

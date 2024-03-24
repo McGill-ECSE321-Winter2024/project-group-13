@@ -20,8 +20,10 @@ public class PersonDTO {
             this.email = person.getEmail();
             this.phoneNumber = person.getPhoneNumber();
             this.name = person.getName();
+            this.password = person.getPassword();
         }
     }
+
 
 
     public String getId() { return id; }
@@ -37,4 +39,19 @@ public class PersonDTO {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof PersonDTO personDTO)) {
+            return false;
+        }
+        return (id==personDTO.getId() || id.equals(personDTO.getId()))&&
+                (email==personDTO.getEmail() || email.equals(personDTO.getEmail()))&&
+                (phoneNumber==personDTO.getPhoneNumber() || phoneNumber.equals(personDTO.getPhoneNumber()))&&
+                (name==personDTO.getName() || name.equals(personDTO.getName()))&&
+                (password==personDTO.getPassword() || password.equals(personDTO.getPassword()));
+    }
 }
