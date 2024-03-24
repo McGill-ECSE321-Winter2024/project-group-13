@@ -26,8 +26,12 @@ public class SportCenterServiceTest {
     @Mock
     private SportCenterRepository sportCenterRepository;
 
+    @Mock
+    private ScheduleRepository scheduleRepository;
+
     @InjectMocks
     private SportCenterService sportCenterService;
+
 
 
     @BeforeEach
@@ -44,7 +48,7 @@ public class SportCenterServiceTest {
         sportCenter.setAddress("1234 Street");
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         sportCenter.setSchedule(schedule);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
         SportCenterDTO result = sportCenterService.getSportCenterDTO(personSession);
 
@@ -75,7 +79,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateName(newName, personSession);
 
@@ -89,7 +93,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateName(oldName, ownerSession);
 
@@ -112,7 +116,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateName(oldName, ownerSession);
 
@@ -136,7 +140,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateAddress(newAddress, personSession);
 
@@ -150,7 +154,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateAddress(oldAddress, ownerSession);
 
@@ -173,7 +177,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
 
         boolean result = sportCenterService.updateAddress(oldAddress, ownerSession);
 
@@ -195,7 +199,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession personSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 
@@ -223,7 +227,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 
@@ -273,7 +277,7 @@ public class SportCenterServiceTest {
         String sportsCenterID = "1";
         SportCenter sportCenter = new SportCenter(sportsCenterID);
         PersonSession ownerSession= new PersonSession("1",PersonSession.PersonType.Owner,sportsCenterID);
-        when(sportCenterRepository.findSportCenterByScheduleNotNull()).thenReturn(sportCenter);
+        when(sportCenterRepository.findSportCenterByIdNotNull()).thenReturn(sportCenter);
         Schedule schedule = new Schedule(new Time(8,0,0),new Time(22,0,0));
         ScheduleDTO scheduleDTO = new ScheduleDTO(schedule);
 

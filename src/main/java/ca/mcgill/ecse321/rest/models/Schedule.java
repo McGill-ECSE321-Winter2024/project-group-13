@@ -49,6 +49,24 @@ public class Schedule {
     this.sundayEnd = standardClosingHour;
   }
 
+  public Schedule(Time standardOpeningHour, Time standardClosingHour,String id) {
+    this.id = id;
+    this.mondayStart = standardOpeningHour;
+    this.mondayEnd = standardClosingHour;
+    this.tuesdayStart = standardOpeningHour;
+    this.tuesdayEnd = standardClosingHour;
+    this.wednesdayStart = standardOpeningHour;
+    this.wednesdayEnd = standardClosingHour;
+    this.thursdayStart = standardOpeningHour;
+    this.thursdayEnd = standardClosingHour;
+    this.fridayStart = standardOpeningHour;
+    this.fridayEnd = standardClosingHour;
+    this.saturdayStart = standardOpeningHour;
+    this.saturdayEnd = standardClosingHour;
+    this.sundayStart = standardOpeningHour;
+    this.sundayEnd = standardClosingHour;
+  }
+
   public Schedule(
       Time weekDaysOpeningHour,
       Time weekDaysClosingHour,

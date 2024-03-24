@@ -11,7 +11,5 @@ public interface SportCenterRepository extends CrudRepository<SportCenter, Strin
 
   SportCenter findSportCenterByAddress(String address);
 
-  SportCenter findSportCenterByScheduleNotNull();
-
   SportCenter findSportCenterByIdNotNull();
 }
