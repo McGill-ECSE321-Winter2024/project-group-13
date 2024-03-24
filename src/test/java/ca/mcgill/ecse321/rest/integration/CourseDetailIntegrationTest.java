@@ -26,7 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // This is the key annotation
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CourseDetailIntegrationTest {
 
     @Autowired private TestRestTemplate restTemplate;
@@ -51,7 +51,6 @@ public class CourseDetailIntegrationTest {
     private Schedule scheduleForUnapprovedCourseOwned;
     private Schedule scheduleForUnapprovedCourse;
     private Schedule scheduleForApprovedCourse;
-//    private Schedule scheduleForCourseWithCustomers;
 
     @BeforeAll
     public void setup() {
@@ -92,7 +91,6 @@ public class CourseDetailIntegrationTest {
         scheduleForUnapprovedCourseOwned = courseRepository.findCourseById(unapprovedCourseOwnedId).getSchedule();
         scheduleForUnapprovedCourse = courseRepository.findCourseById(unapprovedCourseId).getSchedule();
         scheduleForApprovedCourse = courseRepository.findCourseById(approvedCourseId).getSchedule();
-//        scheduleForCourseWithCustomers = courseRepository.findCourseById(courseWithCustomersId).getSchedule();
     }
 
     public void createRegistrations(){
@@ -165,8 +163,8 @@ public class CourseDetailIntegrationTest {
         return course.getId();
     }
 
-    private void assertOKResponse(ResponseEntity<?> response, String message) {
-        assertEquals(HttpStatus.OK, response.getStatusCode(), message);
+    private void assertOKResponse(ResponseEntity<?> response) {
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
         assertNotNull(response.getBody(), "Response body should not be null");
     }
 
@@ -199,7 +197,7 @@ public class CourseDetailIntegrationTest {
                 ScheduleDTO.class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -230,7 +228,7 @@ public class CourseDetailIntegrationTest {
                 ScheduleDTO.class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -247,7 +245,7 @@ public class CourseDetailIntegrationTest {
                 ScheduleDTO.class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForUnapprovedCourse); // Assuming you have a matching constructor or setters
@@ -264,7 +262,7 @@ public class CourseDetailIntegrationTest {
                 ScheduleDTO.class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForUnapprovedCourseOwned); // Assuming you have a matching constructor or setters
@@ -282,7 +280,7 @@ public class CourseDetailIntegrationTest {
                 ScheduleDTO.class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         //Response body verifications
         ScheduleDTO expectedSchedule = new ScheduleDTO(scheduleForApprovedCourse); // Assuming you have a matching constructor or setters
@@ -346,7 +344,7 @@ public class CourseDetailIntegrationTest {
                 CourseDTO[].class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
         assertEquals(4, receivedCourses.size(), "Should return all courses");
     }
@@ -360,7 +358,7 @@ public class CourseDetailIntegrationTest {
                 CourseDTO[].class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
 
         // Verify that received courses include both the active course and the owned inactive course
@@ -384,7 +382,7 @@ public class CourseDetailIntegrationTest {
                 CourseDTO[].class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         List<CourseDTO> receivedCourses = Arrays.asList(response.getBody());
 
         // Verify that received courses include the active course and do not include any inactive courses
@@ -420,7 +418,7 @@ public class CourseDetailIntegrationTest {
                 "/courses",
                 CourseDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals(0, response.getBody().length, "Response body should be an empty list");
 
         //Restore courses
@@ -436,7 +434,7 @@ public class CourseDetailIntegrationTest {
                 "/courses?state=Approved",
                 CourseDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         // Check that all returned courses are in the Approved state
         assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getCourseState().equals("Approved")), "All returned courses should be Approved");
     }
@@ -452,7 +450,7 @@ public class CourseDetailIntegrationTest {
                 CourseDTO[].class);
 
         // Assertions
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
 
         // Convert the response body to a list for easier handling
         List<CourseDTO> courses = Arrays.asList(response.getBody());
@@ -474,7 +472,7 @@ public class CourseDetailIntegrationTest {
                 url,
                 CourseDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         // Check that all returned courses are associated with the specified instructor
         assertTrue(Arrays.stream(response.getBody()).allMatch(course -> course.getInstructor().equals(instructor.getId())), "All returned courses should be taught by the specified instructor");
     }
@@ -503,7 +501,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+approvedCourseId,
                 CourseDTO.class);
 
-        assertOKResponse(responseActive, "Response status should be OK");
+        assertOKResponse(responseActive);
         assertEquals("Approved Test Course", responseActive.getBody().getName());
     }
 
@@ -515,7 +513,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+unapprovedCourseOwnedId,
                 CourseDTO.class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals("Unapproved Test Course Owned by Instructor", response.getBody().getName());
     }
 
@@ -527,7 +525,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+approvedCourseId,
                 CourseDTO.class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals("Approved Test Course", response.getBody().getName());
     }
 
@@ -552,7 +550,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+approvedCourseId,
                 CourseDTO.class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals("Approved Test Course", response.getBody().getName());
     }
 
@@ -609,7 +607,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+courseWithCustomersId+"/customers",
                 CustomerDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertTrue(response.getBody().length > 0, "Response body should contain at least one customer");
     }
 
@@ -621,7 +619,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+courseWithCustomersId+"/customers",
                 CustomerDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertTrue(response.getBody().length > 0, "Response body should contain at least one customer");
     }
 
@@ -674,7 +672,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/"+approvedCourseId+"/customers",
                 CustomerDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals(0, response.getBody().length, "Response body should be an empty list");
     }
 
@@ -685,7 +683,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/" + courseWithCustomersId + "/customers?email=my-customer@mail.com",
                 CustomerDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertEquals(1, response.getBody().length, "Response body should contain one customer with the specified email");
         assertEquals("my-customer@mail.com", response.getBody()[0].getEmail(), "The email of the returned customer should match the query parameter");
     }
@@ -697,7 +695,7 @@ public class CourseDetailIntegrationTest {
                 "/courses/" + courseWithCustomersId + "/customers?name=Hamid",
                 CustomerDTO[].class);
 
-        assertOKResponse(response, "Response status should be OK");
+        assertOKResponse(response);
         assertTrue(response.getBody().length > 0, "Response body should contain at least one customer with the specified name");
         assertTrue(Arrays.stream(response.getBody()).anyMatch(customer -> customer.getName().equals("Hamid")), "The name of at least one returned customer should match the query parameter");
     }

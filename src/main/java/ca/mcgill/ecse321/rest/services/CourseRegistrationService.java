@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
-import ca.mcgill.ecse321.rest.dao.CustomerRepository; // Assuming you have this for loading the Customer
+import ca.mcgill.ecse321.rest.dao.CustomerRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.Customer;
@@ -14,14 +14,10 @@ import java.util.Optional;
 
 @Service
 public class CourseRegistrationService {
-    @Autowired
-    private CourseRepository courseRepository;
+    @Autowired private CourseRepository courseRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository; // Assumes existence of CustomerRepository
-
-    @Autowired
-    private RegistrationRepository registrationRepository;
+    @Autowired private CustomerRepository customerRepository;
+    @Autowired private RegistrationRepository registrationRepository;
 
     @Transactional
     public String registerForCourse(String courseId, PersonSession personSession) {
