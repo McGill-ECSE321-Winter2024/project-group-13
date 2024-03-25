@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,15 +46,26 @@ public class CourseSessionIntegrationTest {
     private final String ownerEmail="TheOwner@gmail.com";
     private final String instructorEmail="TheInstructor@gmail.com";
     private final String customerEmail="TheCustomer@gmail.com";
+    private final String courseID="course567";
     @BeforeAll
     public void set_up(){
         String personPassword = "Password1";
         String personName = "Jordan";
+        String name = "Weights";
+        Timestamp courseStartDate = new Timestamp(2024, 2, 15, 8, 10, 15, 0);
+        Timestamp courseEndDate = new Timestamp(2024, 4, 1, 10, 10, 15, 0);
+        Course course= new Course();
         SportCenter sportCenter=new SportCenter();
         Owner owner= new Owner();
         Instructor instructor = new Instructor();
         Customer customer= new Customer();
         sportCenter.setName(sportCenterName);
+        course.setSportCenter(sportCenter);
+        course.setId(courseID);
+        course.setName(name);
+        course.setCourseState("Approved");
+        course.setCourseStartDate(courseStartDate);
+        course.setCourseEndDate(courseEndDate);
         owner.setSportCenter(sportCenter);
         instructor.setSportCenter(sportCenter);
         customer.setSportCenter(sportCenter);
@@ -65,7 +77,7 @@ public class CourseSessionIntegrationTest {
         personRepository.save(customer);
         personRepository.save(instructor);
         sportCenterRepository.save(sportCenter);
-
+        courseRepository.save(course);
     }
 
     @AfterAll
@@ -82,7 +94,7 @@ public class CourseSessionIntegrationTest {
     public void createCourseSessionTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-        String name = "Weights";
+
         Schedule schedule= new Schedule();
         schedule.setMondayStart(new Time(8, 0, 0));
         schedule.setMondayEnd(new Time(18, 0, 0));
@@ -91,24 +103,20 @@ public class CourseSessionIntegrationTest {
         schedule.setWednesdayStart(new Time(8, 0, 0));
         schedule.setWednesdayEnd(new Time(18, 0, 0));
         scheduleRepository.save(schedule);
-
-
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(name, headers);
-        String url= "/courses/{course_id}+/sessions"
-        ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/courses/"+ courseID+"/sessions";
+        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
 
 
         // Assert
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        CourseDTO createdCourse= new CourseDTO(courseRepository.findCourseByName(name));
-        assertNotNull(createdCourse);
-        assertEquals(name, createdCourse.getName());
-        assertNotNull(createdCourse.getId());
-        assertEquals("AwaitingApproval", createdCourse.getCourseState());
+        assertEquals(HttpStatus.OK, response.getBody().getMessage());
+
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+
     }
     public static void createPerson(
             Person person, String email, String phoneNumber, String name, String password) {
