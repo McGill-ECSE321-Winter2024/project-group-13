@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.rest.integration;
 
 
 import ca.mcgill.ecse321.rest.dao.*;
-import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
@@ -47,6 +46,7 @@ public class CourseSessionIntegrationTest {
     private final String instructorEmail="TheInstructor@gmail.com";
     private final String customerEmail="TheCustomer@gmail.com";
     private String courseID;
+
     @BeforeAll
     public void set_up(){
         String personPassword = "Password1";
@@ -105,7 +105,6 @@ public class CourseSessionIntegrationTest {
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         courseID = courseRepository.findCourseByName("Weights").getId();
 
-
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
@@ -113,14 +112,50 @@ public class CourseSessionIntegrationTest {
         String url= "/courses/"+ courseID+"/sessions";
         ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
 
-
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course session created successfully", response.getBody().getMessage());
 
     }
+    @Test
+    @Order(2)
+    public void createSessionsPerCourseTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        Course course= courseRepository.findCourseByName("Weights");
+        String url= "/courses/"+course.getId()+"/sessions/create";
+        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
+        System.out.println(response.getBody().getMessage());
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course session created successfully", response.getBody().getMessage());
+    }
+//    @Order(3)
+//    public void getCourseSession(){
+//        // Set up
+//        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+//        courseID = courseRepository.findCourseByName("Weights").getId();
+//
+//        // Act
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(authentication);
+//        HttpEntity<String> request = new HttpEntity<>(headers);
+//        String url= "/courses/"+ courseID+"/sessions";
+//        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
+//
+//        // Assert
+//        assertNotNull(response);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals("Course session created successfully", response.getBody().getMessage());
+//
+//    }
     public static void createPerson(
             Person person, String email, String phoneNumber, String name, String password) {
         person.setName(name);
