@@ -39,4 +39,19 @@ public class CourseSessionDTO {
     public void setId(String sessionID) {
         this.id = sessionID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CourseSessionDTO)) {
+            return false;
+        }
+        CourseSessionDTO courseSessionDTO = (CourseSessionDTO) obj;
+        return (id==courseSessionDTO.getId()||id.equals(courseSessionDTO.getId())) &&
+                (startTime==courseSessionDTO.getStartTime()||startTime.equals(courseSessionDTO.getStartTime())) &&
+                (endTime==courseSessionDTO.getEndTime()||endTime.equals(courseSessionDTO.getEndTime())) &&
+                (course==courseSessionDTO.getCourse()||course.equals(courseSessionDTO.getCourse()));
+    }
 }

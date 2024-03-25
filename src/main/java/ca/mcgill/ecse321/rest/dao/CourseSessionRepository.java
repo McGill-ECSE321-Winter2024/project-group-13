@@ -20,6 +20,7 @@ public interface CourseSessionRepository extends CrudRepository<CourseSession, S
   List<CourseSession> findCourseSessionsByStartTimeAfter(Timestamp startTime);
 
   List<CourseSession> findCourseSessionsByStartTimeBetween(Timestamp start, Timestamp end);
+  List<CourseSession> findCourseSessionByCourseRoomId(String roomID);
 
   // Count sessions for a specific course
   long countByCourse(Course course);
