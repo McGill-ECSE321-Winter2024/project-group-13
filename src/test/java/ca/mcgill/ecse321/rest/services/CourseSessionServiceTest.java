@@ -1,9 +1,8 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
 import ca.mcgill.ecse321.rest.dao.CourseSessionRepository;
-import ca.mcgill.ecse321.rest.dao.ScheduleRepository;
 import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.models.Course;
@@ -19,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.management.openmbean.InvalidKeyException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
@@ -206,11 +206,10 @@ public class CourseSessionServiceTest {
         String invalidSessionId = "invalidSessionId";
         when(courseSessionRepository.findCourseSessionById(invalidSessionId)).thenReturn(null);
 
-        // Act
-        CourseSession actualSession = courseSessionService.getCourseSession(invalidSessionId);
-
-        // Assert
-        assertNull(actualSession);
+        // expect error
+        assertThrows(InvalidKeyException.class, () -> {
+            courseSessionService.getCourseSession(invalidSessionId);
+        });
     }
 
     @Test

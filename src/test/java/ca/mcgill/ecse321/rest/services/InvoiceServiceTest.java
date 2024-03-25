@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.InvoiceRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;

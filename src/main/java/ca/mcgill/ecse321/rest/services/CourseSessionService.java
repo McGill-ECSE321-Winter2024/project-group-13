@@ -1,11 +1,9 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.CourseRepository;
 import ca.mcgill.ecse321.rest.dao.CourseSessionRepository;
-import ca.mcgill.ecse321.rest.dao.ScheduleRepository;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
-import ca.mcgill.ecse321.rest.dto.CourseSessionDTO;
 import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.models.CourseSession;
 import ca.mcgill.ecse321.rest.models.Schedule;
@@ -116,7 +114,7 @@ public class CourseSessionService {
       if (courseSession==null){
           throw new InvalidKeyException("Course session not found");
       }
-      return courseSessionRepository.findCourseSessionById(courseSessionID);
+      return courseSession;
   }
 
   public String deleteSessionsPerCourse(String courseID) {

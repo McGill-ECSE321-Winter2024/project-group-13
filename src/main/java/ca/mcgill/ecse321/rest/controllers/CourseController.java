@@ -1,5 +1,5 @@
 package ca.mcgill.ecse321.rest.controllers;
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseService;

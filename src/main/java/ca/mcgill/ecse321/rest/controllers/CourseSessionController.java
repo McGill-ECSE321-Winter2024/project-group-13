@@ -1,13 +1,11 @@
 package ca.mcgill.ecse321.rest.controllers;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.CourseSessionDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
-import ca.mcgill.ecse321.rest.models.Course;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseDetailService;
-import ca.mcgill.ecse321.rest.services.CourseService;
 import ca.mcgill.ecse321.rest.services.CourseSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +15,6 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.Map;
 
 import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.*;
 

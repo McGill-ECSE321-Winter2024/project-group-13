@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CreateInvoiceDTO;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;
 import ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse;
@@ -20,7 +20,7 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @RequestMapping(value = "/invoices", method = RequestMethod.GET)
+    @RequestMapping(value = {"/invoices", "/invoices/"}, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> verify(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
@@ -30,7 +30,7 @@ public class InvoiceController {
         return new ResponseEntity<>(invoiceService.getAllInvoices(personSession), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/invoices/{invoice_id}", method = RequestMethod.GET)
+    @RequestMapping(value = {"/invoices/{invoice_id}", "/invoices/{invoice_id}/"}, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getInvoice(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
@@ -47,7 +47,7 @@ public class InvoiceController {
         return new ResponseEntity<>(invoiceDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/invoices", method = RequestMethod.POST)
+    @RequestMapping(value = {"/invoices", "/invoices/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> generateCheckoutSession(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
@@ -72,7 +72,7 @@ public class InvoiceController {
         }
     }
 
-    @RequestMapping(value = "/invoices/{invoice_id}/status", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/invoices/{invoice_id}/status", "/invoices/{invoice_id}/status/"}, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> updateInvoiceStatus(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
@@ -89,7 +89,7 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @RequestMapping(value = "/invoices/{invoice_id}/amount", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/invoices/{invoice_id}/amount", "/invoices/{invoice_id}/amount/"}, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> updateInvoiceAmount(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,

@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
 import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Instructor;

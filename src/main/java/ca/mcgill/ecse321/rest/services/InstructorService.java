@@ -1,5 +1,5 @@
 package ca.mcgill.ecse321.rest.services;
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.InstructorDTO;
 import ca.mcgill.ecse321.rest.models.Instructor;

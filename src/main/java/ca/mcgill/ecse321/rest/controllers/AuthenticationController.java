@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.LoginDTO;
 import ca.mcgill.ecse321.rest.dto.auth.RegisterDTO;
 import ca.mcgill.ecse321.rest.dto.auth.SessionDTO;
@@ -19,7 +19,7 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
+    @RequestMapping(value = {"/auth/login", "/auth/login/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody LoginDTO body) {
 
@@ -33,7 +33,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(new SessionDTO(session), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/auth/verify", method = RequestMethod.POST)
+    @RequestMapping(value = {"/auth/verify", "/auth/verify/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> verify(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
@@ -41,7 +41,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(new SessionDTO(person.getPersonId()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/auth/register/customer", method = RequestMethod.POST)
+    @RequestMapping(value = {"/auth/register/customer", "/auth/register/customer/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> registerCustomer(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RegisterDTO body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
@@ -60,7 +60,7 @@ public class AuthenticationController {
 
     }
 
-    @RequestMapping(value = "/auth/password", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/auth/password", "/auth/password/"}, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> changePassword(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody LoginDTO body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
@@ -69,7 +69,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(new SessionDTO("Password changed"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/auth/email", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/auth/email", "/auth/email/"}, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> changeEmail(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
@@ -79,7 +79,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(new SessionDTO("Email changed"), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/auth/phoneNumber", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/auth/phoneNumber", "/auth/phoneNumber/"}, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<?> changePhoneNumber(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> body) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
