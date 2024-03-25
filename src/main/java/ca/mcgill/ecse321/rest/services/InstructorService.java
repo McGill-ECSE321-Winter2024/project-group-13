@@ -1,16 +1,13 @@
 package ca.mcgill.ecse321.rest.services;
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
-import ca.mcgill.ecse321.rest.dto.CustomerDTO;
 import ca.mcgill.ecse321.rest.dto.InstructorDTO;
-import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Instructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class InstructorService {

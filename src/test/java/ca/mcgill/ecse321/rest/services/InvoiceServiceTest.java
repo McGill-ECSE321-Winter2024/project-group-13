@@ -1,8 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
-import ca.mcgill.ecse321.rest.dao.CustomerRepository;
-import ca.mcgill.ecse321.rest.dao.InstructorRepository;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.InvoiceRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -196,11 +193,15 @@ public class InvoiceServiceTest {
                 sportCenter.getId()
         );
         when(registrationRepository.findRegistrationById(anyString())).thenReturn(null);
-        InvoiceDTO invoiceDTO = invoiceService.createInvoice(personSession, "registration_id", 100.0);
 
-        assertNull(invoiceDTO);
+        assertThrows(IllegalArgumentException.class, () -> {
+            invoiceService.createInvoice(personSession, "registration_id", 100.0);
+        });
+
         verify(registrationRepository, times(1)).findRegistrationById(anyString());
         verify(invoiceRepository, times(0)).save(any(Invoice.class));
+
+        //expect error to be thrown
     }
 
     @Test

@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.rest;
+package ca.mcgill.ecse321.rest.helpers;
 
 public class PersonSession {
 

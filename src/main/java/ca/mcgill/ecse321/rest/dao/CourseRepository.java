@@ -4,7 +4,6 @@ import ca.mcgill.ecse321.rest.models.Course;
 import jakarta.transaction.Transactional;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;

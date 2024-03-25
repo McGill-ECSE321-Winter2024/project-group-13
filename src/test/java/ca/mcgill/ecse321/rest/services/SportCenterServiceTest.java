@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.dto.SportCenterDTO;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Time;
-import java.sql.Timestamp;
 
 @Nested
 @ExtendWith(MockitoExtension.class)
