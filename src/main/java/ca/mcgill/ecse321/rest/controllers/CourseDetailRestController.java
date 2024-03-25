@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.CustomerDTO;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;

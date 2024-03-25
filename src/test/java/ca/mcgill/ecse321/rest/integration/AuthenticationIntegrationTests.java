@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.integration;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.LoginDTO;
 import ca.mcgill.ecse321.rest.dto.auth.RegisterDTO;
