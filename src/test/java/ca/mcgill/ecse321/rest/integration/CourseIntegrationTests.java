@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;

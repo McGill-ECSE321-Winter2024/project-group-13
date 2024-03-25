@@ -137,25 +137,6 @@ public class CourseSessionIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Course session created successfully", response.getBody().getMessage());
     }
-//    @Order(3)
-//    public void getCourseSession(){
-//        // Set up
-//        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-//        courseID = courseRepository.findCourseByName("Weights").getId();
-//
-//        // Act
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(authentication);
-//        HttpEntity<String> request = new HttpEntity<>(headers);
-//        String url= "/courses/"+ courseID+"/sessions";
-//        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
-//
-//        // Assert
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals("Course session created successfully", response.getBody().getMessage());
-//
-//    }
     public static void createPerson(
             Person person, String email, String phoneNumber, String name, String password) {
         person.setName(name);
