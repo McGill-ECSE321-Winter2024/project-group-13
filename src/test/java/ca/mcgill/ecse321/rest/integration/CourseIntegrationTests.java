@@ -104,15 +104,17 @@ public class CourseIntegrationTests {
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         String name = "Yoga";
 
+
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
         HttpEntity<String> request = new HttpEntity<>(name, headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
 
+
         // Assert
         assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         CourseDTO createdCourse= new CourseDTO(courseRepository.findCourseByName(name));
         assertNotNull(createdCourse);
         assertEquals(name, createdCourse.getName());
