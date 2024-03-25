@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,6 +104,14 @@ public class CourseIntegrationTests {
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         String name = "Yoga";
+        Schedule schedule= new Schedule();
+        schedule.setMondayStart(new Time(9, 0, 0));
+        schedule.setMondayEnd(new Time(17, 0, 0));
+        schedule.setSaturdayStart(new Time(9, 0, 0));
+        schedule.setSaturdayEnd(new Time(17, 0, 0));
+        schedule.setWednesdayStart(new Time(9, 0, 0));
+        schedule.setWednesdayEnd(new Time(17, 0, 0));
+        scheduleRepository.save(schedule);
 
         // Act
         HttpHeaders headers = new HttpHeaders();
@@ -110,9 +119,10 @@ public class CourseIntegrationTests {
         HttpEntity<String> request = new HttpEntity<>(name, headers);
         ResponseEntity<HTTPDTO> response = client.postForEntity("/courses", request,HTTPDTO.class);
 
+
         // Assert
         assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         CourseDTO createdCourse= new CourseDTO(courseRepository.findCourseByName(name));
         assertNotNull(createdCourse);
         assertEquals(name, createdCourse.getName());

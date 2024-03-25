@@ -35,9 +35,6 @@ public class CourseController {
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage= courseService.createCourse(name,person);
-        if (errorMessage.isEmpty()){
-            errorMessage= courseSessionService.createSessionsPerCourse(name);
-        }
         return getResponse(errorMessage,"Course Created successfully");
     }
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
