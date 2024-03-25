@@ -20,8 +20,6 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
     @Autowired
-    private CourseSessionService courseSessionService;
-    @Autowired
     private AuthenticationService authenticationService;
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
