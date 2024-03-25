@@ -46,7 +46,7 @@ public class CourseSessionIntegrationTest {
     private final String ownerEmail="TheOwner@gmail.com";
     private final String instructorEmail="TheInstructor@gmail.com";
     private final String customerEmail="TheCustomer@gmail.com";
-    private final String courseID="course567";
+    private String courseID;
     @BeforeAll
     public void set_up(){
         String personPassword = "Password1";
@@ -61,7 +61,7 @@ public class CourseSessionIntegrationTest {
         Customer customer= new Customer();
         sportCenter.setName(sportCenterName);
         course.setSportCenter(sportCenter);
-        course.setId(courseID);
+        courseID = course.getId();
         course.setName(name);
         course.setCourseState("Approved");
         course.setCourseStartDate(courseStartDate);
@@ -72,6 +72,15 @@ public class CourseSessionIntegrationTest {
         createPerson(owner,ownerEmail,"222-456-7890",personName,personPassword);
         createPerson(instructor,instructorEmail,"444-123-7890",personName,personPassword);
         createPerson(customer,customerEmail,"777-456-0123",personName,personPassword);
+        Schedule schedule= new Schedule();
+        schedule.setMondayStart(new Time(8, 0, 0));
+        schedule.setMondayEnd(new Time(18, 0, 0));
+        schedule.setSaturdayStart(new Time(8, 0, 0));
+        schedule.setSaturdayEnd(new Time(18, 0, 0));
+        schedule.setWednesdayStart(new Time(8, 0, 0));
+        schedule.setWednesdayEnd(new Time(18, 0, 0));
+        scheduleRepository.save(schedule);
+        course.setSchedule(schedule);
 
         personRepository.save(owner);
         personRepository.save(customer);
@@ -94,15 +103,9 @@ public class CourseSessionIntegrationTest {
     public void createCourseSessionTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+        courseID = courseRepository.findCourseByName("Weights").getId();
 
-        Schedule schedule= new Schedule();
-        schedule.setMondayStart(new Time(8, 0, 0));
-        schedule.setMondayEnd(new Time(18, 0, 0));
-        schedule.setSaturdayStart(new Time(8, 0, 0));
-        schedule.setSaturdayEnd(new Time(18, 0, 0));
-        schedule.setWednesdayStart(new Time(8, 0, 0));
-        schedule.setWednesdayEnd(new Time(18, 0, 0));
-        scheduleRepository.save(schedule);
+
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
@@ -113,7 +116,7 @@ public class CourseSessionIntegrationTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getBody().getMessage());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
 //        assertEquals(HttpStatus.OK, response.getStatusCode());
 
