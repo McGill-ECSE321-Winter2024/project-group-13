@@ -3,7 +3,6 @@ import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseService;
-import ca.mcgill.ecse321.rest.services.CourseSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,6 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
     @Autowired
-    private CourseSessionService courseSessionService;
-    @Autowired
     private AuthenticationService authenticationService;
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
@@ -35,9 +32,6 @@ public class CourseController {
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage= courseService.createCourse(name,person);
-        if (errorMessage.isEmpty()){
-            errorMessage= courseSessionService.createSessionsPerCourse(name);
-        }
         return getResponse(errorMessage,"Course Created successfully");
     }
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
