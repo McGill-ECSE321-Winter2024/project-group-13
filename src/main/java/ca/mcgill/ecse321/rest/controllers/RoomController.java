@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 
-import ca.mcgill.ecse321.rest.PersonSession;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.CourseSessionDTO;
 import ca.mcgill.ecse321.rest.dto.RoomDTO;
@@ -35,7 +35,7 @@ public class RoomController {
     }
 
     // Get Courses Per Room
-    @GetMapping(value = {"/rooms/{roomID}/courses", "/rooms/{roomID}/courses/"})
+    @GetMapping(value = {"/room/courses", "/room/courses/"})
     public ResponseEntity<?> getCoursesPerRoom(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RoomDTO roomDTO){
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         List<CourseDTO> coursesPerRoom = roomService.getCoursesPerRoom(roomDTO);
@@ -43,7 +43,7 @@ public class RoomController {
     }
 
     // Get Course Sessions Per Room (Owner Only)
-    @GetMapping(value = {"/rooms/{roomID}/course-sessions", "/rooms/{roomID}/course-sessions/"})
+    @GetMapping(value = {"/room/course-sessions", "/room/course-sessions/"})
     public ResponseEntity<?> getCourseSessionsPerRoom(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RoomDTO roomDTO){
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         List<CourseSessionDTO> courseSessionsPerRoom = roomService.getCourseSessionsPerRoom(roomDTO);

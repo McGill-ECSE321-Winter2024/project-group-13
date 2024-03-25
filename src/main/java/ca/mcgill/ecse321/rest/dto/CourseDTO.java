@@ -110,4 +110,18 @@ public class CourseDTO {
     public String getCourseState() {
         return courseState;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CourseDTO)) {
+            return false;
+        }
+        CourseDTO courseDTO = (CourseDTO) obj;
+        return (id.equals(courseDTO.getId())||id==courseDTO.getId()) &&
+                (name.equals(courseDTO.getName())||name==courseDTO.getName()) &&
+                (sportCenter.equals(courseDTO.getSportCenter())||sportCenter==courseDTO.getSportCenter());
+    }
 }

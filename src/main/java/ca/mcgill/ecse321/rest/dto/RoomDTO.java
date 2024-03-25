@@ -42,4 +42,16 @@ public class RoomDTO {
         return sportCenter;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof RoomDTO)) {
+            return false;
+        }
+        RoomDTO roomDTO = (RoomDTO) obj;
+        return (id.equals(roomDTO.getId())||id==roomDTO.getId()) && (name.equals(roomDTO.getName())||name==roomDTO.getName()) && (sportCenter.equals(roomDTO.getSportCenter())||sportCenter==roomDTO.getSportCenter());
+    }
+
 }

@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.integration;
 
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.CourseSessionDTO;
 import ca.mcgill.ecse321.rest.dto.RoomDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.models.*;
@@ -33,16 +34,20 @@ public class RoomIntegrationTest {
     private RoomRepository roomRepository;
     @Autowired
     private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private CourseSessionRepository courseSessionRepository;
     @Autowired
     private AuthenticationService authenticationService;
 
-    private final String sportCenterName="HealthPlus1";
-    private final String ownerEmail="owner123456@gmail.com";
-    private final String instructorEmail="instructor123456@gmail.com";
-    private final String customerEmail="customer123456@gmail.com";
+    private final String sportCenterName="HealthPlus1z";
+    private final String ownerEmail="owner1234567z@gmail.com";
+    private final String instructorEmail="instructor123456z@gmail.com";
+    private final String customerEmail="customer123456z@gmail.com";
 
     @BeforeAll
     public void set_up(){
+        clearDatabase();
         String personPassword = "password1";
         String personName = "Jake";
         SportCenter sportCenter=new SportCenter();
@@ -65,11 +70,185 @@ public class RoomIntegrationTest {
 
     @AfterAll
     public void clearDatabase() {
-        roomRepository.deleteAll();
+        courseSessionRepository.deleteAll();
         courseRepository.deleteAll();
+        roomRepository.deleteAll();
         personRepository.deleteAll();
         sportCenterRepository.deleteAll();
         scheduleRepository.deleteAll();
+    }
+
+    @Test
+    @Order(1)
+    public void createRoomTestAsOwner(){
+        // Set up
+        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
+
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        RoomDTO roomDTO = new RoomDTO("Yoga", sportCenter.getId());
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(ownerAuthentication);
+        HttpEntity<RoomDTO> request = new HttpEntity<>(roomDTO, headers);
+        ResponseEntity<HTTPDTO> response = client.postForEntity("/rooms", request,HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(2)
+    public void createRoomTestAsInstructor(){
+        // Set up
+        String instructorAuthentication = authenticationService.issueTokenWithEmail(instructorEmail);
+
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        RoomDTO roomDTO = new RoomDTO("Yoga", sportCenter.getId());
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(instructorAuthentication);
+        HttpEntity<RoomDTO> request = new HttpEntity<>(roomDTO, headers);
+        ResponseEntity<HTTPDTO> response = client.postForEntity("/rooms", request,HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(response.getBody().getMessage(),"Must be the Owner of the Sport Center");
+    }
+
+    @Test
+    @Order(3)
+    public void createRoomTestAsCustomer(){
+        // Set up
+        String customerAuthentication = authenticationService.issueTokenWithEmail(customerEmail);
+
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        RoomDTO roomDTO = new RoomDTO("Yoga", sportCenter.getId());
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(customerAuthentication);
+        HttpEntity<RoomDTO> request = new HttpEntity<>(roomDTO, headers);
+        ResponseEntity<HTTPDTO> response = client.postForEntity("/rooms", request,HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(response.getBody().getMessage(),"Must be the Owner of the Sport Center");
+    }
+
+    @Test
+    @Order(4)
+    public void getCoursesPerRoomTest(){
+        // Set up
+        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        Room room = new Room();
+        room.setRoomName("YogaRoom");
+        room.setSportCenter(sportCenter);
+        roomRepository.save(room);
+        Course course = new Course();
+        course.setName("YogaCourse");
+        course.setRoom(room);
+        course.setSportCenter(sportCenter);
+        courseRepository.save(course);
+        CourseDTO courseDTO = new CourseDTO(course);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(ownerAuthentication);
+        HttpEntity<RoomDTO> request = new HttpEntity<>(new RoomDTO(room), headers);
+        ResponseEntity<CourseDTO[]> response = client.exchange("/room/courses", HttpMethod.GET, request, CourseDTO[].class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().length);
+        assertEquals(courseDTO, response.getBody()[0]);
+    }
+
+    @Test
+    @Order(5)
+    public void getCourseSessionsPerRoomTest(){
+        // Set up
+        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        Room room = new Room();
+        room.setRoomName("YogaRoomName");
+        room.setSportCenter(sportCenter);
+        roomRepository.save(room);
+        Course course = new Course();
+        course.setName("YogaCourseName");
+        course.setRoom(room);
+        course.setSportCenter(sportCenter);
+        courseRepository.save(course);
+        Schedule schedule = new Schedule();
+        scheduleRepository.save(schedule);
+        CourseSession courseSession = new CourseSession();
+        courseSession.setCourse(course);
+        courseSession.setStartTime(new Timestamp(System.currentTimeMillis()));
+        courseSession.setEndTime(new Timestamp(System.currentTimeMillis()));
+        courseSessionRepository.save(courseSession);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(ownerAuthentication);
+        HttpEntity<RoomDTO> request = new HttpEntity<>(new RoomDTO(room), headers);
+        ResponseEntity<CourseSessionDTO[]> response = client.exchange("/room/course-sessions", HttpMethod.GET, request, CourseSessionDTO[].class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().length);
+        assertEquals(new CourseSessionDTO(courseSession), response.getBody()[0]);
+    }
+
+    @Test
+    @Order(6)
+    public void deleteExistingRoomTest(){
+        // Set up
+        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+        Room room = new Room();
+        room.setRoomName("YogaRoomName");
+        room.setSportCenter(sportCenter);
+        roomRepository.save(room);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(ownerAuthentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<HTTPDTO> response = client.exchange("/rooms/"+room.getId(), HttpMethod.DELETE, request, HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(roomRepository.findRoomById(room.getId()));
+    }
+
+    @Test
+    @Order(7)
+    public void deleteNonExistingRoomTest(){
+        // Set up
+        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(ownerAuthentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String nonExistingRoomId = "nonExistingRoomId";
+        ResponseEntity<HTTPDTO> response = client.exchange("/rooms/"+nonExistingRoomId, HttpMethod.DELETE, request, HTTPDTO.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Room does not exist", response.getBody().getMessage());
     }
 
     public static void createPerson(Person person, String email, String phoneNumber, String name, String password) {
@@ -79,53 +258,4 @@ public class RoomIntegrationTest {
         person.setPhoneNumber(phoneNumber);
     }
 
-//    @Test
-//    @Order(1)
-//    public void createInvalidRoomTest(){
-//        // Set up
-//        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
-//        String customerAuthentication= authenticationService.issueTokenWithEmail(customerEmail);
-//        String name = "Yoga";
-//        // Act
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(ownerAuthentication);
-//        HttpEntity<String> request = new HttpEntity<>("", headers);
-//        ResponseEntity<HTTPDTO> response = client.postForEntity("/rooms", request,HTTPDTO.class);
-//
-//        headers.setBearerAuth(customerAuthentication);
-//        HttpEntity<String> request2 = new HttpEntity<>(name, headers);
-//        ResponseEntity<HTTPDTO> response2 = client.postForEntity("/rooms", request2, HTTPDTO.class);
-//
-//        // Assert
-//        assertNotNull(response);
-//        assertNotNull(response2);
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//        assertEquals("Room requires name to be created", response.getBody().getMessage());
-//        assertEquals(HttpStatus.FORBIDDEN, response2.getStatusCode());
-//        assertEquals("Must be the Owner of the Sport Center", response2.getBody().getMessage());
-//    }
-//    @Test
-//    @Order(2)
-//    public void createRoomTest(){
-//        // Set up
-//        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-//        String name = "Yoga";
-//
-//        // Act
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(authentication);
-//        HttpEntity<String> request = new HttpEntity<>(name, headers);
-//        ResponseEntity<HTTPDTO> response = client.postForEntity("/rooms", request,HTTPDTO.class);
-//
-//        // Assert
-//        assertNotNull(response);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        RoomDTO createdRoom= new RoomDTO(roomRepository.findRoomByRoomName(name));
-//        assertNotNull(createdRoom);
-//        assertEquals(name, createdRoom.getName());
-//        assertNotNull(createdRoom.getId());
-//    }
-
-    //TODO get courses per room test
-    //TODO get course sessions per room test (owner only)
 }

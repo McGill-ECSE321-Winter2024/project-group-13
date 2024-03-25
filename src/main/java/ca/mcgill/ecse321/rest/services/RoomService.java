@@ -1,8 +1,8 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.PersonSession;
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.*;
+import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -107,7 +107,7 @@ public class RoomService {
         List<CourseSession> courseSessions = courseSessionRepository.findCourseSessionByCourseRoomId(roomDTO.getId());
         List<CourseSessionDTO> courseSessionDTOS = new ArrayList<>();
         for (CourseSession c : courseSessions) {
-            courseSessionDTOS.add(new CourseSessionDTO());
+            courseSessionDTOS.add(new CourseSessionDTO(c));
         }
         return courseSessionDTOS;
     }
