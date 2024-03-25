@@ -41,7 +41,6 @@ public abstract class Person {
 
   public Person() {}
 
-
   /* Code from template attribute_GetUnique */
   public static Person getWithEmail(String aEmail) {
     return personsByEmail.get(aEmail);
@@ -158,6 +157,4 @@ public abstract class Person {
         + getName()
         + "]";
   }
-
-
 }

@@ -45,7 +45,7 @@ Thank you for your interest in our project. We are excited to embark on this jou
 All our documentation for this project, except for this README file, can be found in [the wiki of this repository](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki). This project consisted of three sprints, with a project deliverable associated to each sprint. Individual sprint reports for each deliverable can be navigated to using the following links:
 
 - [Project Deliverable 1 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-1-Report)
-- Project Deliverable 2 Report
+- [Project Deliverable 2 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-2-Report)
 - Project Deliverable 3 Report
 
 ---
@@ -54,9 +54,9 @@ All our documentation for this project, except for this README file, can be foun
 
 |  | Team Role | Deliverable 1 Individual Hours | Deliverable 2 Individual Hours | Deliverable 3 Individual Hours |
 | --- | --- | --- | --- | --- |
-| Mohamed Abdelrahmanibrahim| Full Stack Engineer | 8.5 |  |  |
-| Philippe Aprahamian| Backend Engineer | 10 |  |  |
-| Teddy El-Husseini| Frontend Engineer | 12.5 |  |  |
-| Achraf Ghellach| Full Stack Engineer | 15 |  |  |
-| Omar Moussa| Testing Engineer | 15 |  |  |
-| Rafael Reis| Project Manager | 18 |  |  |
+| Mohamed Abdelrahmanibrahim| Full Stack Engineer | 8.5 | 24 |  |
+| Philippe Aprahamian| Backend Engineer | 10 | 20 |  |
+| Teddy El-Husseini| Frontend Engineer | 12.5 | 22 |  |
+| Achraf Ghellach| Full Stack Engineer | 15 | 20 |  |
+| Omar Moussa| Testing Engineer | 15 | 25 |  |
+| Rafael Reis| Project Manager | 18 | 15 |  |
