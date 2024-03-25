@@ -104,14 +104,7 @@ public class CourseIntegrationTests {
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
         String name = "Yoga";
-        Schedule schedule= new Schedule();
-        schedule.setMondayStart(new Time(9, 0, 0));
-        schedule.setMondayEnd(new Time(17, 0, 0));
-        schedule.setSaturdayStart(new Time(9, 0, 0));
-        schedule.setSaturdayEnd(new Time(17, 0, 0));
-        schedule.setWednesdayStart(new Time(9, 0, 0));
-        schedule.setWednesdayEnd(new Time(17, 0, 0));
-        scheduleRepository.save(schedule);
+
 
         // Act
         HttpHeaders headers = new HttpHeaders();
