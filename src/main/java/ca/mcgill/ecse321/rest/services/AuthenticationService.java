@@ -1,9 +1,11 @@
 package ca.mcgill.ecse321.rest.services;
 
-import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.models.*;
+import ca.mcgill.ecse321.rest.models.Customer;
+import ca.mcgill.ecse321.rest.models.Instructor;
+import ca.mcgill.ecse321.rest.models.Owner;
+import ca.mcgill.ecse321.rest.models.Person;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -20,27 +22,7 @@ public class AuthenticationService {
     @Autowired
     private PersonRepository personRepository;
 
-    @Autowired
-    private SportCenterRepository sportCenterRepository;
-
     public boolean isValidCredentials(String email, String password){
-        Owner admin = (Owner) personRepository.findPersonByEmail("admin@admin.com");
-        if (admin == null) {
-            System.out.println("Admin not found, creating admin");
-            SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
-            if (sportCenter == null) {
-                System.out.println("SportCenter not found, creating sport center");
-                sportCenter = new SportCenter();
-                sportCenter.setName("SportCenter");
-                sportCenterRepository.save(sportCenter);
-            }
-            admin = new Owner();
-            admin.setEmail("admin@admin.com");
-            admin.setPassword("admin");
-            admin.setName("admin");
-            admin.setPhoneNumber("1234567890");
-            personRepository.save(admin);
-        }
         return personRepository.findPersonByEmailAndPassword(email, password) != null;
     }
 
@@ -102,14 +84,7 @@ public class AuthenticationService {
                 ? ((Instructor) person).getSportCenter().getId() :
                         isCustomer ? ((Customer) person).getSportCenter().getId() : null;
         if (personType == null) throw new IllegalArgumentException("Invalid person role");
-        return new PersonSession(
-                person.getId(),
-                person.getName(),
-                person.getEmail(),
-                person.getPhoneNumber(),
-                personType,
-                sportCenterId
-        );
+        return new PersonSession(person.getId(), personType, sportCenterId);
     }
 
     public String registerCustomer(String email, String password, String name, String phoneNumber){

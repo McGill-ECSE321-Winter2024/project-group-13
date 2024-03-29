@@ -70,8 +70,21 @@ public abstract class Person {
   }
 
   public boolean setEmail(String aEmail) {
+    boolean wasSet = false;
+    String anOldEmail = getEmail();
+    if (anOldEmail != null && anOldEmail.equals(aEmail)) {
+      return true;
+    }
+    if (hasWithEmail(aEmail)) {
+      return wasSet;
+    }
     email = aEmail;
-    return true;
+    wasSet = true;
+    if (anOldEmail != null) {
+      personsByEmail.remove(anOldEmail);
+    }
+    personsByEmail.put(aEmail, this);
+    return wasSet;
   }
 
   public boolean setPhoneNumber(String aPhoneNumber) {
