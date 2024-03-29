@@ -1,8 +1,12 @@
 package ca.mcgill.ecse321.rest.controllers;
+import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
+import ca.mcgill.ecse321.rest.models.CourseSession;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
+import ca.mcgill.ecse321.rest.services.CourseDetailService;
 import ca.mcgill.ecse321.rest.services.CourseService;
+import ca.mcgill.ecse321.rest.services.CourseSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +14,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.*;
 
@@ -19,7 +24,13 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
     @Autowired
+    private CourseSessionService courseSessionService;
+    @Autowired
+    private CourseDetailService courseDetailService;
+
+    @Autowired
     private AuthenticationService authenticationService;
+
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
         // Create an error response with appropriate message
@@ -121,8 +132,19 @@ public class CourseController {
         if (scheduleID==null || scheduleID.isEmpty()){
             return badRequest("Requires valid schedule id");
         }
+        String errorMessage;
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseSchedule(person, course_id, scheduleID);
+        CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
+        if(courseDTO.getId()==null){
+            errorMessage = "Course does not exist";
+        }
+        else {
+            courseSessionService.deleteSessionsPerCourse(course_id);
+            errorMessage=courseService.updateCourseSchedule(person, course_id, scheduleID);
+            if (errorMessage.isEmpty()){
+                errorMessage= courseSessionService.createSessionsPerCourse(course_id);
+            }
+        }
         return getResponse(errorMessage,"Course schedule changed");
     }
     @DeleteMapping(value = { "/courses/{course_id}", "/courses/{course_id}/" })
