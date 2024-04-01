@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.rest.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.rest.helpers.RandomGenerator;
 import ca.mcgill.ecse321.rest.models.Instructor;

@@ -27,7 +27,6 @@ public class PersonSession {
         this.personType = personType;
         this.sportCenterId = sportCenterId;
     }
-
     public PersonSession(
             String personId,
             String personName,

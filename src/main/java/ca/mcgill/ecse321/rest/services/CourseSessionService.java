@@ -164,7 +164,10 @@ public class CourseSessionService {
       if (!personSession.getSportCenterId().equals(course.getSportCenter().getId())){
           return "Session must belong to the same sports center";
       }
-      if (courseSession.getEndTime()!= null && startTime!= null && startTime.before(courseSession.getEndTime()) && courseSession.getStartTime()!= startTime){
+      if (startTime!= null){
+          if (courseSession.getEndTime()!= null && startTime.after(courseSession.getEndTime())){
+              return "Start time must be before end time";
+          }
           courseSessionRepository.save(courseSession);
           return "";
       }
@@ -183,11 +186,14 @@ public class CourseSessionService {
       if (!personSession.getSportCenterId().equals(course.getSportCenter().getId())){
           return "Session must belong to the same sports center";
       }
-      if (courseSession.getStartTime()!= null && endTime!= null && endTime.after(courseSession.getStartTime()) && courseSession.getEndTime()!=endTime){
+      if (endTime!= null){
+          if (courseSession.getStartTime()!= null && endTime.before(courseSession.getStartTime())){
+              return "End time must be after start time";
+          }
           courseSessionRepository.save(courseSession);
           return "";
       }
-      return "Invalid Start time";
+      return "Invalid end time";
   }
 
   public String deleteCourseSession(String courseSessionID, PersonSession personSession) {

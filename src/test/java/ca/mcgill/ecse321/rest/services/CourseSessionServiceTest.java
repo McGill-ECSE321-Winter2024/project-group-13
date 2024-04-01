@@ -396,8 +396,8 @@ public class CourseSessionServiceTest {
         // Act
         String result = courseSessionService.updateCourseSessionStart("sessionID", Timestamp.valueOf("2024-03-25 10:00:00"), ownerSession);
 
-        // Assert
-        assertEquals("Invalid Start time", result);
+    // Assert
+    assertEquals("Start time must be before end time", result);
     }
 
     @Test
@@ -481,7 +481,7 @@ public class CourseSessionServiceTest {
         String result = courseSessionService.updateCourseSessionEnd("sessionID", Timestamp.valueOf("2024-03-25 08:00:00"), ownerSession);
 
         // Assert
-        assertEquals("Invalid Start time", result);
+        assertEquals("End time must be after start time", result);
     }
 
     @Test
