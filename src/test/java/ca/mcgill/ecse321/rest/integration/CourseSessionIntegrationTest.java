@@ -52,7 +52,7 @@ public class CourseSessionIntegrationTest {
         String personName = "Jordan";
         String name = "Weights";
         Timestamp courseStartDate = new Timestamp(2024, 2, 15, 8, 10, 15, 0);
-        Timestamp courseEndDate = new Timestamp(2024, 4, 1, 10, 10, 15, 0);
+        Timestamp courseEndDate = new Timestamp(2025, 4, 1, 10, 10, 15, 0);
         Course course= new Course();
         SportCenter sportCenter=new SportCenter();
         Owner owner= new Owner();
@@ -72,11 +72,7 @@ public class CourseSessionIntegrationTest {
         createPerson(customer,customerEmail,"777-456-0123",personName,personPassword);
         Schedule schedule= new Schedule();
         schedule.setMondayStart(new Time(8, 0, 0));
-        schedule.setMondayEnd(new Time(18, 0, 0));
-        schedule.setSaturdayStart(new Time(8, 0, 0));
-        schedule.setSaturdayEnd(new Time(18, 0, 0));
-        schedule.setWednesdayStart(new Time(8, 0, 0));
-        schedule.setWednesdayEnd(new Time(18, 0, 0));
+        schedule.setMondayEnd(new Time(9, 0, 0));
         scheduleRepository.save(schedule);
         course.setSchedule(schedule);
 
@@ -107,8 +103,8 @@ public class CourseSessionIntegrationTest {
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        String url= "/courses/"+ courseID+"/sessions";
+        HttpEntity<String> request = new HttpEntity<>(courseID,headers);
+        String url= "/sessions";
         ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
 
         // Assert
@@ -143,24 +139,57 @@ public class CourseSessionIntegrationTest {
     public void updateCourseSessionStartTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-
-        sessionID= courseSessionRepository.findCourseSessionsByCourse(courseRepository.findCourseById(courseID)).get(0).getId();
-        System.out.println(sessionID);
+        String date = "2024-04-01 15:53:28.371";
         // Act
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
+        HttpEntity<String> request = new HttpEntity<>(date,headers);
         String url= "/sessions/"+sessionID+"/startTime";
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class );
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(sessionID, response.getBody().getMessage());
-
+        assertEquals("Course session start time changed", response.getBody().getMessage());
     }
     @Test
-//    @Order(2)
+    @Order(4)
+    public void updateCourseSessionEndTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+        String date = "2025-04-01 15:53:28.371";
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(date,headers);
+        String url= "/sessions/"+sessionID+"/endTime";
+        ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class );
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course session end time changed", response.getBody().getMessage());
+    }
+    @Test
+    @Order(5)
+    public void deleteCourseSessionTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/sessions/"+sessionID;
+        ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.DELETE, request,HTTPDTO.class );
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course session deleted", response.getBody().getMessage());
+    }
+    @Test
+    @Order(6)
     public void createSessionsPerCourseTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
@@ -169,10 +198,42 @@ public class CourseSessionIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authentication);
         HttpEntity<String> request = new HttpEntity<>(headers);
-        Course course= courseRepository.findCourseByName("Weights");
-        String url= "/courses/"+course.getId()+"/sessions/create";
+        String url= "/courses/"+courseID+"/sessions/create";
         ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
-        System.out.println(response.getBody().getMessage());
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course sessions created successfully", response.getBody().getMessage());
+    }
+    @Test
+    @Order(7)
+    public void getSessionsPerCourseTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/courses/"+courseID+"/sessions/create";
+        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Course sessions created successfully", response.getBody().getMessage());
+    }
+    @Test
+    @Order(8)
+    public void deleteSessionsPerCourseTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/courses/"+courseID+"/sessions/create";
+        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
