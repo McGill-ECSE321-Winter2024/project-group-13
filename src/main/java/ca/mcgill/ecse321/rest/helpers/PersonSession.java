@@ -14,6 +14,14 @@ public class PersonSession {
         Instructor,
         Owner
     }
+    public PersonSession(
+            String personId,
+            PersonType personType,
+            String sportCenterId){
+        this.personId = personId;
+        this.personType = personType;
+        this.sportCenterId = sportCenterId;
+    }
 
     public PersonSession(String personId, PersonType personType, String sportCenterId){
         this.personId = personId;
