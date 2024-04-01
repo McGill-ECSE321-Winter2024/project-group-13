@@ -188,57 +188,6 @@ public class CourseSessionIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Course session deleted", response.getBody().getMessage());
     }
-    @Test
-    @Order(6)
-    public void createSessionsPerCourseTest(){
-        // Set up
-        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-
-        // Act
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        String url= "/courses/"+courseID+"/sessions/create";
-        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Course sessions created successfully", response.getBody().getMessage());
-    }
-    @Test
-    @Order(7)
-    public void getSessionsPerCourseTest(){
-        // Set up
-        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-
-        // Act
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        String url= "/courses/"+courseID+"/sessions/create";
-        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Course sessions created successfully", response.getBody().getMessage());
-    }
-    @Test
-    @Order(8)
-    public void deleteSessionsPerCourseTest(){
-        // Set up
-        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-
-        // Act
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        String url= "/courses/"+courseID+"/sessions/create";
-        ResponseEntity<HTTPDTO> response = client.postForEntity(url, request,HTTPDTO.class);
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Course sessions created successfully", response.getBody().getMessage());
-    }
     public static void createPerson(
             Person person, String email, String phoneNumber, String name, String password) {
         person.setName(name);
