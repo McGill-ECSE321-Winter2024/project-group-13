@@ -139,10 +139,9 @@ public class CourseController {
             errorMessage = "Course does not exist";
         }
         else {
-            courseSessionService.deleteSessionsPerCourse(course_id);
-            errorMessage=courseService.updateCourseSchedule(person, course_id, scheduleID);
-            if (errorMessage.isEmpty()){
-                errorMessage= courseSessionService.createSessionsPerCourse(course_id);
+            errorMessage = courseService.updateCourseSchedule(person, course_id, scheduleID);
+            if (courseDTO.getSchedule() == null && errorMessage.isEmpty()) {
+                errorMessage = courseSessionService.createSessionsPerCourse(course_id);
             }
         }
         return getResponse(errorMessage,"Course schedule changed");

@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.integration;
 
 
 import ca.mcgill.ecse321.rest.dao.*;
+import ca.mcgill.ecse321.rest.dto.CourseSessionDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
@@ -9,10 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -46,6 +44,7 @@ public class CourseSessionIntegrationTest {
     private final String instructorEmail="TheInstructor@gmail.com";
     private final String customerEmail="TheCustomer@gmail.com";
     private String courseID;
+    private String sessionID;
 
     @BeforeAll
     public void set_up(){
@@ -61,7 +60,6 @@ public class CourseSessionIntegrationTest {
         Customer customer= new Customer();
         sportCenter.setName(sportCenterName);
         course.setSportCenter(sportCenter);
-        courseID = course.getId();
         course.setName(name);
         course.setCourseState("Approved");
         course.setCourseStartDate(courseStartDate);
@@ -87,6 +85,8 @@ public class CourseSessionIntegrationTest {
         personRepository.save(instructor);
         sportCenterRepository.save(sportCenter);
         courseRepository.save(course);
+        courseID = courseRepository.findCourseByName("Weights").getId();
+
     }
 
     @AfterAll
@@ -103,7 +103,6 @@ public class CourseSessionIntegrationTest {
     public void createCourseSessionTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
-        courseID = courseRepository.findCourseByName("Weights").getId();
 
         // Act
         HttpHeaders headers = new HttpHeaders();
@@ -120,6 +119,48 @@ public class CourseSessionIntegrationTest {
     }
     @Test
     @Order(2)
+    public void getCourseSessionTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        sessionID= courseSessionRepository.findCourseSessionsByCourse(courseRepository.findCourseById(courseID)).get(0).getId();
+        System.out.println(sessionID);
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/sessions/"+sessionID;
+        ResponseEntity<CourseSessionDTO> response = client.exchange(url, HttpMethod.GET, request,CourseSessionDTO.class );
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(sessionID, response.getBody().getId());
+
+    }
+    @Test
+    @Order(3)
+    public void updateCourseSessionStartTest(){
+        // Set up
+        String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
+
+        sessionID= courseSessionRepository.findCourseSessionsByCourse(courseRepository.findCourseById(courseID)).get(0).getId();
+        System.out.println(sessionID);
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url= "/sessions/"+sessionID+"/startTime";
+        ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class );
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(sessionID, response.getBody().getMessage());
+
+    }
+    @Test
+//    @Order(2)
     public void createSessionsPerCourseTest(){
         // Set up
         String authentication= authenticationService.issueTokenWithEmail(ownerEmail);
@@ -135,7 +176,7 @@ public class CourseSessionIntegrationTest {
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Course session created successfully", response.getBody().getMessage());
+        assertEquals("Course sessions created successfully", response.getBody().getMessage());
     }
     public static void createPerson(
             Person person, String email, String phoneNumber, String name, String password) {
