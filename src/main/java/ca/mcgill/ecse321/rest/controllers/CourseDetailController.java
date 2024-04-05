@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
-public class CourseDetailRestController {
+public class CourseDetailController {
     @Autowired
     private CourseDetailService courseDetailService;
     @Autowired
