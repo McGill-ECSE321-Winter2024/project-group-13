@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.rest.services;
 
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
+import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.models.Person;
 import ca.mcgill.ecse321.rest.models.SportCenter;
@@ -17,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
-    @Mock
-    private PersonRepository personRepository;
+    @Mock private PersonRepository personRepository;
+    @Mock private SportCenterRepository sportCenterRepository;
 
     @InjectMocks
     private AuthenticationService authenticationService;
