@@ -1,3 +1,5 @@
+import { CourseState } from "./enums";
+
 export type Schedule = {
     monday?: {
         start: number;
@@ -27,4 +29,23 @@ export type Schedule = {
         start: number;
         end: number;
     };
+}
+
+export type CourseDTO = {
+    id: string;
+    name: string;
+    description: string;
+    level: string;
+    courseStartDate: Date;
+    courseEndDate: Date;
+    room: string;
+    instructor: string;
+    hourlyRateAmount: number;
+    courseState: CourseState;
+}
+
+export type RoomDTO = {
+    id: string;
+    name: string;
+    sportCenterId: string;
 }

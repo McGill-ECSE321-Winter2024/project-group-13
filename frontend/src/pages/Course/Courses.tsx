@@ -1,48 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CourseTable from "../../components/Course/CourseTable";
 import CourseDetail from "./CourseDetail";
 import User from "../../services/user";
-
-const sampleCourses = [
-  {
-    id: 1,
-    name: "Introduction to Psychology",
-    description: "An introductory course into the world of Psychology.",
-    level: "Beginner",
-    startDate: "2023-01-10",
-    endDate: "2023-04-10",
-    room: "101",
-    instructor: "Dr. Jane Smith",
-    cost: 300,
-  },
-  {
-    id: 2,
-    name: "Advanced Neuroscience",
-    description: "Explore the complexities of the human brain.",
-    level: "Advanced",
-    startDate: "2023-02-15",
-    endDate: "2023-06-15",
-    room: "201",
-    instructor: "Dr. John Doe",
-    cost: 500,
-  },
-  {
-    id: 3,
-    name: "Statistics for Biologists",
-    description: "Statistical methods applicable to biological studies.",
-    level: "Intermediate",
-    startDate: "2023-03-01",
-    endDate: "2023-07-01",
-    room: "105",
-    instructor: "Dr. Emily White",
-    cost: 450,
-  },
-];
+import httpClient from "../../services/http";
+import { CourseState } from "../../helpers/enums";
+import { CourseDTO } from "../../helpers/types";
 
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   const [createCourseModalOpen, setCreateCourseModalOpen] = useState(false);
+  const [courses, setCourses] = useState<CourseDTO[]>([]); // [1]
+  const [instructors, setInstructors] = useState([]); // [2]
 
   const handleCourseSelect = (course) => {
     setSelectedCourse(course);
@@ -51,6 +20,17 @@ export default function Courses() {
   const closeDetailModal = () => {
     setSelectedCourse(null);
   };
+
+  useEffect(() => {
+   
+    httpClient("/courses", "GET")
+      .then((res) => {
+        setCourses(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <div className="p-10">
@@ -65,7 +45,7 @@ export default function Courses() {
               title, email and role.
             </p>
           </div>
-          {User().personType === "Owner" ? (
+          {User().personType !== "Customer" ? (
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
               <button
                 type="button"
@@ -80,7 +60,7 @@ export default function Courses() {
       </div>
       <div className="px-4 sm:px-6 lg:px-8 mt-4 rounded-lg">
         <CourseTable
-          courses={sampleCourses}
+          courses={courses}
           onCourseSelect={handleCourseSelect}
         />
         {selectedCourse && (

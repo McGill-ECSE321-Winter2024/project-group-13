@@ -6,6 +6,8 @@ import Courses from "./pages/Course/Courses";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile/Profile";
 import CreateCourseModal from "./pages/Course/CreateCourse";
+import Settings from "./pages/Settings";
+import ViewCourse from "./pages/Course/ViewCourse";
 
 const router = createBrowserRouter([
     {
@@ -20,10 +22,10 @@ const router = createBrowserRouter([
         path: "/courses/create",
         element: <Skeleton><CreateCourseModal/></Skeleton>,
     },
-    // {
-    //     path: "/courses/:id",
-    //     element: <Skeleton><ViewCourse/></Skeleton>,
-    // },
+    {
+        path: "/courses/:id",
+        element: <Skeleton><ViewCourse/></Skeleton>,
+    },
     {
         path: "/login",
         element: <AuthPage/>,
@@ -35,6 +37,10 @@ const router = createBrowserRouter([
     {
         path: "/profile",
         element: <Skeleton><Profile/></Skeleton>,
+    },
+    {
+        path: "/settings",
+        element: <Skeleton><Settings/></Skeleton>,
     }
 ]);
 

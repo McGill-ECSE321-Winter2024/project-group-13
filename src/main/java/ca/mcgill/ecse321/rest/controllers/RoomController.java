@@ -26,6 +26,20 @@ public class RoomController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    // get all rooms
+    @GetMapping(value = { "/rooms", "/rooms/" })
+    public ResponseEntity<?> getAllRooms(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        try {
+            List<RoomDTO> rooms = roomService.getAllRooms(person);
+            return ResponseEntity.ok(rooms);
+        }
+        catch (Exception e){
+            return badRequest(e.getMessage());
+        }
+    }
+
+
     // Create Room (Owner Only)
     @PostMapping(value = { "/rooms", "/rooms/" })
     public ResponseEntity<HTTPDTO> createRoom(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RoomDTO roomDTO) {
