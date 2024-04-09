@@ -1,12 +1,13 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/24/outline'
-import { Schedule } from '../../helpers/types'
+import { RoomDTO, Schedule } from '../../helpers/types'
 import { Level } from '../../helpers/enums'
 import httpClient from '../../services/http'
 import { set } from 'lodash'
 import Datepicker, { DateRangeType } from 'react-tailwindcss-datepicker'
 import SuccessModal from '../../components/SuccessModal'
+import User from '../../services/user'
 
 export default function CreateCourseModal(props: {
 }) {
@@ -16,7 +17,8 @@ export default function CreateCourseModal(props: {
   const [description, setDescription] = useState('');
   const [level, setLevel] = useState<Level>(Level.Beginner);
   const [rate, setRate] = useState('');
-  const [instructor, setInstructor] = useState('');
+  const [instructor, setInstructor] = useState(User().personType === "Instructor" ? User().personId : '');
+  const [room, setRoom] = useState<string>('');
   const [SuccessModalOpen, setSuccessModalOpen] = useState(false);
 
   const [dateRange, setDateRange] = useState<DateRangeType>({
@@ -35,6 +37,8 @@ const handleValueChange = newValue => {
     name: string,
   }[]>([]);
 
+  const [rooms, setRooms] = useState<RoomDTO[]>([]);
+
   useEffect(() => {
     setName('');
     setDescription('');
@@ -48,6 +52,14 @@ const handleValueChange = newValue => {
       .catch((err) => {
         console.log(err);
       })
+
+    httpClient('/rooms', 'GET')
+        .then((res) => {
+            setRooms(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     
   }
   , [])
@@ -74,6 +86,7 @@ const handleValueChange = newValue => {
             await httpClient(`/courses/${id}/startDate`, 'PUT', body.startDate)
             await httpClient(`/courses/${id}/endDate`, 'PUT', body.endDate)
             await httpClient(`/courses/${id}/instructor`, 'PUT', body.instructor)
+            await httpClient(`/courses/${id}/room`, 'PUT', room)
 
 
             setSuccessModalOpen(true);
@@ -178,6 +191,7 @@ const handleValueChange = newValue => {
               </label>
               <div className="mt-2">
                 <select
+                disabled={User().personType === "Instructor"}
                 required
                   name="instructors"
                   value={instructor}
@@ -209,6 +223,26 @@ const handleValueChange = newValue => {
                     <option value="">Select a level</option>
                     {Object.values(Level).map(level => (
                         <option key={level} value={level}>{level}</option>
+                    ))}
+                  
+                </select>
+              </div>
+            </div>
+            <div className="sm:col-span-3">
+              <label  className="block text-sm font-medium leading-6 text-gray-900">
+                Room
+              </label>
+              <div className="mt-2">
+                <select
+                required
+                 name="rooms"
+                 value={room}
+                onChange={(e) => setRoom(e.target.value)}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                >
+                    <option value="">Select a room</option>
+                    {rooms.map(room => (
+                        <option key={room.id} value={room.id}>{room.name}</option>
                     ))}
                   
                 </select>

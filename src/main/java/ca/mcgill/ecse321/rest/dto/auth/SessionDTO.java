@@ -12,12 +12,16 @@ public class SessionDTO extends DefaultHTTPResponse {
     private String personEmail;
     private String personPhoneNumber;
 
-    public SessionDTO(String session, String personId, String personType, String personName, String personEmail, String personPhoneNumber) {
+    private String personSportCenterId;
+
+    public SessionDTO(String session, String personId, String personType, String personName, String personEmail, String personPhoneNumber, String sportCenterId) {
         this.session = session;
         this.personId = personId;
         this.personType = personType;
         this.personName = personName;
         this.personEmail = personEmail;
+        this.personPhoneNumber = personPhoneNumber;
+        this.personSportCenterId = sportCenterId;
     }
 
     public SessionDTO() {
@@ -51,6 +55,13 @@ public class SessionDTO extends DefaultHTTPResponse {
         return personName;
     }
 
+    public String getPersonSportCenterId() {
+        return personSportCenterId;
+    }
+
+    public void setPersonSportCenterId(String sportCenterId) {
+        this.personSportCenterId = sportCenterId;
+    }
 
 
     public void setPersonName(String personName) {

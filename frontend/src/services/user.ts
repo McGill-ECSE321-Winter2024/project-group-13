@@ -4,6 +4,7 @@ export default function User(): {
     personName: string;
     personEmail: string;
     personPhoneNumber: string;
+    personSportCenterId: string;
 } {
     const userStore = localStorage.getItem('user');
     if (userStore) {
@@ -14,6 +15,7 @@ export default function User(): {
         personType: '',
         personName: '',
         personEmail: '',
-        personPhoneNumber: ''
+        personPhoneNumber: '',
+        personSportCenterId: ''
     };
 }

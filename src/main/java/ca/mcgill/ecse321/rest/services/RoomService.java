@@ -137,6 +137,20 @@ public class RoomService {
         return roomMessagePair.getMessage();
     }
 
+    @Transactional
+    public List<RoomDTO> getAllRooms(PersonSession personSession){
+        if (personSession.getPersonType() != PersonSession.PersonType.Owner ){
+            throw new IllegalArgumentException("Must be the Owner of the Sport Center");
+        }
+        List<Room> rooms = toList(roomRepository.findAll());
+        List<RoomDTO> roomDTOS = new ArrayList<>();
+        for (Room r : rooms) {
+            roomDTOS.add(new RoomDTO(r));
+        }
+        return roomDTOS;
+    }
+
+
     private <T> List<T> toList(Iterable<T> iterable){
         List<T> resultList = new ArrayList<T>();
         for (T t : iterable) {

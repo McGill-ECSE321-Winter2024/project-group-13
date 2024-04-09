@@ -121,7 +121,7 @@ public class CourseController {
             return badRequest("Requires valid room id");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID.replaceAll("[^a-zA-Z0-9]", ""));
+        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID.replaceAll("[^a-zA-Z0-9_-]", ""));
         return getResponse(errorMessage,"Course room changed");
     }
     @PutMapping(value = { "/courses/{course_id}/instructor", "/courses/{course_id}/instructor/" })

@@ -1,10 +1,46 @@
 // CourseTable.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { CourseDTO } from '../../helpers/types';
+import moment from 'moment';
+import httpClient from '../../services/http';
+import User from '../../services/user';
+import ApproveCourseModal from './ApproveCourseModal';
+import { CourseState } from '../../helpers/enums';
+import CourseStatusBadge from './CourseStatusBadge';
+import RegisterToCourseModal from './RegisterToCourseModal';
+import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 
-const CourseTable = ({ courses, onCourseSelect }) => {
+const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCourseSelect: any}) => {
     const [filterText, setFilterText] = useState('');
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState('asc');
+    const [instructors, setInstructors] = useState([]); 
+    const [registrations, setRegistrations] = useState<{
+        id: number;
+        rating: number;
+        course: {
+            id: string
+        }
+    }[]>([]);
+
+    useEffect(() => {
+        httpClient("/instructors", "GET")
+        .then((res) => {
+          setInstructors(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        if(User().personType === 'Customer') {
+            httpClient("/registrations", "GET")
+            .then((res) => {
+              setRegistrations(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+    }, []);
 
     const handleSort = (field) => {
         if (field === sortField) {
@@ -14,6 +50,18 @@ const CourseTable = ({ courses, onCourseSelect }) => {
             setSortOrder('asc');
         }
     };
+
+    const approveCourse = (courseId) => {
+        // approve course
+        httpClient('/courses/' + courseId + '/approve', 'POST')
+        .then((res) => {
+            window.location.reload();
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+    
 
     const sortedCourses = useMemo(() => {
         let sortedData = [...courses];
@@ -34,7 +82,7 @@ const CourseTable = ({ courses, onCourseSelect }) => {
     const filteredAndSortedCourses = useMemo(() => {
         return sortedCourses.filter((course) => {
             return Object.keys(course).some((key) =>
-                course[key].toString().toLowerCase().includes(filterText.toLowerCase())
+                course[key]?.toString().toLowerCase().includes(filterText.toLowerCase())
             );
         });
     }, [sortedCourses, filterText]);
@@ -69,7 +117,7 @@ const CourseTable = ({ courses, onCourseSelect }) => {
                 <table className="min-w-full bg-white w-auto">
                     <thead className="bg-gray-800 text-white">
                     <tr >
-                        {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost'].map((field) => (
+                        {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost', 'state'].map((field) => (
                             <th
                                 key={field}
                                 onClick={() => handleSort(field)}
@@ -83,17 +131,43 @@ const CourseTable = ({ courses, onCourseSelect }) => {
                         ))}
                     </tr>
                     </thead>
-                    <tbody className="text-gray-700">
+                    <tbody className="text-gray-700 gap-10">
                     {filteredAndSortedCourses.map((course, index) => (
-                        <tr key={course.id} onClick={() => onCourseSelect(course)} className="hover:bg-gray-100 cursor-pointer">
-                            <td>{course.name}</td>
+                        <tr key={course.id}  className="hover:bg-gray-100 cursor-pointer" style={{
+                            padding: '10px'
+                        }}>
+                            <td onClick={() => onCourseSelect(course)}><b>{course.name}</b></td>
                             <td>{course.description}</td>
                             <td>{course.level}</td>
-                            <td>{course.startDate}</td>
-                            <td>{course.endDate}</td>
+                            <td>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>
+                            <td>{moment(course.courseEndDate).format('MMM DD, YYYY')}</td>
                             <td>{course.room}</td>
-                            <td>{course.instructor}</td>
-                            <td>{course.cost}</td>
+                            <td>{instructors.find(i => i.id === course.instructor)?.name}</td>
+                            <td>{course.hourlyRateAmount}</td>
+                            <td>
+                                {User().personType !== "Customer" ? <CourseStatusBadge status={course.courseState} /> : null}
+                                {User().personType === 'Owner' && course.courseState !== CourseState.Approved ?
+                                    <ApproveCourseModal
+                                        approveCourse={() => {
+                                            approveCourse(course.id);
+                                        }}
+                                    /> : null    
+                                 }
+                                 {User().personType === 'Customer' && !registrations.find(r => r.course.id === course.id) ?
+                                    <RegisterToCourseModal
+                                        courseId={course.id}
+                                        costPerHour={course.hourlyRateAmount}
+                                    /> : null   
+                                }
+                                {User().personType === 'Customer' && registrations.find(r => r.course.id === course.id) ?
+                                    <div
+                                        className='flex items-center gap-1 text-green-900 text-sm font-semibold'
+                                    >
+                                        <CheckBadgeIcon className="h-6 w-6 text-green-500" /> 
+                                        Registered
+                                    </div>: null
+                                }
+                            </td>
                         </tr>
                     ))}
                     </tbody>

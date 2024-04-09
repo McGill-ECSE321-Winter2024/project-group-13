@@ -37,7 +37,8 @@ public class AuthenticationController {
                 person.getPersonType().toString(),
                 person.getPersonName(),
                 person.getPersonEmail(),
-                person.getPersonPhoneNumber()
+                person.getPersonPhoneNumber(),
+                person.getSportCenterId()
         ), HttpStatus.OK);
     }
 

@@ -120,6 +120,7 @@ public class InvoiceService {
         return new InvoiceDTO(invoice);
     }
 
+
     public boolean updateInvoiceStatus(PersonSession personSession, String invoiceId, String status) {
         Invoice invoice = getOpenInvoice(personSession, invoiceId);
         if(invoice == null) {

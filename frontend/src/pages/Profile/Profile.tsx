@@ -21,7 +21,8 @@ export default function Profile() {
                 personEmail: email,
                 personPhoneNumber: User().personPhoneNumber,
                 personId: User().personId,
-                personType: User().personType
+                personType: User().personType,
+                personSportCenterId: User().personSportCenterId
             }));
         } catch (e) {
             alert(e.response.data.message);
@@ -36,7 +37,8 @@ export default function Profile() {
                 personEmail: email,
                 personPhoneNumber: phoneNumber,
                 personId: User().personId,
-                personType: User().personType
+                personType: User().personType,
+                personSportCenterId: User().personSportCenterId
             }));
         } catch (e) {
             alert(e.response.data.message);

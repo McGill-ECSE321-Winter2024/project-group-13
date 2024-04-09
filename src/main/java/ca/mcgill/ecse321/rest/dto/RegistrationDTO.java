@@ -32,8 +32,8 @@ public class RegistrationDTO {
 
             System.out.println(registration.getRating());
 
-            if ((registration.getRating()>= 1) && (registration.getRating()<=5)){
-            this.rating = registration.getRating();}
+//            if ((registration.getRating()>= 1) && (registration.getRating()<=5)){
+            this.rating = registration.getRating();
 
             if ((registration.getId()!=null)){
                 this.id = registration.getId();}
