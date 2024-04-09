@@ -46,6 +46,7 @@ public class CourseRegistrationService {
         Registration registration = new Registration();
         registration.setCourse(course);
         registration.setCustomer(customer);
+        registration.setRating(0);
         // Assuming the rating is set later, not during registration
         registrationRepository.save(registration);
 

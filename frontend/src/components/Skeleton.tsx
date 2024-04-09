@@ -32,7 +32,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 const navigation = [
     { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
     { name: 'People', href: '#', icon: UsersIcon, current: false },
-    { name: 'Courses', href: '#', icon: RectangleStackIcon, current: false },
+    { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: false },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
 ]

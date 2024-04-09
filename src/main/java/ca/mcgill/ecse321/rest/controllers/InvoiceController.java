@@ -106,6 +106,44 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @RequestMapping(value = {"/invoices/{invoice_id}/pay", "/invoices/{invoice_id}/pay/"}, method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> payInvoice(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+            @PathVariable("invoice_id") String invoiceId
+    ) {
+        PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
+        if(personSession.getPersonType().equals(PersonSession.PersonType.Instructor)) {
+            return DefaultHTTPResponse.unauthorized("Instructors do not have access to invoices");
+        }
+        try {
+            String url = invoiceService.generateCheckoutSession(personSession, invoiceId);
+            if(url == null) {
+                return DefaultHTTPResponse.badRequest("Invalid request");
+            }
+            return new ResponseEntity<>(url, HttpStatus.OK);
+        } catch (Exception e) {
+            return DefaultHTTPResponse.badRequest(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = {"/invoices/payment/success/{invoice_id}", "/invoices/payment/success/{invoice_id}/"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> paymentSuccess(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+            @PathVariable("invoice_id") String invoiceId,
+            @RequestParam("personId") String personId
+    ) {
+        PersonSession session = new PersonSession(
+                personId,
+                PersonSession.PersonType.Customer,
+                "customer"
+        );
+
+        invoiceService.updateInvoiceStatus(session, invoiceId, "Paid");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
 
 
 

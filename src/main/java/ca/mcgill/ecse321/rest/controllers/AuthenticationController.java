@@ -52,8 +52,6 @@ public class AuthenticationController {
     @RequestMapping(value = {"/auth/register/customer", "/auth/register/customer/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> registerCustomer(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RegisterDTO body) {
-        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if(person.getPersonType() != PersonSession.PersonType.Owner) return DefaultHTTPResponse.forbidden("Only owners can register customers");
         try {
             authenticationService.registerCustomer(
                     body.getEmail(),

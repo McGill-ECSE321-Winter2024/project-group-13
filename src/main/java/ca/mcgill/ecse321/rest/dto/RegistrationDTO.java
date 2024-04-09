@@ -8,9 +8,9 @@ public class RegistrationDTO {
     @JsonIgnore
     private CustomerDTO customer;
     private CourseDTO course;
-    private Integer rating;
+    public Integer rating;
 
-    private String id;
+    public String id;
 
     public RegistrationDTO(){
     }
@@ -21,14 +21,16 @@ public class RegistrationDTO {
 
         if (registration!=null) {
             if (registration.getCustomer()!=null){
-            this.customer = new CustomerDTO(registration.getCustomer());}
+                this.customer = new CustomerDTO(registration.getCustomer());
+            }
 
             if (registration.getCourse()!=null){
 
-            this.course = new CourseDTO(registration.getCourse());
+                this.course = new CourseDTO(registration.getCourse());
 
-                }
+            }
 
+            System.out.println(registration.getRating());
 
             if ((registration.getRating()>= 1) && (registration.getRating()<=5)){
             this.rating = registration.getRating();}

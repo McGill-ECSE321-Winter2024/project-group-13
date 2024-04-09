@@ -39,6 +39,7 @@ public class AuthenticationService {
             admin.setPassword("admin");
             admin.setName("admin");
             admin.setPhoneNumber("1234567890");
+            admin.setSportCenter(sportCenter);
             personRepository.save(admin);
         }
         return personRepository.findPersonByEmailAndPassword(email, password) != null;
@@ -122,6 +123,7 @@ public class AuthenticationService {
             customer.setPassword(password);
             customer.setName(name);
             customer.setPhoneNumber(phoneNumber);
+            customer.setSportCenter(sportCenterRepository.findSportCenterByIdNotNull());
             personRepository.save(customer);
             return this.issueToken(email);
         } catch (Exception e){
