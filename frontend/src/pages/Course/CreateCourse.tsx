@@ -8,6 +8,7 @@ import { set } from 'lodash'
 import Datepicker, { DateRangeType } from 'react-tailwindcss-datepicker'
 import SuccessModal from '../../components/SuccessModal'
 import User from '../../services/user'
+import ScheduleSelector from '../../components/ScheduleSelector'
 
 export default function CreateCourseModal(props: {
 }) {
@@ -19,6 +20,7 @@ export default function CreateCourseModal(props: {
   const [rate, setRate] = useState('');
   const [instructor, setInstructor] = useState(User().personType === "Instructor" ? User().personId : '');
   const [room, setRoom] = useState<string>('');
+  const [schedule, setSchedule] = useState<Schedule>({}); // [1
   const [SuccessModalOpen, setSuccessModalOpen] = useState(false);
 
   const [dateRange, setDateRange] = useState<DateRangeType>({
@@ -77,6 +79,19 @@ const handleValueChange = newValue => {
         }
 
         console.log(body);
+
+        const bodySchedule = {
+        };
+
+        Object.entries(schedule).forEach(([key, value]) => {
+          const startKey = key + "Start";
+          const endKey = key + "End";
+          bodySchedule[startKey] = value.start+":00"
+          bodySchedule[endKey] = value.end+":00"
+        });
+
+        console.log(schedule, bodySchedule);
+        // return;
         try {
             const res = await httpClient('/courses', 'POST', body.name)
             const id = res.data.message;
@@ -87,6 +102,7 @@ const handleValueChange = newValue => {
             await httpClient(`/courses/${id}/endDate`, 'PUT', body.endDate)
             await httpClient(`/courses/${id}/instructor`, 'PUT', body.instructor)
             await httpClient(`/courses/${id}/room`, 'PUT', room)
+            await httpClient(`/courses/${id}/update-schedule-and-sessions`, 'PUT', bodySchedule)
 
 
             setSuccessModalOpen(true);
@@ -121,6 +137,7 @@ const handleValueChange = newValue => {
               <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
                 Course name
               </label>
+              
               <div className="mt-2">
                 <input
                 required
@@ -247,6 +264,11 @@ const handleValueChange = newValue => {
                   
                 </select>
               </div>
+              <br/>
+              <ScheduleSelector
+                schedule={schedule}
+                setSchedule={setSchedule}
+              />
             </div>
 
             <div className="sm:col-span-4">
@@ -261,6 +283,8 @@ const handleValueChange = newValue => {
           </div>
         </div>
       </div>
+
+      
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <button type="button" className="text-sm font-semibold leading-6 text-gray-900">

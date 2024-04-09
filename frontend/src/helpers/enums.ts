@@ -10,3 +10,12 @@ export enum Level {
     Intermediate = 'Intermediate',
     Advanced = 'Advanced'
 }
+
+
+export enum InvoiceStatus {
+    Open = 'Open',
+    Failed = 'Failed',
+    Void = 'Void',
+    Completed = 'Completed',
+    Cancelled = 'Cancelled'
+}

@@ -28,13 +28,14 @@ import {
     RectangleStackIcon
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import User from '../services/user'
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: HomeIcon, current: window.location.pathname === '/' },
     { name: 'People', href: '/people', icon: UsersIcon, current: window.location.pathname === '/people' },
     { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: window.location.pathname === '/courses' },
     { name: 'Calendar', href: '#', icon: CalendarIcon, current: window.location.pathname === '/calendar' },
-    { name: 'Reports', href: '#', icon: ChartPieIcon, current: window.location.pathname === '/reports' },
+    { name: 'Invoices', href: '/invoices', icon: ChartPieIcon, current: window.location.pathname === '/invoices' },
 ]
 const teams = [
     // { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
@@ -157,7 +158,7 @@ export default function Skeleton({
                                                 {/*                      ))}*/}
                                                 {/*                  </ul>*/}
                                                 {/*              </li>*/}
-                                                <li className="mt-auto">
+                                                {User().personType === "Owner" && <li className="mt-auto">
                                                     <a
                                                         href="/settings"
                                                         className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
@@ -165,7 +166,7 @@ export default function Skeleton({
                                                         <Cog6ToothIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                                         Settings
                                                     </a>
-                                                </li>
+                                                </li>}
                                             </ul>
                                         </nav>
                                     </div>
@@ -231,7 +232,7 @@ export default function Skeleton({
                                 {/*              ))}*/}
                                 {/*          </ul>*/}
                                 {/*      </li>*/}
-                                <li className="mt-auto">
+                                {User().personType === "Owner" && <li className="mt-auto">
                                     <a
                                         href="/settings"
                                         className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-400 hover:bg-gray-800 hover:text-white"
@@ -239,7 +240,7 @@ export default function Skeleton({
                                         <Cog6ToothIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                         Settings
                                     </a>
-                                </li>
+                                </li>}
                             </ul>
                         </nav>
                     </div>

@@ -66,7 +66,7 @@ public class CourseController {
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         // remove all non alphanumeric characters
-        String errorMessage=courseService.updateCourseName(person, course_id, name.replaceAll("[^a-zA-Z0-9]", ""));
+        String errorMessage=courseService.updateCourseName(person, course_id, name.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course name changed");
     }
 
@@ -77,7 +77,7 @@ public class CourseController {
             return badRequest("Requires valid description");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseDescription(person, course_id, description.replaceAll("[^a-zA-Z0-9]", ""));
+        String errorMessage=courseService.updateCourseDescription(person, course_id, description.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course description changed");
     }
     @PutMapping(value = { "/courses/{course_id}/level", "/courses/{course_id}/level/" })
@@ -87,7 +87,7 @@ public class CourseController {
             return badRequest("Requires valid level");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseLevel(person, course_id, level.replaceAll("[^a-zA-Z0-9]", ""));
+        String errorMessage=courseService.updateCourseLevel(person, course_id, level.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course level changed");
     }
     @PutMapping(value = { "/courses/{course_id}/rate", "/courses/{course_id}/rate/" })
@@ -121,7 +121,7 @@ public class CourseController {
             return badRequest("Requires valid room id");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID.replaceAll("[^a-zA-Z0-9_-]", ""));
+        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course room changed");
     }
     @PutMapping(value = { "/courses/{course_id}/instructor", "/courses/{course_id}/instructor/" })
@@ -131,8 +131,8 @@ public class CourseController {
             return badRequest("Requires valid instructor id");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        // remove all non alphanumeric characters and non - and _
-        String errorMessage=courseService.updateCourseInstructor(person, course_id, instructorID.replaceAll("[^a-zA-Z0-9_-]", ""));
+        // remove all " " chars
+        String errorMessage=courseService.updateCourseInstructor(person, course_id, instructorID.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course instructor changed");
     }
     @PutMapping(value = { "/courses/{course_id}/schedule", "/courses/{course_id}/schedule/" })

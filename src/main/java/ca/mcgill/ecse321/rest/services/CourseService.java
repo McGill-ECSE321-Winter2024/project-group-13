@@ -240,6 +240,8 @@ public class CourseService {
         course.setSchedule(schedule);
         courseRepository.save(course);
 
+
+
         // Generate course sessions based on the schedule
         if (!generateCourseSessions(course, schedule)) {
             return "Failed to generate course sessions";
