@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.rest.controllers;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.models.CourseSession;
@@ -174,6 +175,22 @@ public class CourseController {
             return badRequest(errorMessage);
         }
     }
+
+    @PutMapping(value = "/courses/{course_id}/update-schedule-and-sessions")
+    public ResponseEntity<HTTPDTO> addOrUpdateCourseScheduleAndSessions(@PathVariable String course_id, @RequestBody ScheduleDTO scheduleDTO,
+                                                             @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        if (person == null) {
+            return forbidden("Authorization required");
+        }
+        String errorMessage = courseService.addOrUpdateCourseScheduleAndSessions(course_id, scheduleDTO, person);
+        if (errorMessage.isEmpty()) {
+            return success("Schedule successfully added/updated and linked to the course");
+        } else {
+            return badRequest(errorMessage);
+        }
+    }
+
 
 
 }
