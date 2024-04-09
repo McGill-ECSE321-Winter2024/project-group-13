@@ -1,6 +1,7 @@
+// CourseTable.tsx
 import React, { useState, useMemo } from 'react';
 
-const CourseTable = ({ courses }) => {
+const CourseTable = ({ courses, onCourseSelect }) => {
     const [filterText, setFilterText] = useState('');
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState('asc');
@@ -38,6 +39,21 @@ const CourseTable = ({ courses }) => {
         });
     }, [sortedCourses, filterText]);
 
+    const SortIcon = ({ isAsc }) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="inline w-4 h-4 ml-2"
+        >
+            {isAsc ? (
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            ) : (
+                <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414 6.707 12.707a1 1 0 11-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+            )}
+        </svg>
+    );
+
     return (
         <div>
             <div className="mb-4">
@@ -49,47 +65,35 @@ const CourseTable = ({ courses }) => {
                     className="px-4 py-2 border rounded-lg w-full"
                 />
             </div>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white">
-                    <thead>
-                    <tr className="bg-gray-800 text-white">
-                        <th onClick={() => handleSort('name')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Name
-                        </th>
-                        <th onClick={() => handleSort('description')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Description
-                        </th>
-                        <th onClick={() => handleSort('level')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Level
-                        </th>
-                        <th onClick={() => handleSort('startDate')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Start Date
-                        </th>
-                        <th onClick={() => handleSort('endDate')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            End Date
-                        </th>
-                        <th onClick={() => handleSort('room')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Room
-                        </th>
-                        <th onClick={() => handleSort('instructor')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Instructor
-                        </th>
-                        <th onClick={() => handleSort('cost')} className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                            Cost
-                        </th>
+            <div className="overflow-x-auto shadow-md">
+                <table className="min-w-full bg-white w-auto">
+                    <thead className="bg-gray-800 text-white">
+                    <tr >
+                        {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost'].map((field) => (
+                            <th
+                                key={field}
+                                onClick={() => handleSort(field)}
+                                className={`cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider hover:bg-gray-700 ${sortField === field ? 'bg-gray-600' : ''}`}
+                            >
+                                {field.charAt(0).toUpperCase() + field.slice(1)}
+                                {sortField === field && (
+                                    <SortIcon isAsc={sortOrder === 'asc'}/>
+                                )}
+                            </th>
+                        ))}
                     </tr>
                     </thead>
                     <tbody className="text-gray-700">
                     {filteredAndSortedCourses.map((course, index) => (
-                        <tr key={index}>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.description}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.level}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.startDate}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.endDate}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.room}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.instructor}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{course.cost}</td>
+                        <tr key={course.id} onClick={() => onCourseSelect(course)} className="hover:bg-gray-100 cursor-pointer">
+                            <td>{course.name}</td>
+                            <td>{course.description}</td>
+                            <td>{course.level}</td>
+                            <td>{course.startDate}</td>
+                            <td>{course.endDate}</td>
+                            <td>{course.room}</td>
+                            <td>{course.instructor}</td>
+                            <td>{course.cost}</td>
                         </tr>
                     ))}
                     </tbody>
