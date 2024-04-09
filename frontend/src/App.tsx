@@ -5,6 +5,7 @@ import Skeleton from "./components/Skeleton";
 import {CourseHomePage} from "./pages/CourseHomePage";
 import Courses from "./pages/Courses";
 import Signup from "./pages/Signup";
+import Profile from "./pages/Profile/Profile";
 
 const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
     {
         path: "/courses",
         element: <Skeleton><CourseHomePage/></Skeleton>,
+    },
+    {
+        path: "/profile",
+        element: <Skeleton><Profile/></Skeleton>,
     }
 ]);
 
