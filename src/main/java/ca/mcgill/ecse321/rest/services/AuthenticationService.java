@@ -117,6 +117,9 @@ public class AuthenticationService {
         if (personRepository.findPersonByEmail(email) != null){
             throw new IllegalArgumentException("Email already exists");
         }
+        if(personRepository.findPersonByPhoneNumber(phoneNumber) != null){
+            throw new IllegalArgumentException("Phone number already in use");
+        }
         try {
             Customer customer = new Customer();
             customer.setEmail(email);
