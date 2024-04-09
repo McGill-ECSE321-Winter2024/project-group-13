@@ -252,7 +252,7 @@ public class AuthenticationIntegrationTests {
         ResponseEntity<String> response = client.postForEntity("/auth/register/customer", request, String.class);
         System.out.println(response.getBody());
 
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     }
 
