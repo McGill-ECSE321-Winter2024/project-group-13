@@ -43,6 +43,15 @@ export default function Profile() {
             return;
         }
 
+        try {
+            await httpClient('/auth/password', 'PUT', {
+                password
+            });
+        } catch (e) {
+            alert(e.response.data.message);
+            return;
+        }
+
         alert('Profile updated successfully');
         window.location.reload();
     }

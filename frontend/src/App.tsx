@@ -2,10 +2,10 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import Skeleton from "./components/Skeleton";
-import {CourseHomePage} from "./pages/CourseHomePage";
-import Courses from "./pages/Courses";
+import Courses from "./pages/Course/Courses";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile/Profile";
+import CreateCourseModal from "./pages/Course/CreateCourse";
 
 const router = createBrowserRouter([
     {
@@ -17,16 +17,20 @@ const router = createBrowserRouter([
         element: <Skeleton><Courses/></Skeleton>,
     },
     {
+        path: "/courses/create",
+        element: <Skeleton><CreateCourseModal/></Skeleton>,
+    },
+    // {
+    //     path: "/courses/:id",
+    //     element: <Skeleton><ViewCourse/></Skeleton>,
+    // },
+    {
         path: "/login",
         element: <AuthPage/>,
     },
     {
         path: "/signup",
         element: <Signup/>,
-    },
-    {
-        path: "/courses",
-        element: <Skeleton><CourseHomePage/></Skeleton>,
     },
     {
         path: "/profile",

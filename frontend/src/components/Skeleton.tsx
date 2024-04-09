@@ -108,7 +108,7 @@ export default function Skeleton({
                                         <div className="flex h-16 shrink-0 items-center">
                                             <img
                                                 className="h-8 w-auto"
-                                                src="icons/white.png"
+                                                src="/icons/white.png"
                                                 alt="Your Company"
                                             />
                                         </div>
@@ -182,7 +182,7 @@ export default function Skeleton({
                         <div className="flex h-16 shrink-0 items-center">
                             <img
                                 className="h-8 w-auto"
-                                src="icons/white.png"
+                                src="/icons/white.png"
                                 alt="Your Company"
                             />
                         </div>
