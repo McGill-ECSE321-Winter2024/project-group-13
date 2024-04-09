@@ -70,7 +70,7 @@ public class CourseService {
         }
         course.setCourseState(Course.CourseState.AwaitingApproval);
         courseRepository.save(course);
-        return "";
+        return "--ID: "+course.getId();
     }
     @Transactional
     public String approveCourse(String course_id, PersonSession personSession) {
@@ -173,6 +173,7 @@ public class CourseService {
     public String updateCourseInstructor(PersonSession personSession,String course_id, String instructorID) {
         CourseMessagePair courseMessagePair=getCourse(course_id,personSession);
         Course course=courseMessagePair.getCourse();
+        System.out.println(instructorID);
         Instructor instructor= instructorRepository.findInstructorById(instructorID);
         if (courseMessagePair.getMessage().isEmpty()){
             if (instructor==null ){

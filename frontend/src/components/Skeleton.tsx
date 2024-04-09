@@ -30,11 +30,11 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 const navigation = [
-    { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-    { name: 'People', href: '#', icon: UsersIcon, current: false },
-    { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: false },
-    { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-    { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+    { name: 'Dashboard', href: '/', icon: HomeIcon, current: window.location.pathname === '/' },
+    { name: 'People', href: '/people', icon: UsersIcon, current: window.location.pathname === '/people' },
+    { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: window.location.pathname === '/courses' },
+    { name: 'Calendar', href: '#', icon: CalendarIcon, current: window.location.pathname === '/calendar' },
+    { name: 'Reports', href: '#', icon: ChartPieIcon, current: window.location.pathname === '/reports' },
 ]
 const teams = [
     // { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
@@ -108,7 +108,7 @@ export default function Skeleton({
                                         <div className="flex h-16 shrink-0 items-center">
                                             <img
                                                 className="h-8 w-auto"
-                                                src="icons/white.png"
+                                                src="/icons/white.png"
                                                 alt="Your Company"
                                             />
                                         </div>
@@ -182,7 +182,7 @@ export default function Skeleton({
                         <div className="flex h-16 shrink-0 items-center">
                             <img
                                 className="h-8 w-auto"
-                                src="icons/white.png"
+                                src="/icons/white.png"
                                 alt="Your Company"
                             />
                         </div>
@@ -310,7 +310,7 @@ export default function Skeleton({
                                             <Menu.Item >
                                                 {({ active }) => (
                                                     <a
-                                                        // href={item.href}
+                                                        href={'/profile'}
                                                         className={classNames(
                                                             active ? 'bg-gray-50' : '',
                                                             'block px-3 py-1 text-sm leading-6 text-gray-900'

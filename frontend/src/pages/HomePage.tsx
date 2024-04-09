@@ -1,5 +1,5 @@
 import React from 'react';
-import CourseTable from '../components/CourseTable'; // Make sure the path is correct
+import CourseTable from '../components/Course/CourseTable'; // Make sure the path is correct
 
 const sampleCourses = [
     {

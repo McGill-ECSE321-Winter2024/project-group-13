@@ -403,6 +403,7 @@ public class CourseIntegrationTests {
         scheduleRepository.save(schedule);
 
         // Act
+
         HttpEntity<String> request = new HttpEntity<>(schedule.getId(),headers);
         ResponseEntity<HTTPDTO> response = client.exchange(url, HttpMethod.PUT, request,HTTPDTO.class);
         HttpEntity<String> requestInvalid = new HttpEntity<>("123456",headers);

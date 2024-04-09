@@ -146,7 +146,8 @@ public class AuthenticationService {
     public String changeEmail(String personId, String email){
         // validate email with regex
         if (!email.matches("^(.+)@(.+)$")) return "Invalid email";
-        if(personRepository.findPersonByEmail(email) != null) return "Email already in use";
+        Person user = personRepository.findPersonByEmail(email);
+        if(user != null && !personId.equals(user.getId())) return "Email already in use";
         Person person = personRepository.findPersonById(personId);
         person.setEmail(email);
         personRepository.save(person);
@@ -154,7 +155,8 @@ public class AuthenticationService {
     }
 
     public String changePhoneNumber(String personId, String phoneNumber){
-        if (personRepository.findPersonByPhoneNumber(phoneNumber) != null) return "Phone number already in use";
+        Person user = personRepository.findPersonByPhoneNumber(phoneNumber);
+        if (user != null && !personId.equals(user.getId())) return "Phone number already in use";
         Person person = personRepository.findPersonById(personId);
         person.setPhoneNumber(phoneNumber);
         personRepository.save(person);
