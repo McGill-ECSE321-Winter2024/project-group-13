@@ -1,4 +1,4 @@
-import { CourseState } from "./enums";
+import { CourseState, InvoiceStatus } from "./enums";
 
 export type Schedule = {
     monday?: {
@@ -48,4 +48,19 @@ export type RoomDTO = {
     id: string;
     name: string;
     sportCenterId: string;
+}
+
+export type Invoice = {
+    id: string;
+    status: InvoiceStatus;
+    amount: number;    
+    customer?: {
+        id: string;
+        name: string;
+    };
+    course?: {
+        id: string;
+        name: string;
+    };
+
 }

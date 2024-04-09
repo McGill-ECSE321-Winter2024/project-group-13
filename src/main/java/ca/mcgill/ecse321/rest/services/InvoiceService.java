@@ -81,7 +81,7 @@ public class InvoiceService {
                         .setCurrency("cad")
                         .setUnitAmount(amount)
                         .setProductData(
-                                PriceCreateParams.ProductData.builder().setName("Sport Center Invoice").build()
+                                PriceCreateParams.ProductData.builder().setName(invoice.getRegistration().getCourse().getName() + " | Sport Center Invoice").build()
                         )
                         .build();
 
@@ -91,7 +91,7 @@ public class InvoiceService {
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
                         .setSuccessUrl(YOUR_DOMAIN + "/invoices/payment/success/" + invoiceId + "?personId=" + personSession.getPersonId())
-                        .setCancelUrl(YOUR_DOMAIN + "/invoices/payment/cancel/")
+                        .setCancelUrl("http://localhost:3000" + "/invoices/")
                         .addLineItem(
                                 SessionCreateParams.LineItem.builder()
                                         .setQuantity(1L)
@@ -144,7 +144,6 @@ public class InvoiceService {
     private Invoice getOpenInvoice(PersonSession personSession, String invoiceId) {
         if(
                 PersonSession.PersonType.Instructor.equals(personSession.getPersonType())
-                        || PersonSession.PersonType.Customer.equals(personSession.getPersonType())
         ) {
             return null;
         }

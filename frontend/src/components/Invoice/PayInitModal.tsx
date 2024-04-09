@@ -1,38 +1,39 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { CheckIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import React from 'react'
 import httpClient from '../../services/http'
 
-export default function RegisterToCourseModal({
-    courseId,
-    costPerHour
+export default function PayInitModal({
+    invoiceId,
 }: {
-    courseId: string,
-    costPerHour: number
+    invoiceId: string,
 }) {
-  const [open, setOpen] = useState(false)
 
-  const registerToCourse = () => {
-    // Register to course
-    httpClient(`/courses/${courseId}/register`, 'POST')
-    .then((res) => {
-        window.location.reload();
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-  }
+    const [open, setOpen] = useState(false)
 
+    const initPayment = () => {
+        // Initiate payment
+        httpClient(`/invoices/${invoiceId}/pay`, 'POST')
+        .then((res) => {
+            console.log(res.data);
+            window.location.href = res.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
 
   return (
     <React.Fragment>
+
         <button
-            type="button"
             onClick={() => setOpen(true)}
-            className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            >
-            Register
+            type="button"
+            className="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+        //   disabled={plan.isCurrent}
+        >
+            Pay
         </button>
         <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -61,37 +62,36 @@ export default function RegisterToCourseModal({
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                    <PlusIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                    <QuestionMarkCircleIcon className="h-6 w-6 text-purple-600" aria-hidden="true" />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                      Register
+                      Proceed to payment
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to register to this course ? <br/>
-                        This course costs ${costPerHour}. An invoice will be sent to you as soon as you register.
+                        You will be redirected to the payment gateway to complete the payment.
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6 flex flex-row justify-between gap-3">
-  <button
-    type="button"
-    className="inline-flex justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-    onClick={() => setOpen(false)}
-  >
-    Cancel
-  </button>
-  <button
-    type="button"
-    className="inline-flex justify-center w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-    onClick={registerToCourse}
-  >
-    Yes
-  </button>
-</div>
+                <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    onClick={() => setOpen(false)}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    onClick={initPayment}
+                >
+                    Continue
+                </button>
+                </div>
 
               </Dialog.Panel>
             </Transition.Child>

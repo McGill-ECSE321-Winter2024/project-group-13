@@ -136,7 +136,10 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                         <tr key={course.id}  className="hover:bg-gray-100 cursor-pointer" style={{
                             padding: '10px'
                         }}>
-                            <td onClick={() => onCourseSelect(course)}><b>{course.name}</b></td>
+                            <td onClick={() => {
+                                // onCourseSelect(course)
+                                window.location.href = '/courses/' + course.id
+                            }}><b>{course.name}</b></td>
                             <td>{course.description}</td>
                             <td>{course.level}</td>
                             <td>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>

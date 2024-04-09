@@ -130,7 +130,6 @@ public class InvoiceController {
     @RequestMapping(value = {"/invoices/payment/success/{invoice_id}", "/invoices/payment/success/{invoice_id}/"}, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> paymentSuccess(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
             @PathVariable("invoice_id") String invoiceId,
             @RequestParam("personId") String personId
     ) {
@@ -140,8 +139,10 @@ public class InvoiceController {
                 "customer"
         );
 
-        invoiceService.updateInvoiceStatus(session, invoiceId, "Paid");
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        invoiceService.updateInvoiceStatus(session, invoiceId, "Completed");
+
+        // redirect to http://localhost:3000/invoices
+        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, "http://localhost:3000/invoices").build();
     }
 
 
