@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.rest.integration;
 
 import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
@@ -12,6 +13,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,20 +25,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CourseIntegrationTests {
-    @Autowired
-    private TestRestTemplate client;
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private SportCenterRepository sportCenterRepository;
-    @Autowired
-    private RoomRepository roomRepository;
-    @Autowired
-    private ScheduleRepository scheduleRepository;
-    @Autowired
-    private AuthenticationService authenticationService;
+    @Autowired private TestRestTemplate client;
+    @Autowired private CourseRepository courseRepository;
+    @Autowired private PersonRepository personRepository;
+    @Autowired private SportCenterRepository sportCenterRepository;
+    @Autowired private RoomRepository roomRepository;
+    @Autowired private ScheduleRepository scheduleRepository;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private CourseSessionRepository courseSessionRepository;
 
     private final String sportCenterName="HealthPlus1";
     private final String ownerEmail="owner123456@gmail.com";
@@ -69,6 +69,7 @@ public class CourseIntegrationTests {
         personRepository.deleteAll();
         sportCenterRepository.deleteAll();
         scheduleRepository.deleteAll();
+        courseSessionRepository.deleteAll();
     }
 
     @Test
@@ -180,6 +181,7 @@ public class CourseIntegrationTests {
     assertEquals(course.getId(), updatedCourse.getId());
     assertEquals("Course name changed", response.getBody().getMessage());
     }
+
     @Test
     @Order(5)
     public void updateCourseDescriptionTest(){
@@ -443,7 +445,72 @@ public class CourseIntegrationTests {
     }
 
 
-  public static void createPerson(
+    @Test
+    @Order(14)
+    public void testAddScheduleToCourseSuccessfully() {
+        // Setup
+        String authentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setMondayStart("08:00:00");
+        scheduleDTO.setMondayEnd("10:00:00");
+
+        // Create a course to link
+        Course newCourse = new Course();
+        newCourse.setName("Aerobics");
+        newCourse.setCourseStartDate(Timestamp.valueOf("2024-01-01 00:00:00"));
+        newCourse.setCourseEndDate(Timestamp.valueOf("2024-01-31 23:59:59"));
+        courseRepository.save(newCourse);
+
+        // Act
+        HttpEntity<ScheduleDTO> request = new HttpEntity<>(scheduleDTO, headers);
+        ResponseEntity<HTTPDTO> response = client.exchange("/courses/" + newCourse.getId() + "/update-schedule-and-sessions", HttpMethod.PUT, request, HTTPDTO.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Schedule successfully added/updated and linked to the course", response.getBody().getMessage());
+
+        // Calculate expected number of Mondays in the course duration
+        LocalDate startDate = newCourse.getCourseStartDate().toLocalDateTime().toLocalDate();
+        LocalDate endDate = newCourse.getCourseEndDate().toLocalDateTime().toLocalDate();
+        long expectedSessionCount = Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)))
+                .filter(date -> date.getDayOfWeek() == DayOfWeek.MONDAY)
+                .count();
+
+        // Verify that sessions are generated
+        List<CourseSession> sessions = courseSessionRepository.findCourseSessionsByCourse(newCourse);
+        assertFalse(sessions.isEmpty());
+        assertEquals(expectedSessionCount, sessions.size(), "Expected number of sessions does not match actual sessions created.");
+    }
+
+    @Test
+    @Order(15)
+    public void testAddScheduleWithInvalidTimeFormat() {
+        // Setup
+        String authentication = authenticationService.issueTokenWithEmail(ownerEmail);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authentication);
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setMondayStart("invalid_time");
+
+        // Create a course to link
+        Course newCourse = new Course();
+        newCourse.setName("Zumba");
+        courseRepository.save(newCourse);
+
+        // Act
+        HttpEntity<ScheduleDTO> request = new HttpEntity<>(scheduleDTO, headers);
+        ResponseEntity<HTTPDTO> response = client.exchange("/courses/" + newCourse.getId() + "/update-schedule-and-sessions", HttpMethod.PUT, request, HTTPDTO.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody().getMessage().contains("Invalid time format"));
+    }
+
+
+    public static void createPerson(
       Person person, String email, String phoneNumber, String name, String password) {
         person.setName(name);
         person.setPassword(password);

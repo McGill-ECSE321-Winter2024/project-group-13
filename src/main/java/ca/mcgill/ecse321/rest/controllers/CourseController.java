@@ -176,7 +176,7 @@ public class CourseController {
         }
     }
 
-    @PutMapping(value = "/courses/{course_id}/schedule")
+    @PutMapping(value = "/courses/{course_id}/update-schedule-and-sessions")
     public ResponseEntity<HTTPDTO> addOrUpdateCourseScheduleAndSessions(@PathVariable String course_id, @RequestBody ScheduleDTO scheduleDTO,
                                                              @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
