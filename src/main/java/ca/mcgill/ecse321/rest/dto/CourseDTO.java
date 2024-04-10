@@ -16,6 +16,7 @@ public class CourseDTO {
     private Timestamp courseEndDate;
 
     private String room;
+    private RoomDTO roomDTO;
     private String sportCenter;
     private String instructor;
     private String schedule;
@@ -49,6 +50,7 @@ public class CourseDTO {
             }
             if (course.getRoom() != null){
                 this.room=course.getRoom().getId();
+                this.roomDTO= new RoomDTO(course.getRoom());
             }
             if (course.getSchedule() != null){
                 this.schedule= course.getSchedule().getId();
@@ -123,5 +125,9 @@ public class CourseDTO {
         return (id.equals(courseDTO.getId())||id==courseDTO.getId()) &&
                 (name.equals(courseDTO.getName())||name==courseDTO.getName()) &&
                 (sportCenter.equals(courseDTO.getSportCenter())||sportCenter==courseDTO.getSportCenter());
+    }
+
+    public RoomDTO getRoomDTO() {
+        return roomDTO;
     }
 }

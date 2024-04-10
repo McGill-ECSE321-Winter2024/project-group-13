@@ -13,6 +13,11 @@ export default function Courses() {
     const [instructors, setInstructors] = useState([]);
     const [selectedInstructorId, setSelectedInstructorId] = useState("");
     const [courseNameFilter, setCourseNameFilter] = useState("");
+    const [selectedCourseState, setSelectedCourseState] = useState("");
+    // Add this near your other state declarations
+    const [selectedCourseLevel, setSelectedCourseLevel] = useState("");
+    const [rooms, setRooms] = useState([]);
+
 
     const fetchCourses = () => {
         httpClient("/courses", "GET")
@@ -34,15 +39,35 @@ export default function Courses() {
             });
     };
 
+    const fetchRooms = () => {
+        httpClient("/rooms", "GET")
+            .then(res => {
+                setRooms(res.data); // Assuming the API returns an array of room objects
+            })
+            .catch(err => {
+                console.log("Failed to fetch rooms:", err);
+            });
+    };
+
     useEffect(() => {
         fetchCourses();
         fetchInstructors();
+        fetchRooms(); // Fetch rooms on component mount
     }, []);
 
+
     const filteredCourses = courses.filter(course => {
-        return (!selectedInstructorId || course.instructor === selectedInstructorId) &&
-            (!courseNameFilter || course.name.toLowerCase().includes(courseNameFilter.toLowerCase()));
+        const filterByInstructor = !selectedInstructorId || course.instructor === selectedInstructorId;
+        const filterByName = !courseNameFilter || course.name.toLowerCase().includes(courseNameFilter.toLowerCase());
+        const filterByLevel = !selectedCourseLevel || course.level === selectedCourseLevel;
+        const filterByState = !selectedCourseState || course.courseState === selectedCourseState;
+        return filterByInstructor && filterByName && filterByLevel && filterByState;
     });
+
+    const enhancedCourses = filteredCourses.map(course => ({
+        ...course,
+        room: rooms.find(room => room.id === course.room)?.name || "Room not found"
+    }));
 
     return (
         <div className="p-10">
@@ -77,6 +102,16 @@ export default function Courses() {
                         className="flex-grow rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
                     <select
+                        value={selectedCourseLevel}
+                        onChange={(e) => setSelectedCourseLevel(e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    >
+                        <option value="">All Levels</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                    <select
                         value={selectedInstructorId}
                         onChange={(e) => setSelectedInstructorId(e.target.value)}
                         className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -88,18 +123,32 @@ export default function Courses() {
                             </option>
                         ))}
                     </select>
+                    {User().personType !== "Customer" && (
+                        <select
+                        value={selectedCourseState}
+                        onChange={(e) => setSelectedCourseState(e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    >
+                        <option value="">All States</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Denied">Denied</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Awaiting Approval">Awaiting Approval</option>
+                    </select>
+                    )}
+
                     <button
                         onClick={fetchCourses}
                         className="rounded-full p-2 text-blue-500 hover:text-blue-600"
                         title="Reload Courses"
                     >
-                        <FontAwesomeIcon icon={faSync} size="lg" />
+                        <FontAwesomeIcon icon={faSync} size="lg"/>
                     </button>
                 </div>
             </div>
-            <CourseTable courses={filteredCourses} onCourseSelect={setSelectedCourse} />
+            <CourseTable courses={enhancedCourses} onCourseSelect={setSelectedCourse}/>
             {selectedCourse && (
-                <CourseDetail course={selectedCourse} onClose={() => setSelectedCourse(null)} />
+                <CourseDetail course={selectedCourse} onClose={() => setSelectedCourse(null)}/>
             )}
         </div>
     );

@@ -74,7 +74,12 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                 return 0;
             });
         }
-        return sortedData;
+        return sortedData.map(course => {
+            return {
+                ...course,
+                room: course.roomDTO ? course.roomDTO.name : "No room assigned" // use RoomDTO.name if available
+            };
+        });
     }, [courses, sortField, sortOrder]);
 
     const SortIcon = ({ isAsc }) => (
@@ -98,20 +103,28 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                 <table className="min-w-full bg-white w-auto">
                     <thead className="bg-gray-800 text-white">
                     <tr>
-                        {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost', 'state'].map((field) => (
+                        {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost'].map((field) => (
                             <th
                                 key={field}
                                 onClick={() => handleSort(field)}
                                 className={`cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider hover:bg-gray-700 ${sortField === field ? 'bg-gray-600' : ''}`}
                             >
                                 {field.charAt(0).toUpperCase() + field.slice(1)}
-                                {sortField === field && (
-                                    <SortIcon isAsc={sortOrder === 'asc'}/>
-                                )}
+                                {sortField === field && <SortIcon isAsc={sortOrder === 'asc'}/>}
                             </th>
                         ))}
+                        {(User().personType === 'Instructor' || User().personType === 'Owner') && (
+                            <th
+                                onClick={() => handleSort('state')}
+                                className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider hover:bg-gray-700"
+                            >
+                                State
+                                {sortField === 'state' && <SortIcon isAsc={sortOrder === 'asc'}/>}
+                            </th>
+                        )}
                     </tr>
                     </thead>
+
                     <tbody className="text-gray-700">
                     {sortedCourses.map((course) => (
                         <tr key={course.id} className="hover:bg-gray-100 cursor-pointer">
@@ -122,11 +135,12 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                             <td>{course.level}</td>
                             <td>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>
                             <td>{moment(course.courseEndDate).format('MMM DD, YYYY')}</td>
-                            <td>{course.room}</td>
+                            <td>{course.roomDTO.name}</td>
                             <td>{instructors.find(i => i.id === course.instructor)?.name}</td>
                             <td>{course.hourlyRateAmount}</td>
                             <td>
-                                {User().personType !== "Customer" ? <CourseStatusBadge status={course.courseState} /> : null}
+                                {User().personType !== "Customer" ?
+                                    <CourseStatusBadge status={course.courseState}/> : null}
                                 {User().personType === 'Owner' && course.courseState !== CourseState.Approved ?
                                     <ApproveCourseModal
                                         approveCourse={() => {

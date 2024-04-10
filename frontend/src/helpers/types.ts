@@ -41,6 +41,7 @@ export type CourseDTO = {
     room: string;
     instructor: string;
     hourlyRateAmount: number;
+    roomDTO: RoomDTO;
     courseState: CourseState;
 }
 
