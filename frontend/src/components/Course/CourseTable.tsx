@@ -11,10 +11,9 @@ import RegisterToCourseModal from './RegisterToCourseModal';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 
 const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCourseSelect: any}) => {
-    const [filterText, setFilterText] = useState('');
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState('asc');
-    const [instructors, setInstructors] = useState([]); 
+    const [instructors, setInstructors] = useState([]);
     const [registrations, setRegistrations] = useState<{
         id: number;
         rating: number;
@@ -25,20 +24,20 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
 
     useEffect(() => {
         httpClient("/instructors", "GET")
-        .then((res) => {
-          setInstructors(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-        if(User().personType === 'Customer') {
-            httpClient("/registrations", "GET")
             .then((res) => {
-              setRegistrations(res.data);
+                setInstructors(res.data);
             })
             .catch((err) => {
-              console.log(err);
+                console.log(err);
             });
+        if(User().personType === 'Customer') {
+            httpClient("/registrations", "GET")
+                .then((res) => {
+                    setRegistrations(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
     }, []);
 
@@ -54,14 +53,13 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
     const approveCourse = (courseId) => {
         // approve course
         httpClient('/courses/' + courseId + '/approve', 'POST')
-        .then((res) => {
-            window.location.reload();
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+            .then((res) => {
+                window.location.reload();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-    
 
     const sortedCourses = useMemo(() => {
         let sortedData = [...courses];
@@ -78,14 +76,6 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
         }
         return sortedData;
     }, [courses, sortField, sortOrder]);
-
-    const filteredAndSortedCourses = useMemo(() => {
-        return sortedCourses.filter((course) => {
-            return Object.keys(course).some((key) =>
-                course[key]?.toString().toLowerCase().includes(filterText.toLowerCase())
-            );
-        });
-    }, [sortedCourses, filterText]);
 
     const SortIcon = ({ isAsc }) => (
         <svg
@@ -104,19 +94,10 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
 
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Filter courses..."
-                    value={filterText}
-                    onChange={(e) => setFilterText(e.target.value)}
-                    className="px-4 py-2 border rounded-lg w-full"
-                />
-            </div>
             <div className="overflow-x-auto shadow-md">
                 <table className="min-w-full bg-white w-auto">
                     <thead className="bg-gray-800 text-white">
-                    <tr >
+                    <tr>
                         {['name', 'description', 'level', 'startDate', 'endDate', 'room', 'instructor', 'cost', 'state'].map((field) => (
                             <th
                                 key={field}
@@ -131,15 +112,12 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                         ))}
                     </tr>
                     </thead>
-                    <tbody className="text-gray-700 gap-10">
-                    {filteredAndSortedCourses.map((course, index) => (
-                        <tr key={course.id}  className="hover:bg-gray-100 cursor-pointer" style={{
-                            padding: '10px'
-                        }}>
-                            <td onClick={() => {
-                                // onCourseSelect(course)
-                                window.location.href = '/courses/' + course.id
-                            }}><b>{course.name}</b></td>
+                    <tbody className="text-gray-700">
+                    {sortedCourses.map((course) => (
+                        <tr key={course.id} className="hover:bg-gray-100 cursor-pointer">
+                            <td onClick={() => window.location.href = `/courses/${course.id}`}>
+                                <b>{course.name}</b>
+                            </td>
                             <td>{course.description}</td>
                             <td>{course.level}</td>
                             <td>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>
@@ -154,19 +132,19 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                                         approveCourse={() => {
                                             approveCourse(course.id);
                                         }}
-                                    /> : null    
-                                 }
-                                 {User().personType === 'Customer' && !registrations.find(r => r.course.id === course.id) ?
+                                    /> : null
+                                }
+                                {User().personType === 'Customer' && !registrations.find(r => r.course.id === course.id) ?
                                     <RegisterToCourseModal
                                         courseId={course.id}
                                         costPerHour={course.hourlyRateAmount}
-                                    /> : null   
+                                    /> : null
                                 }
                                 {User().personType === 'Customer' && registrations.find(r => r.course.id === course.id) ?
                                     <div
                                         className='flex items-center gap-1 text-green-900 text-sm font-semibold'
                                     >
-                                        <CheckBadgeIcon className="h-6 w-6 text-green-500" /> 
+                                        <CheckBadgeIcon className="h-6 w-6 text-green-500" />
                                         Registered
                                     </div>: null
                                 }
