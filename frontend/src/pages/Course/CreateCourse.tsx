@@ -95,6 +95,7 @@ const handleValueChange = newValue => {
         try {
             const res = await httpClient('/courses', 'POST', body.name)
             const id = res.data.message;
+            await httpClient(`/courses/${id}/name`, 'PUT', body.name)
             await httpClient(`/courses/${id}/description`, 'PUT', body.description)
             await httpClient(`/courses/${id}/level`, 'PUT', body.level)
             await httpClient(`/courses/${id}/rate`, 'PUT', body.rate)

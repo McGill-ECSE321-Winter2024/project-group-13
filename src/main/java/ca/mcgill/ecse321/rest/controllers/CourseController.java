@@ -3,7 +3,6 @@ import ca.mcgill.ecse321.rest.dto.CourseDTO;
 import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
-import ca.mcgill.ecse321.rest.models.CourseSession;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import ca.mcgill.ecse321.rest.services.CourseDetailService;
 import ca.mcgill.ecse321.rest.services.CourseService;
@@ -16,22 +15,16 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.*;
 
 @CrossOrigin(origins = "*")
 @RestController
 public class CourseController {
-    @Autowired
-    private CourseService courseService;
-    @Autowired
-    private CourseSessionService courseSessionService;
-    @Autowired
-    private CourseDetailService courseDetailService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
+    @Autowired private CourseService courseService;
+    @Autowired private CourseSessionService courseSessionService;
+    @Autowired private CourseDetailService courseDetailService;
+    @Autowired private AuthenticationService authenticationService;
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
@@ -66,7 +59,7 @@ public class CourseController {
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         // remove all non alphanumeric characters
-        String errorMessage=courseService.updateCourseName(person, course_id, name.replaceAll("[^a-zA-Z0-9\\-]", ""));
+        String errorMessage=courseService.updateCourseName(person, course_id, name.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course name changed");
     }
 
@@ -77,7 +70,7 @@ public class CourseController {
             return badRequest("Requires valid description");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseDescription(person, course_id, description.replaceAll("[^a-zA-Z0-9\\-]", ""));
+        String errorMessage=courseService.updateCourseDescription(person, course_id, description.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course description changed");
     }
     @PutMapping(value = { "/courses/{course_id}/level", "/courses/{course_id}/level/" })
@@ -87,7 +80,7 @@ public class CourseController {
             return badRequest("Requires valid level");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseLevel(person, course_id, level.replaceAll("[^a-zA-Z0-9\\-]", ""));
+        String errorMessage=courseService.updateCourseLevel(person, course_id, level.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course level changed");
     }
     @PutMapping(value = { "/courses/{course_id}/rate", "/courses/{course_id}/rate/" })
