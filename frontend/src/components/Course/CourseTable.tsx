@@ -4,13 +4,12 @@ import { CourseDTO } from '../../helpers/types';
 import moment from 'moment';
 import httpClient from '../../services/http';
 import User from '../../services/user';
-import ApproveCourseModal from './ApproveCourseModal';
 import { CourseState } from '../../helpers/enums';
 import CourseStatusBadge from './CourseStatusBadge';
 import RegisterToCourseModal from './RegisterToCourseModal';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 
-const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCourseSelect: any}) => {
+const CourseTable = ({ courses, setCourses, onCourseSelect }: {courses: CourseDTO[], setCourses: Function, onCourseSelect: any}) => {
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState('asc');
     const [instructors, setInstructors] = useState([]);
@@ -21,6 +20,12 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
             id: string
         }
     }[]>([]);
+    const [dropdownVisible, setDropdownVisible] = useState<string | null>(null);
+
+
+    const handleDropdown = (courseId: string) => {
+        setDropdownVisible(prev => prev === courseId ? null : courseId);
+    };
 
     useEffect(() => {
         httpClient("/instructors", "GET")
@@ -82,6 +87,28 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
         });
     }, [courses, sortField, sortOrder]);
 
+
+    const updateCourseState = async (courseId, newState) => {
+        try {
+            const response = await httpClient(`/courses/${courseId}/state`, 'PUT', { state: newState });
+            if (response.status === 200) {
+                // Assuming successful state update, now update local state:
+                setCourses(prevCourses =>
+                    prevCourses.map(course =>
+                        course.id === courseId ? {...course, courseState: newState} : course
+                    )
+                );
+                setDropdownVisible(null);  // Hide the dropdown
+            } else {
+                throw new Error('Failed to update course state with response: ' + response.status);
+            }
+        } catch (error) {
+            console.error("Failed to update course state:", error);
+            // Handle errors, e.g., by showing a notification
+        }
+    };
+
+
     const SortIcon = ({ isAsc }) => (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -113,41 +140,47 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                                 {sortField === field && <SortIcon isAsc={sortOrder === 'asc'}/>}
                             </th>
                         ))}
-                        {(User().personType === 'Instructor' || User().personType === 'Owner') && (
-                            <th
-                                onClick={() => handleSort('state')}
-                                className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider hover:bg-gray-700"
-                            >
-                                State
-                                {sortField === 'state' && <SortIcon isAsc={sortOrder === 'asc'}/>}
-                            </th>
-                        )}
+                        <th className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider hover:bg-gray-700">
+                            Actions
+                        </th>
                     </tr>
                     </thead>
 
                     <tbody className="text-gray-700">
                     {sortedCourses.map((course) => (
-                        <tr key={course.id} className="hover:bg-gray-100 cursor-pointer">
-                            <td onClick={() => window.location.href = `/courses/${course.id}`}>
-                                <b>{course.name}</b>
-                            </td>
-                            <td>{course.description}</td>
-                            <td>{course.level}</td>
-                            <td>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>
-                            <td>{moment(course.courseEndDate).format('MMM DD, YYYY')}</td>
-                            <td>{course.roomDTO.name}</td>
-                            <td>{instructors.find(i => i.id === course.instructor)?.name}</td>
-                            <td>{course.hourlyRateAmount}</td>
+                        <tr key={course.id} className="hover:bg-gray-100">
+                            <td onClick={() => onCourseSelect(course.id)}>{course.name}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{course.description}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{course.level}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{moment(course.courseStartDate).format('MMM DD, YYYY')}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{moment(course.courseEndDate).format('MMM DD, YYYY')}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{course.roomDTO ? course.roomDTO.name : "No room assigned"}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{instructors.find(i => i.id === course.instructor)?.name || "Instructor not found"}</td>
+                            <td onClick={() => onCourseSelect(course.id)}>{`$${course.hourlyRateAmount.toFixed(2)}`}</td>
                             <td>
-                                {User().personType !== "Customer" ?
-                                    <CourseStatusBadge status={course.courseState}/> : null}
-                                {User().personType === 'Owner' && course.courseState !== CourseState.Approved ?
-                                    <ApproveCourseModal
-                                        approveCourse={() => {
-                                            approveCourse(course.id);
-                                        }}
-                                    /> : null
-                                }
+                                {User().personType !== "Customer" && (
+                                    <div onBlur={() => setDropdownVisible(null)} tabIndex={0}>
+                                        <CourseStatusBadge status={course.courseState}
+                                                           onClick={(e) => {
+                                                               e.stopPropagation();
+                                                               setDropdownVisible(course.id);
+                                                           }}/>
+                                        {dropdownVisible === course.id && (
+                                            <div className="absolute bg-white shadow-lg rounded p-2 mt-1">
+                                                {Object.values(CourseState).map(state => (
+                                                    <div key={state} className="p-1 hover:bg-gray-200 cursor-pointer"
+                                                         onClick={(e) => {
+                                                             e.stopPropagation();
+                                                             updateCourseState(course.id, state);
+                                                             setDropdownVisible(null);
+                                                         }}>
+                                                        {state}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                                 {User().personType === 'Customer' && !registrations.find(r => r.course.id === course.id) ?
                                     <RegisterToCourseModal
                                         courseId={course.id}
@@ -156,11 +189,10 @@ const CourseTable = ({ courses, onCourseSelect }: {courses: CourseDTO[], onCours
                                 }
                                 {User().personType === 'Customer' && registrations.find(r => r.course.id === course.id) ?
                                     <div
-                                        className='flex items-center gap-1 text-green-900 text-sm font-semibold'
-                                    >
-                                        <CheckBadgeIcon className="h-6 w-6 text-green-500" />
+                                        className='flex items-center gap-1 text-green-900 text-sm font-semibold'>
+                                        <CheckBadgeIcon className="h-6 w-6 text-green-500"/>
                                         Registered
-                                    </div>: null
+                                    </div> : null
                                 }
                             </td>
                         </tr>

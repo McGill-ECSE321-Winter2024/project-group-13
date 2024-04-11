@@ -205,6 +205,24 @@ public class CourseService {
         return courseMessagePair.getMessage();
     }
 
+    public String updateCourseState(String courseId, String newState, PersonSession person) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return "Course not found";
+        }
+        if (!person.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            return "Must be an owner of the course's sports center to change state";
+        }
+        try {
+            course.setCourseState(Course.CourseState.valueOf(newState));
+            courseRepository.save(course);
+            return ""; // Empty string signifies success
+        } catch (IllegalArgumentException e) {
+            return "Invalid state provided";
+        }
+    }
+
+
 
     @Transactional
     public String addOrUpdateCourseScheduleAndSessions(String course_id, ScheduleDTO scheduleDTO, PersonSession personSession) {

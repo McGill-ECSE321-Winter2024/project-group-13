@@ -15,6 +15,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.Map;
 
 import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.*;
 
@@ -183,6 +184,18 @@ public class CourseController {
             return badRequest(errorMessage);
         }
     }
+
+    @PutMapping(value = "/courses/{course_id}/state")
+    public ResponseEntity<HTTPDTO> updateCourseState(@PathVariable String course_id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> stateMap) {
+        String newState = stateMap.get("state");
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        if (person == null || !person.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            return forbidden("Only owners can modify course state.");
+        }
+        String errorMessage = courseService.updateCourseState(course_id, newState, person);
+        return getResponse(errorMessage, "Course state updated successfully");
+    }
+
 
 
 
