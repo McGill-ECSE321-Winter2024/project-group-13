@@ -23,7 +23,7 @@ export default function CourseStatusBadge ({
     };
     return (
         <span className={className[status]} onClick={onClick}>
-            {formatStatus(_.startCase(status))}
+            {formatStatus(_.startCase(status === "AwaitingApproval" ? "Pending" : status))}
         </span>
     );
 }
