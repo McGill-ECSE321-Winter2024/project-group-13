@@ -43,6 +43,8 @@ export type CourseDTO = {
     hourlyRateAmount: number;
     roomDTO: RoomDTO;
     courseState: CourseState;
+    schedule: string;
+    sportCenter: string;
 }
 
 export type RoomDTO = {

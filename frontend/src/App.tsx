@@ -24,7 +24,7 @@ const router = createBrowserRouter([
         element: <Skeleton><CreateCourseModal/></Skeleton>,
     },
     {
-        path: "/courses/:id",
+        path: "/courses/:courseId",
         element: <Skeleton><ViewCourse/></Skeleton>,
     },
     {

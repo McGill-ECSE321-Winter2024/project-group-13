@@ -6,6 +6,7 @@ import httpClient from "../../services/http";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSync } from '@fortawesome/free-solid-svg-icons';
 import { CourseDTO } from "../../helpers/types";
+import {useNavigate} from "react-router-dom";
 
 export default function Courses() {
     const [selectedCourse, setSelectedCourse] = useState<CourseDTO | null>(null);
@@ -17,7 +18,11 @@ export default function Courses() {
     // Add this near your other state declarations
     const [selectedCourseLevel, setSelectedCourseLevel] = useState("");
     const [rooms, setRooms] = useState([]);
+    const navigate = useNavigate();
 
+    const handleCourseClick = (courseId: string) => {
+        navigate(`/courses/${courseId}`);
+    };
 
     const fetchCourses = () => {
         httpClient("/courses", "GET")
@@ -146,10 +151,7 @@ export default function Courses() {
                     </button>
                 </div>
             </div>
-            <CourseTable courses={enhancedCourses} onCourseSelect={setSelectedCourse}/>
-            {selectedCourse && (
-                <CourseDetail course={selectedCourse} onClose={() => setSelectedCourse(null)}/>
-            )}
+            <CourseTable courses={enhancedCourses} setCourses={setCourses} onCourseSelect={handleCourseClick} />
         </div>
     );
 }
