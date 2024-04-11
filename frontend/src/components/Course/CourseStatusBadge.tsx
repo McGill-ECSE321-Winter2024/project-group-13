@@ -2,6 +2,12 @@
 import {CourseState} from "../../helpers/enums";
 import _ from "lodash";
 
+// Function to format course status by inserting a space before each capital letter (except the first one)
+const formatStatus = (status) => {
+    // Split the status into words based on capital letters and join them with a space
+    return status.replace(/([A-Z])/g, ' $1').trim();
+};
+
 export default function CourseStatusBadge ({
                                                status,
                                                onClick
@@ -17,7 +23,7 @@ export default function CourseStatusBadge ({
     };
     return (
         <span className={className[status]} onClick={onClick}>
-            {_.capitalize(status)}
+            {formatStatus(_.startCase(status))}
         </span>
     );
 }

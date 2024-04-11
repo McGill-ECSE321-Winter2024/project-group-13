@@ -2,7 +2,7 @@ export enum CourseState {
     Approved = 'Approved',
     Denied = 'Denied',
     Inactive = 'Inactive',
-    AwaitingApproval = 'Awaiting Approval'
+    AwaitingApproval = 'AwaitingApproval'
 }
 
 export enum Level {
