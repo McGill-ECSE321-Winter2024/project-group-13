@@ -32,6 +32,7 @@ export default function ViewCourse() {
   const [courseState, setCourseState] = useState<CourseState>(
     CourseState.AwaitingApproval
   ); // default state or fetched from the course
+  const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
     const fetchInstructors = async () => {
@@ -40,6 +41,19 @@ export default function ViewCourse() {
         setInstructors(res.data);
       } catch (err) {
         console.log(err);
+      }
+    };
+    const fetchCustomers = async () => {
+      try {
+        const response = await httpClient(`/courses/${courseId}/customers`, "GET");
+        if (response.status === 200) {
+          setCustomers(response.data);
+        } else {
+          throw new Error('Failed to fetch customers');
+        }
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        // Handle the error state appropriately, e.g., set an error message state
       }
     };
 
@@ -82,6 +96,7 @@ export default function ViewCourse() {
 
     if (courseId) {
       fetchCourseDetails();
+      fetchCustomers();
     }
   }, [courseId]); // Only re-run the effect if courseId changes
 
@@ -92,47 +107,6 @@ export default function ViewCourse() {
     }[]
   >([]);
 
-  const handleInstructorChange = (event) => {
-    setSelectedInstructor(event.target.value);
-  };
-
-  const handleEdit = (field: keyof CourseDTO, value: string) => {
-    setEditableCourse((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = async () => {
-    try {
-      // Start with a check to see if the course object exists
-      if (!course) {
-        throw new Error("No course data to save.");
-      }
-
-      // Update course details. Depending on your backend,
-      // you could combine these into a single request.
-      await httpClient(`/courses/${courseId}/name`, "PUT", {
-        name: editableCourse.name,
-      });
-      await httpClient(`/courses/${courseId}/description`, "PUT", {
-        description: editableCourse.description,
-      });
-      if (isOwner) {
-        await httpClient(`/courses/${courseId}/instructor`, "PUT", {
-          instructor: selectedInstructor,
-        });
-        await httpClient(`/courses/${courseId}/state`, "PUT", {
-          state: course.courseState,
-        });
-      }
-
-      // Additional updates go here
-      // ...
-
-      alert("Course updated successfully");
-    } catch (error) {
-      console.error("Failed to update course:", error);
-      alert("Failed to update course: " + error.message);
-    }
-  };
 
   const handleChange = (newState: string) => {
     if (
@@ -199,64 +173,69 @@ export default function ViewCourse() {
                 <div className="ml-4 mt-2">
                   <h3 className="text-base font-semibold leading-6 text-gray-900">
                     {isOwner ? (
-                      // Allow owners to interact and change the course state
-                      <div
-                        onBlur={() => setDropdownVisible(false)}
-                        tabIndex={0}
-                      >
-                        <CourseStatusBadge
-                          status={course.courseState}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDropdownVisible(!dropdownVisible);
-                          }}
-                        />
-                        {dropdownVisible && (
-                          <div className="absolute z-10 bg-white shadow-lg rounded p-2 mt-1">
-                            {Object.values(CourseState).map((state) => (
-                              <div
-                                key={state}
-                                className="p-1 hover:bg-gray-200 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleChange(state as CourseState); // Directly pass the new state
-                                  setDropdownVisible(false);
-                                }}
-                              >
-                                {state}
+                        // Allow owners to interact and change the course state
+                        <div
+                            onBlur={() => setDropdownVisible(false)}
+                            tabIndex={0}
+                        >
+                          <CourseStatusBadge
+                              status={course.courseState}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDropdownVisible(!dropdownVisible);
+                              }}
+                          />
+                          {dropdownVisible && (
+                              <div className="absolute z-10 bg-white shadow-lg rounded p-2 mt-1">
+                                {Object.values(CourseState).map((state) => (
+                                    <div
+                                        key={state}
+                                        className="p-1 hover:bg-gray-200 cursor-pointer"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleChange(state as CourseState); // Directly pass the new state
+                                          setDropdownVisible(false);
+                                        }}
+                                    >
+                                      {state}
+                                    </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </div>
                     ) : (
-                      // For instructors, just display the status badge without interactivity
-                      <div>
-                        <CourseStatusBadge status={course.courseState} />
-                      </div>
+                        // For instructors, just display the status badge without interactivity
+                        <div>
+                          <CourseStatusBadge status={course.courseState}/>
+                        </div>
                     )}
                     <p className="mt-1 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                       {course.name}
                     </p>
                     <p className="mt-6 text-lg leading-1 text-gray-600" style={{
-                        marginTop: 0,
-                        marginBottom: 10
+                      marginTop: 0,
+                      marginBottom: 10
                     }}>
                       {course.description}
                     </p><p>
-            <strong>Start Date:</strong>{" "}
-            {moment(course.courseStartDate).format("YYYY-MM-DD")}
-          </p>
-          <p>
-            <strong>End Date:</strong>{" "}
-            {moment(course.courseEndDate).format("YYYY-MM-DD")}
-          </p>
+                    <strong>Start Date:</strong>{" "}
+                    {moment(course.courseStartDate).format("YYYY-MM-DD")}
+                  </p>
+                    <p>
+                      <strong>End Date:</strong>{" "}
+                      {moment(course.courseEndDate).format("YYYY-MM-DD")}
+                    </p>
+                    <p>
+                      <strong>Instructor:</strong>{" "}
+                      {instructors.find(i => i.id === course.instructor)?.name || 'Instructor not found'}
+                    </p>
+
 
                   </h3>
                 </div>
                 <div className="ml-4 mt-2  gap-5">
                   <button
-                    style={{ marginRight: "10px" }}
+                      style={{ marginRight: "10px" }}
                     className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     onClick={() =>
                       setViewMode(viewMode === "table" ? "calendar" : "table")
@@ -307,14 +286,45 @@ export default function ViewCourse() {
       
 
       <div className="flex">
-        {User().personType !== "Customer ?" ? <div className="w-1/3">1/3</div> : null}
+        {User().personType !== "Customer ?" ?
+            <div className="w-1/3" style={{
+              borderWidth: 1,
+              borderColor: '#e8e8e8',
+              borderStyle: 'solid',
+              padding: 20,
+              paddingTop: 15,
+              borderRadius: 10
+            }}>
+              <h2
+                  className="text-base font-semibold leading-7 " style={{fontSize: 20, marginBottom: 20}}
+              >
+                Participants
+              </h2>
+              <table className="w-full divide-y divide-gray-300 table-auto">
+                <thead>
+                <tr>
+                </tr>
+                </thead>
+                <tbody>
+                {customers.map((customer) => (
+                    <tr key={customer.id}>
+                      <td
+                          className="px-2 py-3.5 text-sm text-gray-500"
+                      >
+                        {customer.name}
+                      </td>
+                    </tr>
+                ))}
+                </tbody>
+              </table>
+            </div> : null}
         <div className="w-2/3" style={{
-            borderWidth: 1,
-            borderColor: '#e8e8e8',
-            borderStyle: 'solid',
-            padding: 20,
-            paddingTop: 15,
-            borderRadius: 10
+          borderWidth: 1,
+          borderColor: '#e8e8e8',
+          borderStyle: 'solid',
+          padding: 20,
+          paddingTop: 15,
+          borderRadius: 10
         }}>
             <h2 className="text-base font-semibold leading-7 " style={{
                 fontSize: 20,
