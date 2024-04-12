@@ -13,17 +13,6 @@ import User from '../services/user'
 import httpClient from '../services/http'
 import { CourseDTO, Invoice } from '../helpers/types'
 
-const navigation = [
-  { name: 'Home', href: '#' },
-  { name: 'Invoices', href: '#' },
-  { name: 'Clients', href: '#' },
-  { name: 'Expenses', href: '#' },
-]
-const secondaryNavigation = [
-  { name: 'Last 7 days', href: '#', current: true },
-  { name: 'Last 30 days', href: '#', current: false },
-  { name: 'All-time', href: '#', current: false },
-]
 const stats = [
   { name: 'Revenue', value: '$405,091.00', change: '+4.75%', changeType: 'positive' },
   { name: 'Overdue invoices', value: '$12,787.00', change: '+54.02%', changeType: 'negative' },

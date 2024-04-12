@@ -42,7 +42,7 @@ public class CourseService {
     public CourseMessagePair getCourse(String course_id, PersonSession personSession){
         String message="";
         Course course = courseRepository.findCourseById(course_id);
-        if (personSession.getPersonType()!= PersonSession.PersonType.Owner ){
+        if (personSession.getPersonType()== PersonSession.PersonType.Customer ){
             if (personSession.getSportCenterId().equals(course.getSportCenter().getId())){
                 message= "Must be an owner of the course's sports center";
             }

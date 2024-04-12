@@ -56,8 +56,18 @@ const router = createBrowserRouter([
     {
         path: "/mycalendar",
         element: <Skeleton><UserCalendar/></Skeleton>,
+    },
+    {
+        path: "/*",
+        element: <Skeleton>
+            <div className="flex items-center justify-center h-full">
+                <br/>
+                <h1 className="text-4xl font-bold text-gray-800">404 Not Found</h1>
+            </div>
+        </Skeleton>,
     }
 ]);
+
 
 export default function App() {
     return <RouterProvider router={router} />;

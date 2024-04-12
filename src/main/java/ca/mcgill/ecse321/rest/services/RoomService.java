@@ -139,7 +139,7 @@ public class RoomService {
 
     @Transactional
     public List<RoomDTO> getAllRooms(PersonSession personSession){
-        if (personSession.getPersonType() != PersonSession.PersonType.Owner ){
+        if (personSession.getPersonType() == PersonSession.PersonType.Customer ){
             throw new IllegalArgumentException("Must be the Owner of the Sport Center");
         }
         List<Room> rooms = toList(roomRepository.findAll());

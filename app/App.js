@@ -9,7 +9,7 @@ export default function App() {
       flex: 1
     }}>
       <WebView
-      source={{ uri: 'http://localhost:3000' }}
+      source={{ uri: 'http://localhost:3000/login' }}
     />
     </SafeAreaView>
   );

@@ -301,12 +301,12 @@ const CourseTable = ({
                     "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                 >
-                  <button
+                  {User().personType !== "Customer" ? <button
                     onClick={() => onCourseEdit(course.id)}
                     className="text-blue-500 hover:text-blue-600"
                   >
                     Edit
-                  </button>
+                  </button>: null}
                 </td>
               </tr>
             ))}
