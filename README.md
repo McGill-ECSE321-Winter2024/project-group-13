@@ -46,7 +46,7 @@ All our documentation for this project, except for this README file, can be foun
 
 - [Project Deliverable 1 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-1-Report)
 - [Project Deliverable 2 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-2-Report)
-- Project Deliverable 3 Report
+- [Project Deliverable 3 Report](https://github.com/McGill-ECSE321-Winter2024/project-group-13/wiki/Deliverable-3-Report)
 
 ---
 
