@@ -52,7 +52,9 @@ const People = () => {
                         <tr>
                             <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Email</th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Phone #</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -60,7 +62,9 @@ const People = () => {
                             <tr key={customer.id}>
                                 <td className="px-3 py-4">{customer.name}</td>
                                 <td className="px-3 py-4">{customer.email}</td>
+                                <td className="px-3 py-4">{customer.phoneNumber}</td>
                                 <td className="px-3 py-4">{customer.id}</td>
+
                             </tr>
                         ))}
                         </tbody>
@@ -75,6 +79,7 @@ const People = () => {
                         <tr>
                             <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Email</th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Phone #</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th>
                         </tr>
                         </thead>
@@ -83,6 +88,7 @@ const People = () => {
                             <tr key={instructor.id}>
                                 <td className="px-3 py-4">{instructor.name}</td>
                                 <td className="px-3 py-4">{instructor.email}</td>
+                                <td className="px-3 py-4">{instructor.phoneNumber}</td>
                                 <td className="px-3 py-4">{instructor.id}</td>
                             </tr>
                         ))}
