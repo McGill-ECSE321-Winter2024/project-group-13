@@ -11,7 +11,7 @@ import {
 import { ArrowTopRightOnSquareIcon, BanknotesIcon, BellIcon, LinkIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import User from '../services/user'
 import httpClient from '../services/http'
-import { Invoice } from '../helpers/types'
+import { CourseDTO, Invoice } from '../helpers/types'
 
 const navigation = [
   { name: 'Home', href: '#' },
@@ -71,11 +71,27 @@ export default function Example() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [customers, setCustomers] = useState([]);
   const [stats, setStats] = useState([]);
+  const [courses, setCourses] = useState<CourseDTO[]>([]);
 
   useEffect(() => {
+    if(User().personType === "Instructor") window.location.href = '/courses';
+    if(User().personType === "Customer") httpClient('/courses')
+        .then(async (res) => {
+            const registrations = await httpClient('/registrations');
+            const courses = res.data.filter(course => course.courseState === 'Approved' && !registrations.data.some(reg => reg.course.id === course.id));
+
+            // randomly select 5 courses from the lsiot
+            const selectedCourses = courses.sort(() => Math.random() - Math.random()).slice(0, 5);
+            setCourses(selectedCourses);
+
+
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     httpClient('/invoices').then(async (response) => {
         // await new Promise(r => setTimeout(r, 1000));
-        console.log(response.data);
+        console.log(response.data); 
         setInvoices(response.data);
         let revenue = 0
         let pendingPayments = 0
@@ -88,7 +104,8 @@ export default function Example() {
             revenue += invoice.amount;
         });
         console.log(revenue, pendingPayments);
-        const cus = await httpClient('/customers');
+        try {
+            const cus = await httpClient('/customers');
         
         const numberOfCustomers = cus.data.length;
         const coursesCount = await httpClient('/courses')
@@ -101,6 +118,9 @@ export default function Example() {
         ];
         setStats(stats);
         setStats(stats);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
             
     }
     )
@@ -153,6 +173,72 @@ export default function Example() {
             />
           </div>
         </div>
+
+        {courses.length ? <div>
+       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
+        <div className="sm:flex sm:items-center">
+          <div className="sm:flex-auto">
+            <h1 className="text-base font-semibold leading-6 text-gray-900">New courses</h1>
+            <p className="mt-2 text-sm text-gray-700">
+              Here is a list of courses you might be interested in
+            </p>
+          </div>
+          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <a
+                href="/courses"
+              type="button"
+              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              View all courses
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 flow-root overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <table className="w-full text-left">
+            <thead className="bg-white">
+              <tr>
+                <th scope="col" className="relative isolate py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
+                  Name
+                  <div className="absolute inset-y-0 right-full -z-10 w-screen border-b border-b-gray-200" />
+                  <div className="absolute inset-y-0 left-0 -z-10 w-screen border-b border-b-gray-200" />
+                </th>
+                <th
+                  scope="col"
+                  className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+                >
+                  Description
+                </th>
+                <th
+                  scope="col"
+                  className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 md:table-cell"
+                >
+                  Level
+                </th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  Pricing
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((person) => (
+                <tr key={person.id}>
+                  <td className="relative py-4 pr-3 text-sm font-medium text-gray-900">
+                    {person.name}
+                    <div className="absolute bottom-0 right-full h-px w-screen bg-gray-100" />
+                    <div className="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
+                  </td>
+                  <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">{person.description}</td>
+                  <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">{person.level}</td>
+                  <td className="px-3 py-4 text-sm text-gray-500">${person.hourlyRateAmount.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> : null}
 
         <div className="space-y-16 py-16 xl:space-y-20">
           {/* Recent activity table */}

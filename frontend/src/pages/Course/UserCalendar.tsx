@@ -6,7 +6,7 @@ import User from '../../services/user';
 import { CourseDTO, Schedule, RegistrationDTO } from '../../helpers/types';
 import moment from "moment";
 import {set} from "lodash"; // Assume these are your type definitions
-
+import timeGridPlugin from '@fullcalendar/timegrid'
 export default function UserCalendar() {
     const [courses, setCourses] = useState<CourseDTO[]>([]);
     const [events, setEvents] = useState([]);
@@ -26,6 +26,32 @@ export default function UserCalendar() {
         var c = (i & 0x00FFFFFF).toString(16).toUpperCase();
         return "00000".substring(0, 6 - c.length) + c;
     }
+
+    const getEvents = (course: CourseDTO, schedule: any) => {
+        if (!course || !schedule) return [];
+        let events = [];
+        const startDate = moment(course.courseStartDate);
+        const endDate = moment(course.courseEndDate);
+    
+        while (startDate.isBefore(endDate) || startDate.isSame(endDate, "day")) {
+          const dayOfWeek = startDate.format("dddd").toLowerCase(); // 'monday', 'tuesday', etc.
+          const startKey = `${dayOfWeek}Start` as keyof Schedule;
+          const endKey = `${dayOfWeek}End` as keyof Schedule;
+          const sessionStart = schedule[startKey];
+          const sessionEnd = schedule[endKey];
+    
+          if (sessionStart && sessionEnd) {
+            events.push({
+              title: `${course.name} Session`,
+              start: startDate.format("YYYY-MM-DD") + "T" + sessionStart,
+              end: startDate.format("YYYY-MM-DD") + "T" + sessionEnd,
+              allDay: false,
+            });
+          }
+          startDate.add(1, "days");
+        }
+        return events;
+      };
 
     useEffect(() => {
         async function fetchCoursesAndSchedules() {
@@ -75,27 +101,30 @@ export default function UserCalendar() {
     }, [courses]);
 
     function generateEventsForCourse(course, schedule, color) {
-        let events = [];
-        for (const day in schedule) {
-            if (schedule[day]) {
-                const sessionStart = schedule[day].start;
-                const sessionEnd = schedule[day].end;
-                const dayOfWeek = day.toLowerCase(); // e.g., "monday"
-                let currentDate = moment(course.courseStartDate);
-                while (currentDate.isSameOrBefore(course.courseEndDate)) {
-                    if (currentDate.format('dddd').toLowerCase() === dayOfWeek) {
-                        events.push({
-                            title: course.name,
-                            start: currentDate.format('YYYY-MM-DD') + 'T' + sessionStart,
-                            end: currentDate.format('YYYY-MM-DD') + 'T' + sessionEnd,
-                            allDay: false,
-                            color: color
-                        });
-                    }
-                    currentDate.add(1, 'days');
-                }
+        if (!course || !schedule) return [];
+            let events = [];
+            const startDate = moment(course.courseStartDate);
+            const endDate = moment(course.courseEndDate);
+
+            while (startDate.isBefore(endDate) || startDate.isSame(endDate, "day")) {
+            const dayOfWeek = startDate.format("dddd").toLowerCase(); // 'monday', 'tuesday', etc.
+            const startKey = `${dayOfWeek}Start` as keyof Schedule;
+            const endKey = `${dayOfWeek}End` as keyof Schedule;
+            const sessionStart = schedule[startKey];
+            const sessionEnd = schedule[endKey];
+
+            if (sessionStart && sessionEnd) {
+                events.push({
+                title: `${course.name} Session`,
+                start: startDate.format("YYYY-MM-DD") + "T" + sessionStart,
+                end: startDate.format("YYYY-MM-DD") + "T" + sessionEnd,
+                allDay: false,                            color: color
+
+
+                });
             }
-        }
+            startDate.add(1, "days");
+            }
         return events;
     }
 
@@ -105,16 +134,16 @@ export default function UserCalendar() {
                 fontSize: 20,
                 marginBottom: 20
             }}>
-                {(user.personType === 'Customer' || user.personType === 'Instructor') ? 'My Courses' : 'Course Schedule'}</h2>
+                {(user.personType === 'Customer' || user.personType === 'Instructor') ? 'My Courses Sessions' : 'Course Schedule'}</h2>
             <FullCalendar
-                plugins={[dayGridPlugin]}
+                plugins={[dayGridPlugin, timeGridPlugin]}
                 initialView="dayGridMonth"
                 events={events}
                 timeZone="local"
                 headerToolbar={{
                     left: "prev,next today",
                     center: "title",
-                    right: "dayGridMonth,dayGridWeek",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay",
                 }}
                 buttonText={{
                     today: "Today",

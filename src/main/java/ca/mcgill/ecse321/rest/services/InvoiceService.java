@@ -1,10 +1,12 @@
 package ca.mcgill.ecse321.rest.services;
 
+import ca.mcgill.ecse321.rest.dao.PersonRepository;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.InvoiceRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.dto.InvoiceDTO;
 import ca.mcgill.ecse321.rest.models.Invoice;
+import ca.mcgill.ecse321.rest.models.Person;
 import ca.mcgill.ecse321.rest.models.Registration;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -31,6 +33,9 @@ public class InvoiceService {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private PersonRepository personRepository;
 
     public List<InvoiceDTO> getAllInvoices(PersonSession personSession){
         List<InvoiceDTO> invoices = new ArrayList<>();
@@ -128,6 +133,10 @@ public class InvoiceService {
         }
         invoice.setStatus(Invoice.Status.valueOf(status));
         invoiceRepository.save(invoice);
+        Person person = personRepository.findPersonById(invoice.getRegistration().getCustomer().getId());
+        // make sure it has double digits in cents xxx.xx
+        String amount = String.format("%.2f", invoice.getAmount());
+        TwilioService.sendSms(person.getPhoneNumber(), "Hello " + person.getName() + ", your invoice of amount $" + amount + " has been paid successfully");
         return true;
     }
 

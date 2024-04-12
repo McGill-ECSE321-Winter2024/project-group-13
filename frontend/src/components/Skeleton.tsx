@@ -31,11 +31,11 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import User from '../services/user'
 
 const navigation = [
-    { name: 'Dashboard', href: '/', icon: HomeIcon, current: window.location.pathname === '/' },
-    { name: 'People', href: '/people', icon: UsersIcon, current: window.location.pathname === '/people' },
-    { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: window.location.pathname === '/courses' },
-    { name: 'Calendar', href: '/mycalendar', icon: CalendarIcon, current: window.location.pathname === '/mycalendar' },
-    { name: 'Invoices', href: '/invoices', icon: ChartPieIcon, current: window.location.pathname === '/invoices' },
+    { name: 'Dashboard', href: '/', icon: HomeIcon, current: window.location.pathname === '/', people: ["Customer", "Owner"] },
+    { name: 'People', href: '/people', icon: UsersIcon, current: window.location.pathname === '/people', people: ["Owner"] },
+    { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: window.location.pathname === '/courses', people: ["Customer", "Owner", "Instructor"] },
+    { name: 'Calendar', href: '/mycalendar', icon: CalendarIcon, current: window.location.pathname === '/mycalendar', people: ["Customer", "Owner", "Instructor"] },
+    { name: 'Invoices', href: '/invoices', icon: ChartPieIcon, current: window.location.pathname === '/invoices', people: ["Customer", "Owner"] },
 ]
 const teams = [
     // { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
@@ -117,7 +117,9 @@ export default function Skeleton({
                                             <ul role="list" className="flex flex-1 flex-col gap-y-7">
                                                 <li>
                                                     <ul role="list" className="-mx-2 space-y-1">
-                                                        {navigation.map((item) => (
+                                                        {navigation
+                                                        .filter(item => item.people.includes(User().personType))
+                                                        .map((item) => (
                                                             <li key={item.name}>
                                                                 <a
                                                                     href={item.href}
@@ -191,7 +193,9 @@ export default function Skeleton({
                             <ul role="list" className="flex flex-1 flex-col gap-y-7">
                                 <li>
                                     <ul role="list" className="-mx-2 space-y-1">
-                                        {navigation.map((item) => (
+                                        {navigation
+                                        .filter(item => item.people.includes(User().personType))
+                                        .map((item) => (
                                             <li key={item.name}>
                                                 <a
                                                     href={item.href}

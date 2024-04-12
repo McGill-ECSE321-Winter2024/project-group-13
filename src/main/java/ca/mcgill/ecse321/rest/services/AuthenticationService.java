@@ -9,6 +9,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ca.mcgill.ecse321.rest.services.TwilioService;
 
 import java.util.Date;
 
@@ -128,6 +129,7 @@ public class AuthenticationService {
             customer.setPhoneNumber(phoneNumber);
             customer.setSportCenter(sportCenterRepository.findSportCenterByIdNotNull());
             personRepository.save(customer);
+            TwilioService.sendSms(phoneNumber, "Hello " + name + ", you have been registered successfully");
             return this.issueToken(email);
         } catch (Exception e){
             throw new IllegalArgumentException(e.getMessage());

@@ -61,6 +61,8 @@ public class CourseRegistrationService {
         invoiceRepository.save(invoice);
 
 
+        TwilioService.sendSms(customer.getPhoneNumber(), "Hello " + customer.getName() + ". You have successfully registered for the course " + course.getName() + "!");
+
         return "Successfully registered for the course.";
     }
 }
