@@ -30,9 +30,11 @@ import { set } from "lodash";
 
 
 export default function CreateCourseModal({
+    hide=false,
     courseId,
     setCourseId,
 }: {
+    hide?: boolean;
     courseId?: string;
     setCourseId: (id: string) => void;
 }) {
@@ -202,7 +204,7 @@ export default function CreateCourseModal({
 
   return (
     <React.Fragment>
-      <button
+      {!hide ? <button
         type="button"
         onClick={() => {
             setCourseId(null);
@@ -211,10 +213,10 @@ export default function CreateCourseModal({
         className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
       >
         Add new course
-      </button>
+      </button> : null}
       <SuccessModal
         action={() => (window.location.href = "/courses")}
-        message="Course created successfully"
+        message={courseId ? "Course updated successfully" : "Course created successfully"}
         open={SuccessModalOpen}
         setOpen={setSuccessModalOpen}
       />

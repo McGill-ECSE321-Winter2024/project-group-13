@@ -152,7 +152,7 @@ const CourseTable = ({
     </svg>
   );
 
-  return (
+  return sortedCourses?.length ? (
     <div>
       <div className="-mx-4 mt-10 ring-1 ring-gray-300 sm:mx-0 sm:rounded-lg ">
         <table className="divide-y divide-gray-300 table-auto">
@@ -160,7 +160,6 @@ const CourseTable = ({
             <tr>
               {[
                 "name",
-                "description",
                 "status",
                 "level",
                 "start Date",
@@ -191,17 +190,6 @@ const CourseTable = ({
                   onClick={() => onCourseSelect(course.id)}
                 >
                   {course.name}
-                </td>
-                <td
-                  className={classNames(
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
-                  )}
-                  onClick={() => onCourseSelect(course.id)}
-                >
-                    {
-                        // Truncate description to 100 characters
-                    }
-                  {_.truncate(course.description, { length: 40 })}
                 </td>
                 <td
                   className={classNames(
@@ -326,7 +314,9 @@ const CourseTable = ({
         </table>
       </div>
     </div>
-  );
+  ): <div className="text-center mt-10">
+  <p className="text-gray-500">No courses found.</p>
+</div>
 };
 
 export default CourseTable;
