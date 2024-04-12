@@ -185,7 +185,7 @@ const CourseTable = ({
               <tr key={course.id} className="hover:bg-gray-100">
                 <td
                   className={classNames(
-                    "hidden px-2 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    " px-2 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -194,7 +194,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   
                 >
@@ -244,7 +244,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -254,7 +254,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-0 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-0 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -263,7 +263,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-0 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-0 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -272,7 +272,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -281,7 +281,7 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >
@@ -291,14 +291,14 @@ const CourseTable = ({
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                   onClick={() => onCourseSelect(course.id)}
                 >{`$${course?.hourlyRateAmount?.toFixed(2)}`}</td>
                 <td
                   className={classNames(
                     "",
-                    "hidden px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
+                    "px-3 py-3.5 text-sm text-gray-500 lg:table-cell"
                   )}
                 >
                   <button

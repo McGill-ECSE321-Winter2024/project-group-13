@@ -38,22 +38,30 @@ const People = () => {
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 pt-5">
+            <div className='flex justify-between'>
+                <h1 className='text-2xl font-semibold text-gray-900'>
+                    People
+                </h1>
+                <h5>
+                </h5>
             <div className="flex justify-end">
                 <CreateInstructorModal hide={!showModal} setInstructorId={() => {}} />
             </div>
+            </div>
             <br/>
-
+                
             <div className="flex">
 
                 <div className="flex-1 min-w-0 mr-2 ring-1 ring-gray-300 rounded-lg">
-                    <h2 className="text-lg font-semibold leading-6 text-gray-900 pl-4 py-2">Customers</h2>
+                                        <h2 className="text-lg font-semibold leading-6 text-gray-900 pl-4 py-2">Customers</h2>
+
                     <table className="min-w-full divide-y divide-gray-300">
                         <thead>
                         <tr>
                             <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Email</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Phone #</th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th>
+                            {/* <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th> */}
 
                         </tr>
                         </thead>
@@ -63,7 +71,7 @@ const People = () => {
                                 <td className="px-3 py-4">{customer.name}</td>
                                 <td className="px-3 py-4">{customer.email}</td>
                                 <td className="px-3 py-4">{customer.phoneNumber}</td>
-                                <td className="px-3 py-4">{customer.id}</td>
+                                {/* <td className="px-3 py-4">{customer.id}</td> */}
 
                             </tr>
                         ))}
@@ -80,7 +88,7 @@ const People = () => {
                             <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Email</th>
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">Phone #</th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th>
+                            {/* <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell">ID</th> */}
                         </tr>
                         </thead>
                         <tbody>
@@ -90,7 +98,7 @@ const People = () => {
                                 <td className="px-3 py-4">{instructor.name}</td>
                                 <td className="px-3 py-4">{instructor.email}</td>
                                 <td className="px-3 py-4">{instructor.phoneNumber}</td>
-                                <td className="px-3 py-4">{instructor.id}</td>
+                                {/* <td className="px-3 py-4">{instructor.id}</td> */}
                             </tr>
                         ))}
                         </tbody>

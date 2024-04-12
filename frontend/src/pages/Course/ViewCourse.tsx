@@ -6,10 +6,11 @@ import CourseStatusBadge from "../../components/Course/CourseStatusBadge";
 import moment from "moment";
 import User from "../../services/user";
 import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from "@fullcalendar/daygrid";
-// import "./FullCalendarStyles.css";
 import { CourseState } from "../../helpers/enums"; // Adjust the path as necessary
 import CreateCourseModal from "../../components/Course/CreateCourseModal";
+
 
 interface ViewCourseProps {
   courseId: string; // Adjust if needed based on how you're passing props
@@ -233,7 +234,7 @@ export default function ViewCourse() {
 
                   </h3>
                 </div>
-                <div className="ml-4 mt-2  gap-5">
+                <div className="ml-4 mt-2  gap-5 align-top">
                   <button
                       style={{ marginRight: "10px" }}
                     className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -293,7 +294,8 @@ export default function ViewCourse() {
               borderStyle: 'solid',
               padding: 20,
               paddingTop: 15,
-              borderRadius: 10
+              borderRadius: 10,
+              marginRight: 20
             }}>
               <h2
                   className="text-base font-semibold leading-7 " style={{fontSize: 20, marginBottom: 20}}
@@ -334,8 +336,8 @@ export default function ViewCourse() {
             </h2>
           {viewMode === "calendar" ? (
             <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
+              plugins={[dayGridPlugin, timeGridPlugin]}
+              initialView="timeGridWeek"
               events={getEvents()}
               timeZone="local"
               headerToolbar={{
