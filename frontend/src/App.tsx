@@ -9,6 +9,7 @@ import CreateCourseModal from "./pages/Course/CreateCourse";
 import Settings from "./pages/Settings";
 import ViewCourse from "./pages/Course/ViewCourse";
 import Invoices from "./pages/Invoice/Invoices";
+import People from "./pages/People/People";
 
 const router = createBrowserRouter([
     {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
     {
         path: "/settings",
         element: <Skeleton><Settings/></Skeleton>,
+    },
+    {
+        path: "/people",
+        element: <Skeleton><People/></Skeleton>,
     }
 ]);
 
