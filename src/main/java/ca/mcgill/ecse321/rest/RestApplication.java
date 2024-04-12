@@ -2,8 +2,6 @@
 package ca.mcgill.ecse321.rest;
 
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.models.Owner;
-import ca.mcgill.ecse321.rest.models.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

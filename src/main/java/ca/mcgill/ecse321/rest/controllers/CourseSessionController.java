@@ -36,14 +36,16 @@ public class CourseSessionController {
     public ResponseEntity<HTTPDTO> createCourseSession(@RequestBody(required = false)String course_id,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
-        String errorMessage;
+        String errorMessage = "";
         if(!person.getPersonType().equals(PersonSession.PersonType.Owner)){
             errorMessage="Must be an owner";
         }
         if (!person.getSportCenterId().equals(courseDTO.getSportCenter())){
             errorMessage="Session must belong to the same sports center errorMessage";
         }
-        errorMessage= courseSessionService.createCourseSession(course_id,person);
+        if (errorMessage.isEmpty()){
+            errorMessage= courseSessionService.createCourseSession(course_id,person);
+        }
         return getResponse(errorMessage,"Course session created successfully");
     }
 
