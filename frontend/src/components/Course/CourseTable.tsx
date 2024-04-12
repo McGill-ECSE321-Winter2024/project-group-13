@@ -155,7 +155,7 @@ const CourseTable = ({
   return sortedCourses?.length ? (
     <div>
       <div className="-mx-4 mt-10 ring-1 ring-gray-300 sm:mx-0 sm:rounded-lg ">
-        <table className="divide-y divide-gray-300 table-auto">
+        <table className="w-full divide-y divide-gray-300 table-auto">
           <thead>
             <tr>
               {[
