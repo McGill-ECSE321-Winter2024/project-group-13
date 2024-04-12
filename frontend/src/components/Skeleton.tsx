@@ -34,7 +34,7 @@ const navigation = [
     { name: 'Dashboard', href: '/', icon: HomeIcon, current: window.location.pathname === '/' },
     { name: 'People', href: '/people', icon: UsersIcon, current: window.location.pathname === '/people' },
     { name: 'Courses', href: '/courses', icon: RectangleStackIcon, current: window.location.pathname === '/courses' },
-    { name: 'Calendar', href: '#', icon: CalendarIcon, current: window.location.pathname === '/calendar' },
+    { name: 'Calendar', href: '/mycalendar', icon: CalendarIcon, current: window.location.pathname === '/mycalendar' },
     { name: 'Invoices', href: '/invoices', icon: ChartPieIcon, current: window.location.pathname === '/invoices' },
 ]
 const teams = [

@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import ViewCourse from "./pages/Course/ViewCourse";
 import Invoices from "./pages/Invoice/Invoices";
 import People from "./pages/People/People";
+import UserCalendar from "./pages/Course/UserCalendar"; // Import the UserSchedule component
 
 const router = createBrowserRouter([
     {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
     {
         path: "/people",
         element: <Skeleton><People/></Skeleton>,
+    },
+    {
+        path: "/mycalendar",
+        element: <Skeleton><UserCalendar/></Skeleton>,
     }
 ]);
 

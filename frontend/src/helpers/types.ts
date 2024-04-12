@@ -65,5 +65,20 @@ export type Invoice = {
         id: string;
         name: string;
     };
-
 }
+
+export type RegistrationDTO = {
+    customer: CustomerDTO;
+    course: CourseDTO;
+    rating?: number;
+    id: string;
+};
+
+export type PersonDTO = {
+    id: string;
+    name: string;
+};
+
+export type CustomerDTO = PersonDTO & {
+    sportCenterId: string;
+};
