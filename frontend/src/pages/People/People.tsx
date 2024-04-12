@@ -86,6 +86,7 @@ const People = () => {
                         <tbody>
                         {instructors.map((instructor) => (
                             <tr key={instructor.id}>
+
                                 <td className="px-3 py-4">{instructor.name}</td>
                                 <td className="px-3 py-4">{instructor.email}</td>
                                 <td className="px-3 py-4">{instructor.phoneNumber}</td>
