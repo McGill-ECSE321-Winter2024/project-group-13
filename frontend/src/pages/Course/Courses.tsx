@@ -27,6 +27,12 @@ export default function Courses() {
     navigate(`/courses/${courseId}`);
   };
 
+      /**
+     * Fetches a list of courses from the server.
+     * Uses the httpClient to make a GET request to the "/courses" endpoint.
+     * If the request is successful, sets the fetched courses using the setCourses function.
+     * If there is an error, logs the error to the console.
+     */
   const fetchCourses = () => {
     httpClient("/courses", "GET")
       .then((res) => {
@@ -37,6 +43,12 @@ export default function Courses() {
       });
   };
 
+  /**
+ * Fetches a list of instructors from the server.
+ * Uses the httpClient to make a GET request to the "/instructors" endpoint.
+ * If the request is successful, sets the fetched instructors using the setInstructors function.
+ * If there is an error, logs the error to the console.
+ */
   const fetchInstructors = () => {
     httpClient("/instructors", "GET")
       .then((res) => {
@@ -47,6 +59,12 @@ export default function Courses() {
       });
   };
 
+  /**
+ * Fetches a list of rooms from the server.
+ * Uses the httpClient to make a GET request to the "/rooms" endpoint.
+ * If the request is successful, sets the fetched rooms using the setRooms function.
+ * If there is an error, logs the error to the console.
+ */
   const fetchRooms = () => {
     httpClient("/rooms", "GET")
       .then((res) => {
@@ -57,18 +75,41 @@ export default function Courses() {
       });
   };
 
+  /**
+ * Sets the selected course ID for editing.
+ * Clears the previously selected course ID, waits for the modal to close,
+ * and then sets the new course ID as the selected one for editing.
+ *
+ * @param courseId The ID of the course to be edited.
+ */
   const courseEdit = async (courseId: string) => {
     setSelectedCourseId(null);
     await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for the modal to close
     setSelectedCourseId(courseId);
   };
 
+  /**
+ * Runs once when the component mounts.
+ * Fetches a list of courses, instructors, and rooms from the server using the corresponding fetch methods.
+ */
   useEffect(() => {
     fetchCourses();
     fetchInstructors();
     fetchRooms(); // Fetch rooms on component mount
   }, []);
 
+  /**
+ * Filters the list of courses based on selected filters.
+ * Filters the courses by instructor, name, level, and state.
+ * Returns a new array of courses that match the selected filters.
+ *
+ * @param courses The array of courses to filter.
+ * @param selectedInstructorId The ID of the selected instructor to filter by.
+ * @param courseNameFilter The name filter to apply.
+ * @param selectedCourseLevel The selected course level to filter by.
+ * @param selectedCourseState The selected course state to filter by.
+ * @returns A new array of courses that match the selected filters.
+ */
   const filteredCourses = courses.filter((course) => {
     const filterByInstructor =
       !selectedInstructorId || course.instructor === selectedInstructorId;
@@ -82,6 +123,16 @@ export default function Courses() {
     return filterByInstructor && filterByName && filterByLevel && filterByState;
   });
 
+  /**
+ * Enhances the filtered list of courses with room names.
+ * Maps over the filtered courses array and adds the corresponding room name to each course.
+ * If the room is not found, sets the room name to "Room not found".
+ * Returns a new array of courses with enhanced room information.
+ *
+ * @param filteredCourses The array of filtered courses to enhance.
+ * @param rooms The array of rooms to match with course rooms.
+ * @returns A new array of courses with enhanced room information.
+ */
   const enhancedCourses = filteredCourses.map((course) => ({
     ...course,
     room:
