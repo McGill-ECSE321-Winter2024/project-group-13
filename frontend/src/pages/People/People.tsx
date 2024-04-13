@@ -3,6 +3,13 @@ import httpClient from '../../services/http';
 import User from "../../services/user";
 import CreateInstructorModal from "../../components/People/CreateInstructorModal";
 const People = () => {
+
+    /**
+ * State variables for customers, instructors, and modal visibility.
+ * - customers: Array of customer data.
+ * - instructors: Array of instructor data.
+ * - showModal: Boolean indicating whether the modal is currently visible.
+ */
     const [customers, setCustomers] = useState([]);
     const [instructors, setInstructors] = useState([]);
     const [showModal, setShowModal] = useState(true);
@@ -27,11 +34,16 @@ const People = () => {
                 console.log('Error fetching instructors:', err);
             });
     }, []);
-
+    /**
+     * Shows the modal when the "Add Instructor" button is clicked.
+     */
     const handleAddInstructor = () => {
         setShowModal(true); // Show the modal when the button is clicked
     };
 
+    /**
+ * Hides the modal when the close button is clicked.
+ */
     const handleCloseModal = () => {
         setShowModal(false); // Hide the modal
     };
