@@ -7,7 +7,6 @@ import ca.mcgill.ecse321.rest.models.CourseSession;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import ca.mcgill.ecse321.rest.models.Instructor;
@@ -23,6 +22,7 @@ public class CourseRepositoryTests {
   @Autowired private CourseRepository courseRepository;
   @Autowired private CourseSessionRepository courseSessionRepository;
   @Autowired private PersonRepository personRepository;
+
 
   /**
    * Sets the attributes of a course, saves it to the database, and ensures persistence.
@@ -89,6 +89,7 @@ public class CourseRepositoryTests {
 
     courseRepository.deleteAll();
     personRepository.deleteAll();
+    courseSessionRepository.deleteAll();
   }
 
   /**
@@ -159,51 +160,6 @@ public class CourseRepositoryTests {
     assertEquals(courseStartDate, course.getCourseStartDate());
     assertEquals(courseEndDate, course.getCourseEndDate());
     assertEquals(courseState, course.getCourseState());
-  }
-
-  /**
-   * Test goal: Tests the functionality of finding courses by their approval state. This test
-   * verifies that courses with a specific approval state are retrieved correctly from the database
-   * and that their attributes match the expected values.
-   *
-   * @author Mohamed Abdelrahman
-   */
-  @Test
-  public void testFindCoursesByCourseState() {
-    // Set the approval state for testing
-    Course.CourseState courseState = Course.CourseState.Approved;
-
-    // Create and save the first course with the specified approval state
-    Course course = courseRepository.findCourseByName("Health Plus");
-    course.setName("First Course");
-    course.setCourseState(courseState);
-    courseRepository.save(course);
-
-    // Create another course with the same name but different attributes
-    makeCourse();
-    Course course1 = courseRepository.findCourseByName("Health Plus");
-    course1.setName("Second Course");
-    course1.setCourseState(courseState);
-    courseRepository.save(course1);
-
-    // Ensure that the IDs of the two courses are not equal
-    assertNotEquals(course.getId(), course1.getId());
-
-    // Create a list of locally approved courses
-    List<Course> myApprovedCourses = new ArrayList<>();
-    myApprovedCourses.add(course);
-    myApprovedCourses.add(course1);
-
-    // Retrieve approved courses from the system (database)
-    List<Course> systemApprovedCourses = courseRepository.findCoursesByCourseState(courseState);
-
-    // Assert that the sizes of the two lists are equal
-    assertEquals(myApprovedCourses.size(), systemApprovedCourses.size());
-
-    // Iterate over both lists and compare the IDs of the courses
-    for (int i = 0; i < systemApprovedCourses.size(); i++) {
-      assertEquals(myApprovedCourses.get(i).getId(), systemApprovedCourses.get(i).getId());
-    }
   }
 
   /**

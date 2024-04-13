@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.rest.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.rest.helpers.RandomGenerator;
 import ca.mcgill.ecse321.rest.models.Customer;
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @SpringBootTest
 public class CustomerRepositoryTests {
@@ -272,29 +272,20 @@ public class CustomerRepositoryTests {
    *     email. We should detect this and not allow it.
    */
   @Test
-  public void testCustomerDuplicateEmail() {
-    // Create customer.
+  public void testDuplicateEmailThrowsException() {
+    // Assuming createCustomer() correctly sets a unique email that can be duplicated for the test
     Customer customer1 = createCustomer();
-    String email1 = customer1.getEmail();
-    String phoneNumber1 = customer1.getPhoneNumber();
+    customer1.setEmail("duplicate@example.com");
+    customerRepository.save(customer1);
 
-    customerRepository.save(customer1); // Save customer to database.
-    customer1 =
-        customerRepository.findCustomerByEmail(email1); // Get customer from database by email.
-
-    // Assert that customer is not null (i.e. customer was created and added to the database
-    // successfully)
-    assertNotNull(customer1);
-    checkAttributes(customer1, name, phoneNumber1, email1, password);
-
-    // Create second customer
+    // Attempt to create another customer with the same email
     Customer customer2 = createCustomer();
-    String email2 = customer2.getEmail();
-    customer2.setEmail(email1); // Attempt to change the email of customer2 to be that of customer1;
+    customer2.setEmail("duplicate@example.com");
 
-    assertEquals(
-        email2,
-        customer2.getEmail()); // the email should still be email2, i.e. the change was not allowed
+    // Assert that saving the second customer throws a DataIntegrityViolationException
+    assertThrows(DataIntegrityViolationException.class, () -> {
+      customerRepository.save(customer2);
+    }, "Expected DataIntegrityViolationException to be thrown due to duplicate email");
   }
 
   /**

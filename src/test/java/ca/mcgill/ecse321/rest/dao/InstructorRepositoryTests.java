@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.rest.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.rest.helpers.RandomGenerator;
 import ca.mcgill.ecse321.rest.models.Instructor;
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @SpringBootTest
 public class InstructorRepositoryTests {
@@ -274,31 +274,19 @@ public class InstructorRepositoryTests {
    */
   @Test
   public void testInstructorDuplicateEmail() {
-    // Create instructor.
+    // Create and save the first instructor
     Instructor instructor1 = createInstructor();
-    String email1 = instructor1.getEmail();
-    String phoneNumber1 = instructor1.getPhoneNumber();
+    instructor1.setEmail("unique-email@example.com"); // Set a specific email
+    instructorRepository.save(instructor1);
 
-    instructorRepository.save(instructor1); // Save instructor to database.
-    instructor1 =
-        instructorRepository.findInstructorByEmail(
-            email1); // Get instructor from database by email.
-
-    // Assert that instructor is not null (i.e. instructor was created and added to the database
-    // successfully)
-    assertNotNull(instructor1);
-    checkAttributes(instructor1, name, phoneNumber1, email1, password);
-
-    // Create second instructor
+    // Try to create a second instructor with the same email
     Instructor instructor2 = createInstructor();
-    String email2 = instructor2.getEmail();
-    instructor2.setEmail(
-        email1); // Attempt to change the email of instructor2 to be that of instructor1;
+    instructor2.setEmail("unique-email@example.com"); // Same email as the first
 
-    assertEquals(
-        email2,
-        instructor2
-            .getEmail()); // the email should still be email2, i.e. the change was not allowed
+    // Assert that an exception is thrown when trying to save the second instructor
+    assertThrows(DataIntegrityViolationException.class, () -> {
+      instructorRepository.save(instructor2);
+    }, "Expected DataIntegrityViolationException due to duplicate email");
   }
 
   /**

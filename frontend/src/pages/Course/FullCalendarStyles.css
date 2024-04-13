@@ -1,0 +1,80 @@
+/* FullCalendarCustomStyles.css */
+
+/* General calendar styles with rounded borders and shadow */
+.fc .fc-toolbar {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.12);
+}
+
+.fc .fc-daygrid-day-frame {
+    /* Day cells having rounded corners and better spacing */
+    background-color: #ffffff;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.fc .fc-daygrid-day-top {
+    /* Top area of the day cell, typically where the date number appears */
+    font-size: 16px;
+    color: #495057;
+}
+
+.fc .fc-event {
+    /* Event bubble inside day cells */
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 8px; /* rounded corners for event labels */
+    padding: 4px 8px;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.fc .fc-event:hover {
+    background-color: #0056b3;
+}
+
+.fc .fc-scrollgrid {
+    /* The main grid of the calendar */
+    border: none; /* Removes default borders */
+}
+
+.fc .fc-col-header-cell {
+    /* Column headers like "Sunday, Monday, etc." */
+    background-color: #e9ecef;
+    color: #343a40;
+    border-radius: 8px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+.fc .fc-button-primary {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.fc .fc-button-primary:not(:disabled):active {
+    background-color: #117a8b;
+    border-color: #10707f;
+}
+
+.fc .fc-button-active {
+    background-color: #117a8b;
+    border-color: #10707f;
+}
+
+.fc .fc-button {
+    /* All buttons in the calendar */
+    margin-right: 4px;
+    text-transform: uppercase;
+}

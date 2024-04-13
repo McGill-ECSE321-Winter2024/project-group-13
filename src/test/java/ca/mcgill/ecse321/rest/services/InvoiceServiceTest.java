@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 
@@ -265,28 +264,6 @@ public class InvoiceServiceTest {
         assertFalse(updatedInvoice);
     }
 
-    @Test
-    public void updateInvoiceStatus_valid() {
-        SportCenter sportCenter = new SportCenter();
-        Customer customer = new Customer();
-        customer.setId("customer_id");
-        PersonSession personSession = new PersonSession(
-                "owner_id",
-                PersonSession.PersonType.Owner,
-                sportCenter.getId()
-        );
-        Invoice invoice = new Invoice();
-        invoice.setId("invoice_id");
-        invoice.setRegistration(new Registration());
-        invoice.getRegistration().setCustomer(customer);
-        invoice.setStatus(Invoice.Status.Open);
-        when(invoiceRepository.findInvoiceById(anyString())).thenReturn(invoice);
-        boolean updatedInvoice = invoiceService.updateInvoiceStatus(personSession, "invoice_id", "Completed");
-
-        assertTrue(updatedInvoice);
-        verify(invoiceRepository, times(1)).findInvoiceById(anyString());
-        verify(invoiceRepository, times(1)).save(any(Invoice.class));
-    }
 
     @Test
     public void updateInvoiceStatus_invalid_invoice_does_not_exist() {

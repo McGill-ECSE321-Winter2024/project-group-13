@@ -32,49 +32,24 @@ public class CourseSessionController {
         // Create an error response with appropriate message
         return badRequest("Invalid input type");
     }
-    @PostMapping(value = { "/courses/{course_id}/sessions/create", "/courses/{course_id}/sessions/create/" })
-    public ResponseEntity<HTTPDTO> createSessionsPerCourse(@PathVariable String course_id,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+    @PostMapping(value = { "/sessions", "/sessions/" })
+    public ResponseEntity<HTTPDTO> createCourseSession(@RequestBody(required = false)String course_id,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
-        String errorMessage;
+        String errorMessage = "";
         if(!person.getPersonType().equals(PersonSession.PersonType.Owner)){
             errorMessage="Must be an owner";
         }
         if (!person.getSportCenterId().equals(courseDTO.getSportCenter())){
             errorMessage="Session must belong to the same sports center errorMessage";
         }
-        errorMessage= courseSessionService.createSessionsPerCourse(course_id);
+        if (errorMessage.isEmpty()){
+            errorMessage= courseSessionService.createCourseSession(course_id,person);
+        }
         return getResponse(errorMessage,"Course session created successfully");
     }
-    @PostMapping(value = { "/courses/{course_id}/sessions", "/courses/{course_id}/sessions/" })
-    public ResponseEntity<HTTPDTO> createCourseSession(@PathVariable String course_id,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
-        String errorMessage;
-        if(!person.getPersonType().equals(PersonSession.PersonType.Owner)){
-            errorMessage="Must be an owner";
-        }
-        if (!person.getSportCenterId().equals(courseDTO.getSportCenter())){
-            errorMessage="Session must belong to the same sports center errorMessage";
-        }
-        errorMessage= courseSessionService.createCourseSession(course_id,person);
-        return getResponse(errorMessage,"Course session created successfully");
-    }
-    @DeleteMapping(value = { "/courses/{course_id}/sessions", "/courses/{course_id}/sessions/" })
-    public ResponseEntity<HTTPDTO> deleteSessionsPerCourse(@PathVariable String course_id,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
-        String errorMessage;
-        if(!person.getPersonType().equals(PersonSession.PersonType.Owner)){
-            errorMessage="Must be an owner";
-        }
-        if (!person.getSportCenterId().equals(courseDTO.getSportCenter())){
-            errorMessage="Session must belong to the same sports center errorMessage";
-        }
-        errorMessage = courseSessionService.deleteSessionsPerCourse(course_id);
-        return getResponse(errorMessage,"Course session deleted");
-    }
-    @GetMapping(value = { "/sessions/{id}", "/sessions/{id}/" })
+
+    @GetMapping(value = { "/sessions/{session_id}", "/sessions/{session_id}/" })
     public ResponseEntity<?> getCourseSession(@PathVariable String session_id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             PersonSession personSession = authenticationService.verifyTokenAndGetUser(authorization);
@@ -90,7 +65,6 @@ public class CourseSessionController {
                 case Owner:
                     // For owner, show any course
                     return ResponseEntity.ok(courseSessionDTO);
-
                 case Instructor:
                     // For instructor, show all active courses + courses created by them
 
@@ -118,7 +92,7 @@ public class CourseSessionController {
             return badRequest(error.getMessage());
         }
     }
-    @PutMapping(value = { "/sessions/{id}/startTime", "/sessions/{id}/startTime/" })
+    @PutMapping(value = { "/sessions/{session_id}/startTime", "/sessions/{session_id}/startTime/" })
     public ResponseEntity<HTTPDTO> updateCourseSessionStart(@PathVariable String session_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
             , @RequestBody(required = false)String time) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
@@ -127,12 +101,12 @@ public class CourseSessionController {
             startTime=Timestamp.valueOf(time);
         }
         catch (Exception e){
-            return badRequest("Invalid start time");
+            return badRequest("Invalid start time"+e);
         }
         String errorMessage=courseSessionService.updateCourseSessionStart(session_id,startTime ,person);
         return getResponse(errorMessage,"Course session start time changed");
     }
-    @PutMapping(value = { "/sessions/{id}/endTime", "/sessions/{id}/endTime/" })
+    @PutMapping(value = { "/sessions/{session_id}/endTime", "/sessions/{session_id}/endTime/" })
     public ResponseEntity<HTTPDTO> updateCourseSessionEnd(@PathVariable String session_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization
             , @RequestBody(required = false)String time) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
@@ -144,13 +118,13 @@ public class CourseSessionController {
             return badRequest("Invalid start time");
         }
         String errorMessage=courseSessionService.updateCourseSessionEnd(session_id,endTime,person);
-        return getResponse(errorMessage,"Course session start time changed");
+        return getResponse(errorMessage,"Course session end time changed");
     }
-    @DeleteMapping(value = { "/sessions/{id}", "/sessions/{id}/" })
-    public ResponseEntity<HTTPDTO> deleteCourse(@PathVariable String session_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+    @DeleteMapping(value = { "/sessions/{session_id}", "/sessions/{session_id}/" })
+    public ResponseEntity<HTTPDTO> deleteCourseSession(@PathVariable String session_id, @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage=courseSessionService.deleteCourseSession(session_id, person);
-        return getResponse(errorMessage,"Course deleted");
+        return getResponse(errorMessage,"Course session deleted");
     }
     public ResponseEntity<HTTPDTO> getResponse(String errorMessage, String successMessage){
         if (errorMessage.isEmpty()){

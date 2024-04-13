@@ -1,25 +1,32 @@
 package ca.mcgill.ecse321.rest.controllers;
+import ca.mcgill.ecse321.rest.dto.CourseDTO;
+import ca.mcgill.ecse321.rest.dto.ScheduleDTO;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dto.http.HTTPDTO;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
+import ca.mcgill.ecse321.rest.services.CourseDetailService;
 import ca.mcgill.ecse321.rest.services.CourseService;
+import ca.mcgill.ecse321.rest.services.CourseSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.Map;
 
 import static ca.mcgill.ecse321.rest.helpers.DefaultHTTPResponse.*;
 
 @CrossOrigin(origins = "*")
 @RestController
 public class CourseController {
-    @Autowired
-    private CourseService courseService;
-    @Autowired
-    private AuthenticationService authenticationService;
+    @Autowired private CourseService courseService;
+    @Autowired private CourseSessionService courseSessionService;
+    @Autowired private CourseDetailService courseDetailService;
+    @Autowired private AuthenticationService authenticationService;
+
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<HTTPDTO> handleUnsupportedMediaType() {
         // Create an error response with appropriate message
@@ -32,6 +39,11 @@ public class CourseController {
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
         String errorMessage= courseService.createCourse(name,person);
+        if(errorMessage.startsWith("--ID: ")){
+            HTTPDTO httpDTO = new HTTPDTO();
+            httpDTO.setMessage(errorMessage.replace("--ID: ",""));
+            return new ResponseEntity<>(httpDTO, HttpStatus.OK);
+        }
         return getResponse(errorMessage,"Course Created successfully");
     }
     @PostMapping(value = { "/courses/{course_id}/approve", "/courses/{course_id}/approve/" })
@@ -47,7 +59,8 @@ public class CourseController {
             return badRequest("Requires valid name");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseName(person, course_id, name);
+        // remove all non alphanumeric characters
+        String errorMessage=courseService.updateCourseName(person, course_id, name.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course name changed");
     }
 
@@ -58,7 +71,7 @@ public class CourseController {
             return badRequest("Requires valid description");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseDescription(person, course_id, description);
+        String errorMessage=courseService.updateCourseDescription(person, course_id, description.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course description changed");
     }
     @PutMapping(value = { "/courses/{course_id}/level", "/courses/{course_id}/level/" })
@@ -68,7 +81,7 @@ public class CourseController {
             return badRequest("Requires valid level");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseLevel(person, course_id, level);
+        String errorMessage=courseService.updateCourseLevel(person, course_id, level.replaceAll("[^a-zA-Z0-9\\-\\s']", ""));
         return getResponse(errorMessage,"Course level changed");
     }
     @PutMapping(value = { "/courses/{course_id}/rate", "/courses/{course_id}/rate/" })
@@ -102,7 +115,7 @@ public class CourseController {
             return badRequest("Requires valid room id");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID);
+        String errorMessage=courseService.updateCourseRoom(person, course_id, roomID.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course room changed");
     }
     @PutMapping(value = { "/courses/{course_id}/instructor", "/courses/{course_id}/instructor/" })
@@ -112,7 +125,8 @@ public class CourseController {
             return badRequest("Requires valid instructor id");
         }
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseInstructor(person, course_id, instructorID);
+        // remove all " " chars
+        String errorMessage=courseService.updateCourseInstructor(person, course_id, instructorID.replaceAll("[^a-zA-Z0-9\\-]", ""));
         return getResponse(errorMessage,"Course instructor changed");
     }
     @PutMapping(value = { "/courses/{course_id}/schedule", "/courses/{course_id}/schedule/" })
@@ -121,8 +135,18 @@ public class CourseController {
         if (scheduleID==null || scheduleID.isEmpty()){
             return badRequest("Requires valid schedule id");
         }
+        String errorMessage;
         PersonSession person= authenticationService.verifyTokenAndGetUser(authorization);
-        String errorMessage=courseService.updateCourseSchedule(person, course_id, scheduleID);
+        CourseDTO courseDTO= new CourseDTO(courseDetailService.getSpecificCourse(course_id));
+        if(courseDTO.getId()==null){
+            errorMessage = "Course does not exist";
+        }
+        else {
+            errorMessage = courseService.updateCourseSchedule(person, course_id, scheduleID);
+            if (courseDTO.getSchedule() == null && errorMessage.isEmpty()) {
+                errorMessage = courseSessionService.createSessionsPerCourse(course_id);
+            }
+        }
         return getResponse(errorMessage,"Course schedule changed");
     }
     @DeleteMapping(value = { "/courses/{course_id}", "/courses/{course_id}/" })
@@ -145,6 +169,34 @@ public class CourseController {
             return badRequest(errorMessage);
         }
     }
+
+    @PutMapping(value = "/courses/{course_id}/update-schedule-and-sessions")
+    public ResponseEntity<HTTPDTO> addOrUpdateCourseScheduleAndSessions(@PathVariable String course_id, @RequestBody ScheduleDTO scheduleDTO,
+                                                             @RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        if (person == null) {
+            return forbidden("Authorization required");
+        }
+        String errorMessage = courseService.addOrUpdateCourseScheduleAndSessions(course_id, scheduleDTO, person);
+        if (errorMessage.isEmpty()) {
+            return success("Schedule successfully added/updated and linked to the course");
+        } else {
+            return badRequest(errorMessage);
+        }
+    }
+
+    @PutMapping(value = "/courses/{course_id}/state")
+    public ResponseEntity<HTTPDTO> updateCourseState(@PathVariable String course_id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody Map<String, String> stateMap) {
+        String newState = stateMap.get("state");
+        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
+        if (person == null || !person.getPersonType().equals(PersonSession.PersonType.Owner)) {
+            return forbidden("Only owners can modify course state.");
+        }
+        String errorMessage = courseService.updateCourseState(course_id, newState, person);
+        return getResponse(errorMessage, "Course state updated successfully");
+    }
+
+
 
 
 }

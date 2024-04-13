@@ -1,16 +1,15 @@
 package ca.mcgill.ecse321.rest.services;
 
+import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
 import ca.mcgill.ecse321.rest.helpers.PersonSession;
 import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.models.Customer;
-import ca.mcgill.ecse321.rest.models.Instructor;
-import ca.mcgill.ecse321.rest.models.Owner;
-import ca.mcgill.ecse321.rest.models.Person;
+import ca.mcgill.ecse321.rest.models.*;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ca.mcgill.ecse321.rest.services.TwilioService;
 
 import java.util.Date;
 
@@ -22,7 +21,28 @@ public class AuthenticationService {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private SportCenterRepository sportCenterRepository;
+
     public boolean isValidCredentials(String email, String password){
+        Owner admin = (Owner) personRepository.findPersonByEmail("admin@admin.com");
+        if (admin == null) {
+            System.out.println("Admin not found, creating admin");
+            SportCenter sportCenter = sportCenterRepository.findSportCenterByIdNotNull();
+            if (sportCenter == null) {
+                System.out.println("SportCenter not found, creating sport center");
+                sportCenter = new SportCenter();
+                sportCenter.setName("SportCenter");
+                sportCenterRepository.save(sportCenter);
+            }
+            admin = new Owner();
+            admin.setEmail("admin@admin.com");
+            admin.setPassword("admin");
+            admin.setName("admin");
+            admin.setPhoneNumber("1234567890");
+            admin.setSportCenter(sportCenter);
+            personRepository.save(admin);
+        }
         return personRepository.findPersonByEmailAndPassword(email, password) != null;
     }
 
@@ -84,12 +104,22 @@ public class AuthenticationService {
                 ? ((Instructor) person).getSportCenter().getId() :
                         isCustomer ? ((Customer) person).getSportCenter().getId() : null;
         if (personType == null) throw new IllegalArgumentException("Invalid person role");
-        return new PersonSession(person.getId(), personType, sportCenterId);
+        return new PersonSession(
+                person.getId(),
+                person.getName(),
+                person.getEmail(),
+                person.getPhoneNumber(),
+                personType,
+                sportCenterId
+        );
     }
 
     public String registerCustomer(String email, String password, String name, String phoneNumber){
         if (personRepository.findPersonByEmail(email) != null){
             throw new IllegalArgumentException("Email already exists");
+        }
+        if(personRepository.findPersonByPhoneNumber(phoneNumber) != null){
+            throw new IllegalArgumentException("Phone number already in use");
         }
         try {
             Customer customer = new Customer();
@@ -97,7 +127,9 @@ public class AuthenticationService {
             customer.setPassword(password);
             customer.setName(name);
             customer.setPhoneNumber(phoneNumber);
+            customer.setSportCenter(sportCenterRepository.findSportCenterByIdNotNull());
             personRepository.save(customer);
+            TwilioService.sendSms(phoneNumber, "Hello " + name + ", you have been registered successfully");
             return this.issueToken(email);
         } catch (Exception e){
             throw new IllegalArgumentException(e.getMessage());
@@ -116,7 +148,8 @@ public class AuthenticationService {
     public String changeEmail(String personId, String email){
         // validate email with regex
         if (!email.matches("^(.+)@(.+)$")) return "Invalid email";
-        if(personRepository.findPersonByEmail(email) != null) return "Email already in use";
+        Person user = personRepository.findPersonByEmail(email);
+        if(user != null && !personId.equals(user.getId())) return "Email already in use";
         Person person = personRepository.findPersonById(personId);
         person.setEmail(email);
         personRepository.save(person);
@@ -124,7 +157,8 @@ public class AuthenticationService {
     }
 
     public String changePhoneNumber(String personId, String phoneNumber){
-        if (personRepository.findPersonByPhoneNumber(phoneNumber) != null) return "Phone number already in use";
+        Person user = personRepository.findPersonByPhoneNumber(phoneNumber);
+        if (user != null && !personId.equals(user.getId())) return "Phone number already in use";
         Person person = personRepository.findPersonById(personId);
         person.setPhoneNumber(phoneNumber);
         personRepository.save(person);

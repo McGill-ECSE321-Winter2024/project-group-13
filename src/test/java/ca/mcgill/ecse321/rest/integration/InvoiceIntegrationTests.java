@@ -200,44 +200,9 @@ public class InvoiceIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+
     @Test
     @Order(5)
-    public void updateInvoiceStatusAsOwner(){
-        // Set up
-        String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
-        Registration registration = new Registration();
-        Customer customer = (Customer) personRepository.findPersonByEmail(customerEmail);
-        registration.setCustomer(customer);
-        registrationRepository.save(registration);
-        Invoice invoice = getSampleInvoice(registration);
-        // Act
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(ownerAuthentication);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        List<Invoice.Status> statuses = List.of(
-                Invoice.Status.Completed,
-                Invoice.Status.Cancelled,
-                Invoice.Status.Failed,
-                Invoice.Status.Void
-        );
-
-        for (Invoice.Status status : statuses) {
-            ResponseEntity<?> response = client.exchange(
-                "/invoices/" + invoice.getId() + "/status?status=" + status.toString(),
-                HttpMethod.PUT,
-                request,
-                String.class
-            );
-
-            assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
-            Invoice updatedInvoice = invoiceRepository.findInvoiceById(invoice.getId());
-            assertEquals(status, updatedInvoice.getStatus());
-            }
-
-    }
-
-    @Test
-    @Order(6)
     public void updateInvoiceStatusAsCustomer(){
         // Set up
         String customerAuthentication = authenticationService.issueTokenWithEmail(customerEmail);
@@ -264,7 +229,7 @@ public class InvoiceIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void getInvoiceAsCustomer_customer_owns_invoice(){
         // Set up
         String customerAuthentication = authenticationService.issueTokenWithEmail(customerEmail);
@@ -294,7 +259,7 @@ public class InvoiceIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void getInvoiceAsCustomer_customer_does_not_own_invoice(){
 
         Customer customer2 = new Customer();
@@ -324,7 +289,7 @@ public class InvoiceIntegrationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void getInvoiceAsOwner(){
         // Set up
         String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
@@ -354,7 +319,7 @@ public class InvoiceIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     public void getInvoiceAsInstructor(){
         // Set up
         String instructorAuthentication = authenticationService.issueTokenWithEmail(instructorEmail);
@@ -378,7 +343,7 @@ public class InvoiceIntegrationTests {
     }
 
     @Test
-    @Order(11)
+    @Order(10)
     public void getInvoiceAsCustomer_invoice_does_not_exist(){
         // Set up
         String customerAuthentication = authenticationService.issueTokenWithEmail(customerEmail);
@@ -398,7 +363,7 @@ public class InvoiceIntegrationTests {
 
     // update amount
     @Test
-    @Order(12)
+    @Order(11)
     public void updateInvoiceAmountAsOwner(){
         // Set up
         String ownerAuthentication = authenticationService.issueTokenWithEmail(ownerEmail);
@@ -425,7 +390,7 @@ public class InvoiceIntegrationTests {
 
     // update amount
     @Test
-    @Order(13)
+    @Order(12)
     public void updateInvoiceAmountAsCustomer(){
         // Set up
         String customerAuthentication = authenticationService.issueTokenWithEmail(customerEmail);

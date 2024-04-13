@@ -26,11 +26,20 @@ public class AuthenticationController {
         String email = body.getEmail();
         String password = body.getPassword();
         if (!authenticationService.isValidCredentials(email, password))
-            return DefaultHTTPResponse.unauthorized("Invalid credentials");
+            return DefaultHTTPResponse.unauthorized("Invalid credentials. Please change them");
         String session = authenticationService.issueTokenWithEmail(email);
+        PersonSession person = authenticationService.verifyTokenAndGetUser("Bearer "+session);
         System.out.println(session);
 
-        return new ResponseEntity<>(new SessionDTO(session), HttpStatus.OK);
+        return new ResponseEntity<>(new SessionDTO(
+                session,
+                person.getPersonId(),
+                person.getPersonType().toString(),
+                person.getPersonName(),
+                person.getPersonEmail(),
+                person.getPersonPhoneNumber(),
+                person.getSportCenterId()
+        ), HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/auth/verify", "/auth/verify/"}, method = RequestMethod.POST)
@@ -38,14 +47,12 @@ public class AuthenticationController {
     public ResponseEntity<?> verify(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization) {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.unauthorized();
-        return new ResponseEntity<>(new SessionDTO(person.getPersonId()), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultHTTPResponse.success("valid session"), HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/auth/register/customer", "/auth/register/customer/"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> registerCustomer(@RequestHeader (HttpHeaders.AUTHORIZATION) String authorization, @RequestBody RegisterDTO body) {
-        PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
-        if(person.getPersonType() != PersonSession.PersonType.Owner) return DefaultHTTPResponse.forbidden("Only owners can register customers");
         try {
             authenticationService.registerCustomer(
                     body.getEmail(),
@@ -66,7 +73,7 @@ public class AuthenticationController {
         PersonSession person = authenticationService.verifyTokenAndGetUser(authorization);
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         authenticationService.changePassword(person.getPersonId(), body.getPassword());
-        return new ResponseEntity<>(new SessionDTO("Password changed"), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultHTTPResponse.success("Password changed"), HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/auth/email", "/auth/email/"}, method = RequestMethod.PUT)
@@ -76,7 +83,7 @@ public class AuthenticationController {
         if (person.getPersonId() == null) return DefaultHTTPResponse.badRequest();
         String error = authenticationService.changeEmail(person.getPersonId(), body.get("email"));
         if (error != null) return DefaultHTTPResponse.badRequest(error);
-        return new ResponseEntity<>(new SessionDTO("Email changed"), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultHTTPResponse.success("Email changed"), HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/auth/phoneNumber", "/auth/phoneNumber/"}, method = RequestMethod.PUT)
@@ -87,7 +94,7 @@ public class AuthenticationController {
         String error = authenticationService.changePhoneNumber(person.getPersonId(), body.get("phoneNumber"));
 
         if (error != null) return DefaultHTTPResponse.badRequest(error);
-        return new ResponseEntity<>(new SessionDTO("Phone number changed"), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultHTTPResponse.success("Phone number changed"), HttpStatus.OK);
     }
 
 

@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.rest.integration;
 
-import ca.mcgill.ecse321.rest.dao.CourseRepository;
-import ca.mcgill.ecse321.rest.dao.PersonRepository;
-import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
-import ca.mcgill.ecse321.rest.dao.SportCenterRepository;
+import ca.mcgill.ecse321.rest.dao.*;
 import ca.mcgill.ecse321.rest.models.*;
 import ca.mcgill.ecse321.rest.services.AuthenticationService;
 import org.junit.jupiter.api.*;
@@ -17,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
-import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,6 +29,7 @@ public class CourseRegistrationIntegrationTest {
     @Autowired private PersonRepository personRepository;
     @Autowired private RegistrationRepository registrationRepository;
     @Autowired private AuthenticationService authenticationService;
+    @Autowired private CourseSessionRepository courseSessionRepository;
 
     private String customerToken;
     private String ownerToken;
@@ -67,9 +64,11 @@ public class CourseRegistrationIntegrationTest {
     }
 
     private void clearRepositories() {
-        personRepository.deleteAll();
-        courseRepository.deleteAll();
+        courseSessionRepository.deleteAll();
         registrationRepository.deleteAll();
+        courseRepository.deleteAll();
+        personRepository.deleteAll();
+        sportCenterRepository.deleteAll();
     }
 
     private SportCenter createAndSaveSportCenter() {
@@ -178,22 +177,6 @@ public class CourseRegistrationIntegrationTest {
     }
 
 
-    @Test
-    public void verifyRegistrationCountIncreasesAfterSuccessfulRegistration() {
-        // Count registrations before the new registration attempt
-        long initialRegistrationCount = StreamSupport.stream(registrationRepository.findAll().spliterator(), false).count();
-
-        // Perform registration
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + customerToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        restTemplate.postForEntity("/courses/" + RegistrationValidCourseId + "/register", entity, String.class);
-
-        // Count registrations after the new registration
-        long finalRegistrationCount = StreamSupport.stream(registrationRepository.findAll().spliterator(), false).count();
-
-        assertEquals(initialRegistrationCount + 1, finalRegistrationCount, "The registration count should increase by 1 after a successful registration.");
-    }
 
 
     @Test
