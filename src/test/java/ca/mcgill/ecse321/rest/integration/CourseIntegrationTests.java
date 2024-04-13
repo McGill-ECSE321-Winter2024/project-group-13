@@ -35,9 +35,9 @@ public class CourseIntegrationTests {
     @Autowired private CourseSessionRepository courseSessionRepository;
 
     private final String sportCenterName="HealthPlus1";
-    private final String ownerEmail="owner123456@gmail.com";
-    private final String instructorEmail="instructor123456@gmail.com";
-    private final String customerEmail="customer123456@gmail.com";
+    private final String ownerEmail="owner1234@gmail.com";
+    private final String instructorEmail="instructor1234567@gmail.com";
+    private final String customerEmail="customer1234567@gmail.com";
 
     @BeforeAll
     public void set_up(){
@@ -51,7 +51,7 @@ public class CourseIntegrationTests {
         owner.setSportCenter(sportCenter);
         instructor.setSportCenter(sportCenter);
         customer.setSportCenter(sportCenter);
-        createPerson(owner,ownerEmail,"223-456-7890",personName,personPassword);
+        createPerson(owner,ownerEmail,"223-456-7892",personName,personPassword);
         createPerson(instructor,instructorEmail,"446-123-7890",personName,personPassword);
         createPerson(customer,customerEmail,"779-456-0123",personName,personPassword);
 
@@ -64,12 +64,12 @@ public class CourseIntegrationTests {
 
     @AfterAll
     public void clearDatabase() {
+        courseSessionRepository.deleteAll();
         roomRepository.deleteAll();
         courseRepository.deleteAll();
         personRepository.deleteAll();
         sportCenterRepository.deleteAll();
         scheduleRepository.deleteAll();
-        courseSessionRepository.deleteAll();
     }
 
     @Test
