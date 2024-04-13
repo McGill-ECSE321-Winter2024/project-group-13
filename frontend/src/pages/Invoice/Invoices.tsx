@@ -6,6 +6,12 @@ import { InvoiceStatus } from "../../helpers/enums";
 import PayInitModal from "../../components/Invoice/PayInitModal";
 import UpdateInvoiceStatus from "../../components/Invoice/UpdateInvoiceStatus";
 
+
+/**
+ * An array of hosting plans.
+ * Each plan object contains details such as ID, name, memory, CPU, storage, price, and whether it is the current plan.
+ * Plans can include various configurations and pricing options for different needs.
+ */
 const plans = [
     {
       id: 1,
@@ -27,7 +33,17 @@ const plans = [
     },
     // More plans...
   ]
-  
+
+
+/**
+
+Combines multiple CSS class names into a single string.
+Filters out falsy values (null, undefined, false, 0, '') from the input array.
+Joins the remaining class names with a space.
+Returns a string of concatenated class names.
+@param classes Array of CSS class names to be combined.
+@returns A single string containing the combined class names.
+*/
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
@@ -40,6 +56,12 @@ export default function Invoices() {
 
     // const []
 
+    /**
+ * Fetches a list of invoices from the server.
+ * Uses the httpClient to make a GET request to the "/invoices" endpoint.
+ * If the request is successful, sets the fetched invoices using the setInvoicesRaw function.
+ * If there is an error, logs the error to the console.
+ */
     useEffect(() => {
         httpClient("/invoices", "GET")
           .then((res) => {
@@ -50,6 +72,12 @@ export default function Invoices() {
           });
       }, []);
 
+    /**
+ * Fetches a list of registrations from the server.
+ * Uses the httpClient to make a GET request to the "/registrations" endpoint.
+ * If the request is successful, sets the fetched registrations using the setRegistrations function.
+ * If there is an error, logs the error to the console.
+ */
       useEffect(() => {
         httpClient("/registrations", "GET")
             .then((res) => {
@@ -61,6 +89,12 @@ export default function Invoices() {
     }
     , [invoicesRaw]);
 
+    /**
+ * Fetches a list of courses from the server when the registrations state changes.
+ * Uses the httpClient to make a GET request to the "/courses" endpoint.
+ * If the request is successful, sets the fetched courses using the setCourses function.
+ * If there is an error, logs the error to the console.
+ */
     useEffect(() => {
         httpClient("/courses", "GET")
             .then((res) => {
@@ -72,7 +106,13 @@ export default function Invoices() {
     }
     , [registrations]);
 
-    
+    /**
+ * Updates the invoices state based on the registrations and courses state.
+ * Maps over the invoicesRaw array and for each invoice, finds the corresponding registration and course.
+ * Updates the invoice object with the course name and ID, and the registration ID and rating.
+ * Sets the updated invoices array as the new state.
+ * Logs the updated invoices array to the console.
+ */
 
     useEffect(() => {
         setInvoices(invoicesRaw.map((invoice) => {
