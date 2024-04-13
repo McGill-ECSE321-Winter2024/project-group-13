@@ -19,7 +19,9 @@ interface CourseDetailProps {
     };
     onClose: () => void;
 }
-
+/**
+     * This constant is used to display details of a course on the course page of our app.
+     */
 const CourseDetail = ({ course, onClose }: {course: CourseDTO, onClose: any}) => {
     
 
