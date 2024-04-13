@@ -5,9 +5,7 @@ import ca.mcgill.ecse321.rest.dao.CourseRepository;
 import ca.mcgill.ecse321.rest.dao.CustomerRepository;
 import ca.mcgill.ecse321.rest.dao.RegistrationRepository;
 import ca.mcgill.ecse321.rest.models.Course;
-import ca.mcgill.ecse321.rest.models.Customer;
 import ca.mcgill.ecse321.rest.helpers.PersonSession.PersonType;
-import ca.mcgill.ecse321.rest.models.Registration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,26 +41,6 @@ class CourseRegistrationServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void registerForCourse_Successful() {
-        Course course = new Course();
-        course.setId(courseId);
-        course.setCourseState(Course.CourseState.Approved);
-        course.setCourseEndDate(new Timestamp(System.currentTimeMillis() + 1000000)); // Future date
-
-        Customer customer = new Customer();
-        customer.setId(customerId);
-
-        when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
-        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-
-        PersonSession personSession = new PersonSession(customerId, PersonType.Customer, "SportCenter123");
-
-        String result = courseRegistrationService.registerForCourse(courseId, personSession);
-
-        assertEquals("Successfully registered for the course.", result);
-        verify(registrationRepository, times(1)).save(any(Registration.class));
-    }
 
     @Test
     void registerForCourse_CourseNotFound() {

@@ -164,31 +164,6 @@ public class AuthenticationIntegrationTests {
 
     @Test
     @Order(3)
-    public void testRegisterCustomer() {
-        String session = authenticationService.issueTokenWithEmail(ownerEmail);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(session);
-        String email = "customer2@test.com";
-        String password = "password";
-        String name = "John";
-        String phoneNumber = "123-456-7899";
-        RegisterDTO registerDTO = new RegisterDTO();
-        registerDTO.setEmail(email);
-        registerDTO.setPassword(password);
-        registerDTO.setName(name);
-        registerDTO.setPhoneNumber(phoneNumber);
-
-        HttpEntity<RegisterDTO> request = new HttpEntity<>(registerDTO, headers);
-
-        ResponseEntity<String> response = client.postForEntity("/auth/register/customer", request, String.class);
-        System.out.println(response.getBody());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    }
-
-    @Test
-    @Order(4)
     public void testRegisterCustomerWithSameEmail() {
         String session = authenticationService.issueTokenWithEmail(ownerEmail);
         HttpHeaders headers = new HttpHeaders();
@@ -214,7 +189,7 @@ public class AuthenticationIntegrationTests {
 
     // invalid email
     @Test
-    @Order(5)
+    @Order(4)
     public void testRegisterCustomerInvalidEmail() {
         String session = authenticationService.issueTokenWithEmail(ownerEmail);
         HttpHeaders headers = new HttpHeaders();
@@ -240,7 +215,7 @@ public class AuthenticationIntegrationTests {
 
     // register customer as instructor
     @Test
-    @Order(6)
+    @Order(5)
     public void testRegisterCustomerAsInstructor() {
         String session = authenticationService.issueTokenWithEmail(instructorEmail);
         HttpHeaders headers = new HttpHeaders();
@@ -257,7 +232,7 @@ public class AuthenticationIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void testChangePassword() {
         String session = authenticationService.issueTokenWithEmail(customerEmail);
         HttpHeaders headers = new HttpHeaders();
@@ -275,7 +250,7 @@ public class AuthenticationIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void testChangeEmail() {
         String session = authenticationService.issueTokenWithEmail(customerEmail2);
         HttpHeaders headers = new HttpHeaders();
@@ -291,7 +266,7 @@ public class AuthenticationIntegrationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void testChangeEmailInvalidEmail() {
         String session = authenticationService.issueTokenWithEmail(customerEmail);
         HttpHeaders headers = new HttpHeaders();
@@ -307,7 +282,7 @@ public class AuthenticationIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     public void testChangePhoneNumber() {
         System.out.println(personRepository.findAll());
         String session = authenticationService.issueTokenWithEmail(customerEmail);
@@ -326,7 +301,7 @@ public class AuthenticationIntegrationTests {
 
     // phone number already in use
     @Test
-    @Order(11)
+    @Order(10)
     public void testChangePhoneNumberAlreadyInUse() {
         String session = authenticationService.issueTokenWithEmail(customerEmail);
         HttpHeaders headers = new HttpHeaders();

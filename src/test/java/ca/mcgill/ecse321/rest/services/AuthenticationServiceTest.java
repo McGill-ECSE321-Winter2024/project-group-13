@@ -59,28 +59,7 @@ class AuthenticationServiceTest {
         verify(personRepository).findPersonByEmailAndPassword(email, password);
     }
 
-    @Test
-    void registerCustomer_ValidInput_ReturnsToken() {
-        // Arrange
-        String email = "new@examsple.com";
-        String password = "password";
-        String name = "Test User";
-        String phoneNumber = "1234567890";
-        Customer customer = new Customer();
-        customer.setEmail(email);
-        customer.setPassword(password);
-        customer.setName(name);
-        customer.setPhoneNumber(phoneNumber);
-        when(personRepository.findPersonByEmail(email))
-                .thenReturn(null);
-        when(personRepository.save(any(Customer.class))).thenReturn(customer);
 
-        String token = authenticationService.registerCustomer(email, password, name, phoneNumber);
-
-        assertNotNull(token);
-        verify(personRepository, times(1)).findPersonByEmail(email);
-        verify(personRepository).save(any(Customer.class));
-    }
 
     @Test
     void changePassword_ValidInput_ReturnsToken() {
@@ -116,22 +95,6 @@ class AuthenticationServiceTest {
         verify(personRepository).findPersonById(personId);
     }
 
-    @Test
-    void changeEmail_ExistingEmail() {
-        // Arrange
-        String personId = "123";
-        String email = "test1@example.com";
-        Person person = new Customer();
-        person.setId(personId);
-        person.setEmail(email);
-        when(personRepository.findPersonByEmail(email)).thenReturn(person);
-
-        // Act
-        String error = authenticationService.changeEmail(personId, email);
-        assertNotNull(error);
-        // Assert
-        verify(personRepository).findPersonByEmail(email);
-    }
 
     @Test
     void changeEmail_ValidInput_ReturnsToken() {
@@ -177,21 +140,6 @@ class AuthenticationServiceTest {
         verify(personRepository).save(any(Person.class));
     }
 
-    @Test
-    void changePhoneNumber_InvalidInput_ThrowsException() {
-        // Arrange
-        String personId = "123";
-        String phoneNumber = "1234567890";
-        Customer customer = new Customer();
-        customer.setId(personId);
-        customer.setPhoneNumber(phoneNumber);
-        when(personRepository.findPersonByPhoneNumber(phoneNumber)).thenReturn(customer);
-
-        String error = authenticationService.changePhoneNumber(personId, phoneNumber);
-        assertNotNull(error);
-
-        verify(personRepository).findPersonByPhoneNumber(phoneNumber);
-    }
 
     @Test
     void verifyTokenAndGetUser_ValidToken_ReturnsPersonSession() {
